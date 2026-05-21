@@ -7,9 +7,13 @@ const today = new Date();
 </footer>
 <style>
 	footer {
-		padding: 2em 1em 6em 1em;
-		background: linear-gradient(var(--gray-gradient)) no-repeat;
-		color: rgb(var(--gray));
+		padding: 2rem 1rem;
+		color: var(--site-muted);
 		text-align: center;
+		background: transparent;
+		margin-top: 2rem;
+	}
+	@media (min-width: 720px) {
+		footer { padding-bottom: 3rem; }
 	}
 </style>

@@ -4,9 +4,21 @@
   License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
  */
 
+/* (removed duplicate :root block) */
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
+	/* Site palette (applied lightly) */
+	--site-bg: #faf7ed;
+	--site-surface: #ffffff;
+	--site-text: #171717;
+	--site-muted: #5f5a4f;
+	--site-accent: #b94a1d;
+	--site-green: #123f32;
+	--site-sand: #e3b45f;
+	--site-border: #ded4bd;
+
+	/* compatibility tokens used by existing rules */
+	--accent: var(--site-accent);
+	--accent-dark: #7a2e14;
 	--black: 15, 18, 25;
 	--gray: 96, 115, 159;
 	--gray-light: 229, 233, 240;
@@ -21,20 +33,50 @@ body {
 	margin: 0;
 	padding: 0;
 	text-align: left;
-	background: linear-gradient(var(--gray-gradient)) no-repeat;
-	background-size: 100% 600px;
+	background: var(--site-bg);
 	word-wrap: break-word;
 	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
+	color: var(--site-text);
 	font-size: 20px;
 	line-height: 1.7;
 }
-main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-	margin: auto;
-	padding: 3em 1em;
+/* Page shell: keep footer at bottom on short pages */
+html, body {
+	min-height: 100%;
 }
+body {
+	display: flex;
+	flex-direction: column;
+}
+main {
+	flex: 1 0 auto;
+}
+
+/* Homepage layout */
+.home-page {
+	max-width: 920px;
+	margin: 2.5rem auto;
+	padding: 0 1.25rem;
+}
+.home-page .intro {
+	max-width: 760px;
+	margin: 0 auto 1.25rem auto;
+}
+.latest-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+.post-card {
+	border: 1px solid var(--site-border);
+	background: var(--site-surface);
+	padding: 1rem;
+	border-radius: 10px;
+}
+.post-card h3 { margin: 0 0 0.25rem 0; }
+.post-meta { font-size: 0.9rem; color: var(--site-muted); margin-bottom: 0.5rem; }
+.post-excerpt { margin: 0; color: var(--site-muted); }
 h1,
 h2,
 h3,
@@ -97,8 +139,15 @@ code {
 	border-radius: 2px;
 }
 pre {
-	padding: 1.5em;
+	border: 1px solid rgb(var(--gray-light));
+	background: #fbfbfd;
+}
+.snippet-card {
+	border: 1px solid var(--site-border);
+	background: var(--site-surface);
 	border-radius: 8px;
+	padding: 0.9rem;
+	margin-bottom: 0.9rem;
 }
 pre > code {
 	all: unset;
@@ -193,8 +242,8 @@ hr {
 }
 
 .snippet-card {
-	border: 1px solid rgb(var(--gray-light));
-	background: #fbfbfd;
+	border: 1px solid var(--site-border);
+	background: var(--site-surface);
 	border-radius: 8px;
 	padding: 0.9rem;
 	margin-bottom: 0.9rem;
@@ -213,6 +262,7 @@ hr {
 	line-height: 1.4;
 	white-space: pre;
 	margin: 0;
+	border: 1px solid var(--site-border);
 }
 .snippet-card code {
 	background: transparent;
@@ -250,7 +300,23 @@ hr {
 }
 .cv-download:hover { opacity: 0.95; }
 .cv-embed { margin-top: 1rem; }
-.cv-embed iframe { border: 1px solid rgb(var(--gray-light)); border-radius: 6px; }
+.cv-embed iframe { border: 1px solid var(--site-border); border-radius: 6px; }
+
+/* Home hero artwork */
+.home-hero-art {
+	margin: 2rem 0 3rem;
+}
+
+.home-hero-art img {
+	width: 100%;
+	height: auto;
+	max-height: 520px;
+	object-fit: cover;
+	object-position: center;
+	border-radius: 18px;
+	border: 1px solid var(--site-border);
+	box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+}
 
 @media (max-width: 720px) {
 	.cv-page { padding: 1rem; margin: 1rem auto; }

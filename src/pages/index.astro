@@ -3,6 +3,30 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+
+function normalisePath(src) {
+	if (!src || typeof src !== 'string') return null;
+	return src.startsWith('/') ? src : `/blog/${src.replace(/^\/+/, '')}`;
+}
+
+function normaliseImage(src) {
+	if (!src || typeof src !== 'string') return null;
+	return src.startsWith('/') ? src : `/${src}`;
+}
+
+function excerptFor(post, length = 200) {
+	const desc = post?.data?.description;
+	if (desc && typeof desc === 'string') return desc;
+	const body = typeof post.body === 'string' ? post.body : '';
+	return body.length > length ? body.substring(0, length) + '...' : body;
+}
+
+const allPosts = await getCollection('blog');
+const posts = allPosts
+	.filter((p) => !p.data?.draft)
+	.sort((a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf())
+	.slice(0, 5);
 ---
 
 <!doctype html>
@@ -12,21 +36,52 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	</head>
 	<body>
 		<Header />
-		<main>
-			<h1>Shan Islam</h1>
+		<main class="home-page">
+			<section class="intro">
+				<h1>Shan Islam</h1>
 
-			<p>
-				I write about pricing, experimentation, forecasting and practical data science.
-			</p>
+				<p>
+					I write about pricing, experimentation, forecasting and practical data science.
+				</p>
 
-			<p>
-				Most of the writing here is about what I have learned from working on commercial data science problems:
-				A/B testing, dynamic pricing, demand forecasting, messy data and stakeholder decision making.
-			</p>
+				<p>
+					Most of the writing here is about what I have learned from working on commercial data science problems:
+					A/B testing, dynamic pricing, demand forecasting, messy data and stakeholder decision making.
+				</p>
+			</section>
 
-			<p>
-				<a href="/blog/">Read the blog</a>
-			</p>
+			<figure class="home-hero-art">
+				<img src="/images/site-hero.png" alt="Personal illustration representing faith, family, technology and Bangladesh" />
+			</figure>
+
+			<section class="latest-writing">
+				<h2>Latest writing</h2>
+				<div class="latest-list">
+					{posts.length === 0 ? (
+						<p>No posts yet.</p>
+					) : (
+						posts.map((post) => (
+							<article class="post-card">
+								<h3>
+									{
+										(() => {
+											const href = normalisePath(post.slug ?? post.id ?? '');
+											return (
+												<a href={href ?? '#'}>
+													{post.data.title}
+												</a>
+											);
+										})()
+									}
+								</h3>
+								<div class="post-meta">{new Date(post.data.pubDate).toLocaleDateString()}</div>
+								<p class="post-excerpt">{excerptFor(post)}</p>
+							</article>
+						))
+					)}
+				</div>
+				<p><a href="/blog/">See all posts</a></p>
+			</section>
 		</main>
 		<Footer />
 	</body>
