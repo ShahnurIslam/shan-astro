@@ -1,0 +1,296 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { Code } from 'astro:components';
+
+// Store all snippets as strings here to avoid Astro parsing issues.
+const snippets = [
+    // Docker
+    {
+        section: 'Docker',
+        title: 'Basic Dockerfile for Python',
+        language: 'dockerfile',
+        code: `FROM python:3.11-slim
+WORKDIR /app
+COPY pyproject.toml poetry.lock* /app/
+RUN pip install --upgrade pip
+COPY . /app
+CMD ["python", "src/main.py"]`
+    },
+    {
+        section: 'Docker',
+        title: 'Docker Compose service',
+        language: 'yaml',
+        code: `version: "3.8"
+services:
+    web:
+        build: .
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/app`
+    },
+
+    // Python - Core
+    {
+        section: 'Python',
+        subsection: 'Core Python',
+        title: 'Read environment variable',
+        language: 'python',
+        code: `import os
+
+def get_env(name, default=None):
+        return os.getenv(name, default)`
+    },
+    {
+        section: 'Python',
+        subsection: 'Core Python',
+        title: 'Simple timing context manager',
+        language: 'python',
+        code: `import time
+from contextlib import contextmanager
+
+@contextmanager
+def timeit(label=None):
+        start = time.time()
+        yield
+        elapsed = time.time() - start
+        print(f"{label or 'elapsed'}: {elapsed:.3f}s")`
+    },
+
+    // Python - pandas
+    {
+        section: 'Python',
+        subsection: 'pandas',
+        title: 'Read CSV and inspect',
+        language: 'python',
+        code: `import pandas as pd
+
+df = pd.read_csv('data.csv', parse_dates=['date'])
+print(df.shape)
+print(df.head())`
+    },
+    {
+        section: 'Python',
+        subsection: 'pandas',
+        title: 'Group by summary',
+        language: 'python',
+        code: `summary = df.groupby('category').agg({'value': ['mean','sum','count']})
+print(summary)`
+    },
+    {
+        section: 'Python',
+        subsection: 'pandas',
+        title: 'Date parsing',
+        language: 'python',
+        code: `df['date'] = pd.to_datetime(df['date'])
+df = df.set_index('date')`
+    },
+
+    // Python - matplotlib
+    {
+        section: 'Python',
+        subsection: 'matplotlib',
+        title: 'Basic line chart',
+        language: 'python',
+        code: `import matplotlib.pyplot as plt
+
+plt.plot(df.index, df['value'])
+plt.title('Value over time')
+plt.xlabel('date')
+plt.ylabel('value')
+plt.show()`
+    },
+    {
+        section: 'Python',
+        subsection: 'matplotlib',
+        title: 'Save figure',
+        language: 'python',
+        code: `fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+ax.plot([1,2,3],[4,5,6])
+fig.savefig('plot.png')`
+    },
+
+    // Python - scikit learn
+    {
+        section: 'Python',
+        subsection: 'scikit learn',
+        title: 'Train test split',
+        language: 'python',
+        code: `from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)`
+    },
+    {
+        section: 'Python',
+        subsection: 'scikit learn',
+        title: 'Simple pipeline',
+        language: 'python',
+        code: `from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+pipe = make_pipeline(StandardScaler(), LogisticRegression())
+pipe.fit(X_train, y_train)`
+    },
+
+    // Python - stats and experimentation
+    {
+        section: 'Python',
+        subsection: 'stats and experimentation',
+        title: 'Two proportion z test (placeholder)',
+        language: 'python',
+        code: `# Placeholder: use statsmodels or scipy for two-proportion z-test
+from statsmodels.stats.proportion import proportions_ztest
+
+count = [success_a, success_b]
+nobs = [n_a, n_b]
+stat, pval = proportions_ztest(count, nobs)`
+    },
+    {
+        section: 'Python',
+        subsection: 'stats and experimentation',
+        title: 'Sample ratio mismatch note',
+        language: 'python',
+        code: `# Quick check for sample ratio mismatch
+expected_ratio = 0.5
+observed = n_a / (n_a + n_b)
+print(observed, expected_ratio)`
+    },
+
+    // SQL
+    {
+        section: 'SQL',
+        title: 'Group by month',
+        language: 'sql',
+        code: `SELECT DATE_TRUNC('month', created_at) AS month, COUNT(*) AS events
+FROM events
+GROUP BY month
+ORDER BY month DESC;`
+    },
+    {
+        section: 'SQL',
+        title: 'Window function with row_number',
+        language: 'sql',
+        code: `SELECT *, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) as rn
+FROM events;`
+    },
+    {
+        section: 'SQL',
+        title: 'Lag example',
+        language: 'sql',
+        code: `SELECT *, LAG(value) OVER (PARTITION BY id ORDER BY ts) as prev_value
+FROM metrics;`
+    },
+
+    // Haskell
+    {
+        section: 'Haskell',
+        title: 'Simple function',
+        language: 'haskell',
+        code: `add :: Int -> Int -> Int
+add x y = x + y`
+    },
+    {
+        section: 'Haskell',
+        title: 'Pattern matching',
+        language: 'haskell',
+        code: `fact :: Int -> Int
+fact 0 = 1
+fact n = n * fact (n - 1)`
+    },
+
+    // Scala
+    {
+        section: 'Scala',
+        title: 'Case class',
+        language: 'scala',
+        code: `case class User(id: Int, name: String)`
+    },
+    {
+        section: 'Scala',
+        title: 'Map and filter example',
+        language: 'scala',
+        code: `val nums = List(1,2,3,4,5)
+val evens = nums.filter(_ % 2 == 0).map(_ * 2)`
+    }
+];
+
+const sections = ['Docker', 'Python', 'SQL', 'Haskell', 'Scala'];
+
+const groups = sections.map((sec) => {
+    const items = snippets.filter((s) => s.section === sec);
+    if (sec === 'Python') {
+        const subs = Array.from(new Set(items.map((i) => i.subsection))).filter(Boolean).map((sub) => ({
+            subsection: sub,
+            items: items.filter((it) => it.subsection === sub),
+        }));
+        return { section: sec, subsections: subs };
+    }
+    return { section: sec, items };
+});
+
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title="Code snippets" description={SITE_DESCRIPTION} />
+    </head>
+    <body>
+        <Header />
+        <main class="snippets-page">
+            <h1>Code snippets</h1>
+            <p>Small reusable snippets I reach for when working with data, analytics, modelling and web projects.</p>
+
+            <nav class="snippets-toc" aria-label="Table of contents">
+                <strong>Contents</strong>
+                <ul>
+                    <li><a href="#docker">Docker</a></li>
+                    <li>
+                        <a href="#python">Python</a>
+                        <ul>
+                            <li><a href="#python-core-python">Core Python</a></li>
+                            <li><a href="#python-pandas">pandas</a></li>
+                            <li><a href="#python-matplotlib">matplotlib</a></li>
+                            <li><a href="#python-scikit-learn">scikit learn</a></li>
+                            <li><a href="#python-stats-and-experimentation">stats and experimentation</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#sql">SQL</a></li>
+                    <li><a href="#haskell">Haskell</a></li>
+                    <li><a href="#scala">Scala</a></li>
+                </ul>
+            </nav>
+
+            {groups.map((group) => (
+                <section id={group.section.toLowerCase()}>
+                    <h2>{group.section}</h2>
+                    {group.subsections
+                        ? group.subsections.map((sub) => (
+                                <div id={`${group.section.toLowerCase()}-${sub.subsection.replace(/\s+/g, '-').toLowerCase()}`}>
+                                    <h3>{sub.subsection}</h3>
+                                    {sub.items.map((snip) => (
+                                        <article class="snippet-card">
+                                            <h4>{snip.title}</h4>
+                                            <Code code={snip.code} lang={snip.language} theme="github-light" />
+                                        </article>
+                                    ))}
+                                </div>
+                            ))
+                        : group.items.map((snip) => (
+                                <article id={`${group.section.toLowerCase()}-${snip.title.replace(/\s+/g, '-').toLowerCase()}`} class="snippet-card">
+                                    <h3>{snip.title}</h3>
+                                    <Code code={snip.code} lang={snip.language} theme="github-light" />
+                                </article>
+                            ))}
+                </section>
+            ))}
+
+        </main>
+        <Footer />
+    </body>
+</html>
