@@ -77,6 +77,27 @@ main {
 .post-card h3 { margin: 0 0 0.25rem 0; }
 .post-meta { font-size: 0.9rem; color: var(--site-muted); margin-bottom: 0.5rem; }
 .post-excerpt { margin: 0; color: var(--site-muted); }
+/* Ensure post titles are dark by default, accent on hover */
+.post-card h3 a {
+	color: var(--site-text);
+	text-decoration: none;
+}
+.post-card h3 a:hover,
+.post-card h3 a:focus {
+	color: var(--site-accent);
+}
+
+/* Blog page layout */
+.blog-page {
+	max-width: 920px;
+	margin: 2.5rem auto;
+	padding: 0 1.25rem;
+}
+.blog-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
 h1,
 h2,
 h3,
@@ -310,9 +331,6 @@ hr {
 .home-hero-art img {
 	width: 100%;
 	height: auto;
-	max-height: 520px;
-	object-fit: cover;
-	object-position: center;
 	border-radius: 18px;
 	border: 1px solid var(--site-border);
 	box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
