@@ -7,106 +7,65 @@ import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const posts = (await getCollection('blog'))
+	.filter((p) => !p.data?.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+function stripBasicMarkdown(text) {
+	if (!text || typeof text !== 'string') return '';
+	let s = text;
+	// Remove images
+	s = s.replace(/!\[[^\]]*\]\([^)]*\)/g, '');
+	// Replace links with link text
+	s = s.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
+	// Remove headings
+	s = s.replace(/^#{1,6}\s*/gm, '');
+	// Remove blockquotes
+	s = s.replace(/^>\s?/gm, '');
+	// Remove code fences and inline code
+	s = s.replace(/```[\s\S]*?```/g, '');
+	s = s.replace(/`([^`]*)`/g, '$1');
+	// Remove list markers
+	s = s.replace(/^[\s]*[-*+]\s+/gm, '');
+	s = s.replace(/^[0-9]+\.\s+/gm, '');
+	// Collapse whitespace
+	s = s.replace(/\s+/g, ' ').trim();
+	return s;
+}
+
+function excerptFromPost(post, len = 180) {
+	const desc = post?.data?.description;
+	if (desc && typeof desc === 'string') return desc.length > len ? desc.slice(0, len) + '...' : desc;
+	const body = typeof post.body === 'string' ? stripBasicMarkdown(post.body) : '';
+	if (!body) return '';
+	return body.length > len ? body.slice(0, len) + '...' : body;
+}
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
-			<section>
-				<ul>
-					{
+		<main class="blog-page">
+			<section class="blog-intro">
+				<h1>Blog</h1>
+				<p>Writing about pricing, experimentation, forecasting and practical data science.</p>
+			</section>
+			<section class="blog-list">
+				{
+					posts.length === 0 ? (<p>No posts yet.</p>) : (
 						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
+							<article class="post-card">
+								<h3><a href={`/blog/${post.id}/`}>{post.data.title}</a></h3>
+								<div class="post-meta"><FormattedDate date={post.data.pubDate} /></div>
+								<p class="post-excerpt">{excerptFromPost(post)}</p>
+							</article>
 						))
-					}
-				</ul>
+					)
+				}
 			</section>
 		</main>
 		<Footer />

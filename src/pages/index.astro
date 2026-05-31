@@ -3,6 +3,30 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+
+function normalisePath(src) {
+	if (!src || typeof src !== 'string') return null;
+	return src.startsWith('/') ? src : `/blog/${src.replace(/^\/+/, '')}`;
+}
+
+function normaliseImage(src) {
+	if (!src || typeof src !== 'string') return null;
+	return src.startsWith('/') ? src : `/${src}`;
+}
+
+function excerptFor(post, length = 200) {
+	const desc = post?.data?.description;
+	if (desc && typeof desc === 'string') return desc;
+	const body = typeof post.body === 'string' ? post.body : '';
+	return body.length > length ? body.substring(0, length) + '...' : body;
+}
+
+const allPosts = await getCollection('blog');
+const posts = allPosts
+	.filter((p) => !p.data?.draft)
+	.sort((a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf())
+	.slice(0, 5);
 ---
 
 <!doctype html>
@@ -12,37 +36,54 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	</head>
 	<body>
 		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+		<main class="home-page">
+			<section class="home-hero">
+				<figure class="home-banner">
+					<img src="/images/home-banner.png" alt="Site banner" />
+				</figure>
+				<div class="home-intro">
+					<h1>Pricing, experiments and practical data science</h1>
+
+					<p>
+						I write about pricing, experimentation, forecasting and practical data science.
+					</p>
+
+					<p>
+						Most of the writing here is about what I have learned from working on commercial data science problems:
+						A/B testing, dynamic pricing, demand forecasting, messy data and stakeholder decision making.
+					</p>
+				</div>
+			</section>
+
+
+			<section class="latest-writing">
+				<h2>Latest writing</h2>
+				<div class="latest-list">
+					{posts.length === 0 ? (
+						<p>No posts yet.</p>
+					) : (
+						posts.map((post) => (
+							<article class="post-card">
+								<h3>
+									{
+										(() => {
+											const href = normalisePath(post.slug ?? post.id ?? '');
+											return (
+												<a href={href ?? '#'}>
+													{post.data.title}
+												</a>
+											);
+										})()
+									}
+								</h3>
+								<div class="post-meta">{new Date(post.data.pubDate).toLocaleDateString()}</div>
+								<p class="post-excerpt">{excerptFor(post)}</p>
+							</article>
+						))
+					)}
+				</div>
+				<p><a href="/blog/">See all posts</a></p>
+			</section>
 		</main>
 		<Footer />
 	</body>
