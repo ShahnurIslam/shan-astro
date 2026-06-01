@@ -28,7 +28,7 @@ We were split into seven teams, working with 2 data scientists currently employe
 
 I was called back for a formal interview. My wife was super supportive and came with me to the interview beforehand for moral support, which was awesome. The interview went well and the role was everything I wanted. However I've had interviews go well before and not receive an offer so I decided not to get my hopes up. My wife on the other hand, announced she had a "good feeling" and decided I had already got the job. Turns out she was right- at 9.06pm on the same day I got:
 
-![success](/images/posts/success_email.png)
+![success](/images/success_email.png)
 Lots of jumping up and down ensued. 
 
 ### Being a data scientist

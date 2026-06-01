@@ -1,63 +1,152 @@
-# Astro Starter Kit: Blog
+# Shan Islam personal site
 
-```sh
-npm create astro@latest -- --template blog
+Astro personal site and blog for writing about pricing, experimentation, forecasting and practical data science.
+
+## Local development
+
+Install dependencies and run the local dev server:
+
+```bash
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+The local dev server is usually available at:
 
 ```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+http://localhost:4321
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Build check
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Build the site for production:
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+```bash
+npm run build
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
+This should succeed before committing or deploying.
 
-## 🧞 Commands
+## Creating a new blog post
 
-All commands are run from the root of the project, from a terminal:
+Astro doesn't require a special command to create posts. Add a Markdown file to:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```text
+src/content/blog/
+```
 
-## 👀 Want to learn more?
+Example:
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```text
+src/content/blog/the-cost-of-waiting-for-certainty.md
+```
 
-## Credit
+Example frontmatter:
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+```markdown
+---
+title: "The cost of waiting for certainty"
+description: "Why commercial experimentation is about making the right decision under uncertainty, not waiting for perfect statistical purity."
+pubDate: 2026-06-01
+tags: ["A/B testing", "experimentation", "decision making", "statistics"]
+draft: true
+---
+```
+
+Set `draft: false` or remove the `draft` field when ready to publish.
+
+## Blog post ideas
+
+Some ideas to get started:
+
+- Before asking who won: the commercial pitfalls of A/B testing
+- The cost of waiting for certainty
+- Peeking is inevitable, so design for it
+- The metric can win while the business loses
+- Sample ratio mismatch: before asking who won, check whether the test was broken
+- Outcome maturity: not every quote has had time to convert
+- Bayesian does not remove judgement
+- A prior is not truth, it is a bet about the past
+
+## Snippets page
+
+Snippets live in:
+
+```text
+src/pages/snippets.astro
+```
+
+Snippets are stored as strings in the frontmatter to avoid Astro parsing issues with braces and code syntax. Use Astro's `Code` component for syntax highlighting where appropriate.
+
+## Static assets
+
+Static files (images, PDFs) live in the `public/` directory and are served from the site root. Examples:
+
+```text
+public/images/home-banner.png
+public/images/site-mark.png
+public/cv/shan-islam-cv.pdf
+```
+
+These are referenced by their root paths. For example, `public/images/home-banner.png` becomes `/images/home-banner.png`.
+
+## CV page
+
+Place the CV PDF at:
+
+```text
+public/cv/shan-islam-cv.pdf
+```
+
+And link to it from the CV page as:
+
+```text
+/cv/shan-islam-cv.pdf
+```
+
+## Deploying
+
+Typical deploy flow:
+
+```bash
+npm run build
+git status
+git add .
+git commit -m "Update site"
+git push
+```
+
+Netlify automatically deploys from the GitHub repository after pushing. Recommended Netlify settings:
+
+```
+Build command: npm run build
+Publish directory: dist
+```
+
+## Domain notes
+
+The live domain is:
+
+```text
+www.shanislam.com
+```
+
+The bare domain `shanislam.com` should redirect to `www.shanislam.com`.
+
+DNS is managed in Namecheap and points to Netlify.
+
+Example DNS pattern:
+
+```text
+ALIAS @    apex-loadbalancer.netlify.com
+CNAME www  [current-netlify-site].netlify.app
+```
+
+Do not hardcode the Netlify subdomain here unless it's obvious in the project.
+
+## Design principle
+
+Commercial decision first. Statistics make the risk visible.
+
+Keep the site calm, readable and writing focused. Do not redesign the site when the goal is to publish a post.
+
