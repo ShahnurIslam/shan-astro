@@ -66,6 +66,7 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 					<line x1="72" y1="195" x2="480" y2="195" />
 					<line x1="72" y1="340" x2="480" y2="340" />
 					<line x1="72" y1="55" x2="72" y2="340" />
+					<line x1="480" y1="55" x2="480" y2="340" />
 				</g>
 				<g stroke="#5f574c" stroke-width="1">
 					<line x1="72" y1="340" x2="72" y2="348" />
@@ -76,10 +77,10 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 				<line x1="72" y1="120" x2="500" y2="120" stroke="#8b7652" stroke-width="3" />
 				<g class="pricing-chart__axis" fill="#5f574c" font-family="Atkinson, sans-serif" font-size="15">
 					<text x="62" y="125" text-anchor="end">100</text>
-					<text x="72" y="370" text-anchor="middle">90 days</text>
+					<text x="72" y="370" text-anchor="middle">90</text>
 					<text x="208" y="370" text-anchor="middle">60</text>
 					<text x="344" y="370" text-anchor="middle">30</text>
-					<text x="480" y="370" text-anchor="end">0 / service date</text>
+					<text x="480" y="370" text-anchor="middle">0</text>
 					<text x="26" y="215" text-anchor="middle" transform="rotate(-90 26 215)">Cumulative jobs / bookings</text>
 					<text x="90" y="111" fill="#6c5a3e" font-weight="700">Usable capacity — 100 jobs</text>
 				</g>
@@ -103,7 +104,7 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 					<text class="pricing-buffer__label" x="520" y="118">&amp; rescheduling</text>
 					<text class="pricing-buffer__caption" x="520" y="139" font-size="12" font-weight="400">Gross-booking buffer</text>
 				</g>
-				<text x="72" y="408" fill="#5f574c" font-family="Atkinson, sans-serif" font-size="14">Days before service</text>
+				<text x="276" y="408" text-anchor="middle" fill="#5f574c" font-family="Atkinson, sans-serif" font-size="14">Days before service</text>
 			</svg>
 			<figcaption>
 				Illustrative data. Pricing is used to slow booking growth when forecast demand exceeds capacity. Gross bookings deliberately finish slightly above usable capacity to allow for expected cancellations and rescheduling.
