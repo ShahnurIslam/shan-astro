@@ -40,49 +40,71 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 	<section>
 		<h2>Make the intervention window visible</h2>
 		<p>
-			The executive view focused attention on the gap between expected demand and available capacity. That gap, rather than a forecast in isolation, created the commercial signal for targeted intervention.
+			The executive view showed whether the cumulative booking trajectory was likely to exceed usable capacity by the service date. That forecast created time to intervene, regulate subsequent bookings, and still allow enough gross demand to fill capacity after expected attrition.
 		</p>
 		<figure class="executive-visual">
 			<div class="executive-visual__header">
-				<h3>Forecast pressure and pricing windows</h3>
+				<h3>Forecast demand early, regulate bookings toward capacity</h3>
 				<span class="illustrative-label">Illustrative data</span>
 			</div>
 			<div class="chart-key" aria-hidden="true">
-				<span><i class="chart-key__line chart-key__line--demand"></i>Predicted demand</span>
-				<span><i class="chart-key__line chart-key__line--capacity"></i>Available capacity</span>
-				<span><i class="chart-key__window"></i>Intervention window</span>
+				<span><i class="chart-key__line chart-key__line--demand"></i>Observed bookings</span>
+				<span><i class="chart-key__line chart-key__line--forecast"></i>Forecast without intervention</span>
+				<span><i class="chart-key__line chart-key__line--capacity"></i>Projected after intervention</span>
 			</div>
-			<svg viewBox="0 0 760 360" role="img" aria-labelledby="pricing-chart-title pricing-chart-desc">
-				<title id="pricing-chart-title">Predicted demand compared with available capacity</title>
-				<desc id="pricing-chart-desc">An illustrative seven-day chart. Demand rises above capacity during shaded pressure periods on Tuesday evening, Thursday evening, and Saturday, creating targeted pricing intervention windows.</desc>
-				<rect width="760" height="360" fill="#fffdf7" />
+			<svg class="pricing-chart" viewBox="0 0 640 430" role="img" aria-labelledby="pricing-chart-title pricing-chart-desc">
+				<title id="pricing-chart-title">Cumulative bookings forecast and pricing intervention</title>
+				<desc id="pricing-chart-desc">Illustrative cumulative bookings from 90 days before service to the service date. Observed bookings reach a decision point where the no-intervention forecast would exceed 100 jobs of usable capacity. After pricing intervention, projected bookings rise more slowly and finish slightly above capacity so expected fulfilled jobs land around capacity after cancellations and rescheduling.</desc>
+				<defs>
+					<marker id="pricing-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+						<path d="M 0 0 L 10 5 L 0 10 z" fill="#a83220" />
+					</marker>
+				</defs>
+				<rect width="640" height="430" fill="#fffdf7" />
 				<g stroke="#e6dac2" stroke-width="1">
-					<line x1="70" y1="70" x2="720" y2="70" />
-					<line x1="70" y1="140" x2="720" y2="140" />
-					<line x1="70" y1="210" x2="720" y2="210" />
-					<line x1="70" y1="280" x2="720" y2="280" />
+					<line x1="72" y1="55" x2="600" y2="55" />
+					<line x1="72" y1="195" x2="600" y2="195" />
+					<line x1="72" y1="340" x2="600" y2="340" />
+					<line x1="72" y1="55" x2="72" y2="340" />
 				</g>
-				<g fill="#f3e7d2" opacity="0.9">
-					<rect x="179" y="48" width="66" height="232" rx="5" />
-					<rect x="385" y="48" width="62" height="232" rx="5" />
-					<rect x="572" y="48" width="96" height="232" rx="5" />
+				<g stroke="#5f574c" stroke-width="1">
+					<line x1="72" y1="340" x2="72" y2="348" />
+					<line x1="248" y1="340" x2="248" y2="348" />
+					<line x1="424" y1="340" x2="424" y2="348" />
+					<line x1="600" y1="340" x2="600" y2="348" />
 				</g>
-				<g class="pricing-chart__axis" fill="#5f574c" font-family="Atkinson, sans-serif" font-size="14">
-					<text x="26" y="75">High</text>
-					<text x="30" y="285">Low</text>
-					<text x="76" y="315">Mon</text>
-					<text x="174" y="315">Tue</text>
-					<text x="269" y="315">Wed</text>
-					<text x="368" y="315">Thu</text>
-					<text x="469" y="315">Fri</text>
-					<text x="568" y="315">Sat</text>
-					<text x="666" y="315">Sun</text>
+				<line x1="72" y1="120" x2="600" y2="120" stroke="#8b7652" stroke-width="3" />
+				<g class="pricing-chart__axis" fill="#5f574c" font-family="Atkinson, sans-serif" font-size="15">
+					<text x="62" y="125" text-anchor="end">100</text>
+					<text x="72" y="370" text-anchor="middle">90 days</text>
+					<text x="248" y="370" text-anchor="middle">60</text>
+					<text x="424" y="370" text-anchor="middle">30</text>
+					<text x="600" y="370" text-anchor="end">0 / service date</text>
+					<text x="26" y="215" text-anchor="middle" transform="rotate(-90 26 215)">Cumulative jobs / bookings</text>
+					<text x="90" y="111" fill="#6c5a3e" font-weight="700">Usable capacity — 100 jobs</text>
 				</g>
-				<polyline points="86,236 137,221 188,174 239,101 290,193 341,215 392,152 443,82 494,187 545,203 596,124 647,76 698,169" fill="none" stroke="#a83220" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
-				<polyline points="86,205 137,194 188,190 239,181 290,178 341,175 392,173 443,168 494,171 545,175 596,168 647,160 698,165" fill="none" stroke="#143b2f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+				<path d="M 72 326 C 150 321, 220 304, 282 279 S 360 239, 395 220" fill="none" stroke="#a83220" stroke-width="5" stroke-linecap="round" />
+				<path d="M 395 220 C 468 179, 540 105, 600 58" fill="none" stroke="#a83220" stroke-width="4" stroke-dasharray="10 9" stroke-linecap="round" />
+				<path d="M 395 220 C 470 190, 538 135, 600 101" fill="none" stroke="#143b2f" stroke-width="5" stroke-linecap="round" />
+				<circle cx="395" cy="220" r="7" fill="#fffdf7" stroke="#a83220" stroke-width="4" />
+				<g fill="#151210" font-family="Atkinson, sans-serif" font-size="16" font-weight="700">
+					<text x="276" y="175">Pricing intervention</text>
+				</g>
+				<line x1="372" y1="182" x2="391" y2="211" stroke="#a83220" stroke-width="2" marker-end="url(#pricing-arrow)" />
+				<g stroke="#8b7652" stroke-width="2">
+					<line x1="614" y1="101" x2="614" y2="120" />
+					<line x1="608" y1="101" x2="620" y2="101" />
+					<line x1="608" y1="120" x2="620" y2="120" />
+				</g>
+				<g fill="#5f574c" font-family="Atkinson, sans-serif" font-size="14">
+					<text x="350" y="76" font-weight="700">Gross-booking buffer</text>
+					<text x="350" y="95">allows for expected attrition</text>
+				</g>
+				<line x1="540" y1="96" x2="607" y2="108" stroke="#8b7652" stroke-width="1.5" />
+				<text x="72" y="408" fill="#5f574c" font-family="Atkinson, sans-serif" font-size="14">Days before service</text>
 			</svg>
 			<figcaption>
-				Illustrative data, not historical performance. Shaded periods show where forecast demand exceeds available capacity enough to consider a pricing response.
+				Illustrative data, not historical performance or employer operating rules. Pricing reduces the rate of subsequent bookings while retaining a small gross-booking buffer for expected cancellations and rescheduling.
 			</figcaption>
 		</figure>
 	</section>
