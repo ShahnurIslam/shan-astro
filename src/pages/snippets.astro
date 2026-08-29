@@ -380,9 +380,9 @@ const groups = sections.map((sec) => {
             subsection: sub,
             items: items.filter((it) => it.subsection === sub),
         }));
-        return { section: sec, subsections: subs };
+        return { section: sec, subsections: subs, count: items.length };
     }
-    return { section: sec, items };
+    return { section: sec, items, count: items.length };
 });
 
 ---
@@ -390,59 +390,90 @@ const groups = sections.map((sec) => {
 <!doctype html>
 <html lang="en">
     <head>
-        <BaseHead title="Code snippets" description={SITE_DESCRIPTION} />
+        <BaseHead title="Code snippets | Shan Islam" description={SITE_DESCRIPTION} />
     </head>
     <body>
         <Header />
         <main class="snippets-page">
-            <h1>Code snippets</h1>
-            <p>Small reusable snippets I reach for when working with data, analytics, modelling and web projects.</p>
+			<header class="snippets-intro">
+				<p class="section-label">Working notebook</p>
+				<h1>Code snippets.</h1>
+				<p>Small reusable snippets I reach for when working with data, analytics, modelling and web projects.</p>
+			</header>
 
-            <nav class="snippets-toc" aria-label="Table of contents">
-                <strong>Contents</strong>
-                <ul>
-                    <li><a href="#docker">Docker</a></li>
-                    <li>
-                        <a href="#python">Python</a>
-                        <ul>
-                            <li><a href="#python-core-python">Core Python</a></li>
-                            <li><a href="#python-pandas">pandas</a></li>
-                            <li><a href="#python-matplotlib">matplotlib</a></li>
-                            <li><a href="#python-scikit-learn">scikit learn</a></li>
-                            <li><a href="#python-stats-and-experimentation">stats and experimentation</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#sql">SQL</a></li>
-                    <li><a href="#haskell">Haskell</a></li>
-                    <li><a href="#scala">Scala</a></li>
-                </ul>
-            </nav>
+			<div class="snippets-layout">
+				<nav class="snippets-toc" aria-label="Table of contents">
+					<strong>Browse snippets</strong>
+					<ul>
+						<li><a href="#docker">Docker</a></li>
+						<li>
+							<a href="#python">Python</a>
+							<ul>
+								<li><a href="#python-core-python">Core Python</a></li>
+								<li><a href="#python-pandas">pandas</a></li>
+								<li><a href="#python-matplotlib">matplotlib</a></li>
+								<li><a href="#python-scikit-learn">scikit learn</a></li>
+								<li><a href="#python-stats-and-experimentation">stats &amp; experimentation</a></li>
+							</ul>
+						</li>
+						<li><a href="#sql">SQL</a></li>
+						<li><a href="#haskell">Haskell</a></li>
+						<li><a href="#scala">Scala</a></li>
+					</ul>
+				</nav>
 
-            {groups.map((group) => (
-                <section id={group.section.toLowerCase()}>
-                    <h2>{group.section}</h2>
-                    {group.subsections
-                        ? group.subsections.map((sub) => (
-                                <div id={`${group.section.toLowerCase()}-${sub.subsection.replace(/\s+/g, '-').toLowerCase()}`}>
-                                    <h3>{sub.subsection}</h3>
-                                    {sub.items.map((snip) => (
-                                        <article class="snippet-card">
-                                            <h4>{snip.title}</h4>
-                                            <Code code={snip.code} lang={snip.language} theme="github-light" />
-                                        </article>
-                                    ))}
-                                </div>
-                            ))
-                        : group.items.map((snip) => (
-                                <article id={`${group.section.toLowerCase()}-${snip.title.replace(/\s+/g, '-').toLowerCase()}`} class="snippet-card">
-                                    <h3>{snip.title}</h3>
-                                    <Code code={snip.code} lang={snip.language} theme="github-light" />
-                                </article>
-                            ))}
-                </section>
-            ))}
+				<div class="snippets-content">
+					{groups.map((group) => (
+						<section id={group.section.toLowerCase()} class="snippet-section">
+							<header class="snippet-section__header">
+								<h2>{group.section}</h2>
+								<span>{group.count} snippets</span>
+							</header>
+							{group.subsections
+								? group.subsections.map((sub) => (
+										<section class="snippet-subsection" id={`${group.section.toLowerCase()}-${sub.subsection.replace(/\s+/g, '-').toLowerCase()}`}>
+											<h3>{sub.subsection} <span>{sub.items.length}</span></h3>
+											<div class="snippet-stack">
+												{sub.items.map((snip) => (
+													<article class="snippet-card">
+														<header><h4>{snip.title}</h4><button type="button" data-copy-snippet>Copy</button></header>
+														<Code code={snip.code} lang={snip.language} theme="github-light" />
+													</article>
+												))}
+											</div>
+										</section>
+									))
+								: (
+									<div class="snippet-stack">
+										{group.items.map((snip) => (
+											<article id={`${group.section.toLowerCase()}-${snip.title.replace(/\s+/g, '-').toLowerCase()}`} class="snippet-card">
+												<header><h3>{snip.title}</h3><button type="button" data-copy-snippet>Copy</button></header>
+												<Code code={snip.code} lang={snip.language} theme="github-light" />
+											</article>
+										))}
+									</div>
+								)}
+						</section>
+					))}
+				</div>
+			</div>
 
         </main>
         <Footer />
+		<script is:inline>
+			document.addEventListener('click', async (event) => {
+				const button = event.target.closest('[data-copy-snippet]');
+				if (!button) return;
+				const code = button.closest('.snippet-card')?.querySelector('pre code')?.textContent;
+				if (!code) return;
+				try {
+					await navigator.clipboard.writeText(code);
+					button.textContent = 'Copied';
+					setTimeout(() => { button.textContent = 'Copy'; }, 1400);
+				} catch {
+					button.textContent = 'Select code';
+				}
+			});
+		</script>
     </body>
 </html>

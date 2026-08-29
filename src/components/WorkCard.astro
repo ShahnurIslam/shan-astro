@@ -1,5 +1,7 @@
 ---
 interface Props {
+	number: string;
+	featured?: boolean;
 	title: string;
 	description: string;
 	capability: string;
@@ -7,11 +9,14 @@ interface Props {
 	href: string;
 }
 
-const { title, description, capability, value, href } = Astro.props;
+const { number, featured = false, title, description, capability, value, href } = Astro.props;
 ---
 
-<article class="work-card">
-	<p class="work-card__capability">{capability}</p>
+<article class:list={['work-card', { 'work-card--featured': featured }]}>
+	<div class="work-card__topline">
+		<span>{number}</span>
+		<p class="work-card__capability">{capability}</p>
+	</div>
 	<h3><a href={href}>{title}</a></h3>
 	<p class="work-card__description">{description}</p>
 	<p class="work-card__value"><strong>Decision:</strong> {value}</p>
@@ -25,28 +30,48 @@ const { title, description, capability, value, href } = Astro.props;
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
-		padding: 1.5rem;
+		min-height: 300px;
+		padding: 2rem;
 		border: 1px solid var(--site-border);
-		border-radius: 14px;
-		background: var(--site-surface);
+		border-radius: 0;
+		background: rgba(255,255,255,.28);
 	}
-	.work-card__capability {
-		margin: 0 0 0.7rem;
+	.work-card--featured {
+		min-height: 618px;
+		grid-row: span 2;
+		padding: clamp(2rem, 4vw, 4rem);
+		background: var(--site-blue);
+		color: #f7fafb;
+	}
+	.work-card__topline {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
 		color: var(--site-accent);
-		font-size: 0.76rem;
+		font-size: 0.72rem;
 		font-weight: 700;
-		letter-spacing: 0.08em;
-		line-height: 1.35;
+		letter-spacing: 0.09em;
 		text-transform: uppercase;
 	}
+	.work-card__topline > span {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	}
+	.work-card--featured .work-card__topline {
+		color: #d9c0a8;
+	}
+	.work-card__capability {
+		margin: 0;
+	}
 	h3 {
-		font-size: clamp(1.35rem, 2.6vw, 1.75rem);
-		line-height: 1.15;
-		letter-spacing: -0.025em;
-		margin-bottom: 0.8rem;
+		margin: auto 0 1rem;
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(1.8rem, 3vw, 3.1rem);
+		font-weight: 400;
+		line-height: 1.02;
+		letter-spacing: -0.04em;
 	}
 	h3 a {
-		color: var(--site-text);
+		color: inherit;
 		text-decoration: none;
 	}
 	h3 a:hover,
@@ -55,7 +80,7 @@ const { title, description, capability, value, href } = Astro.props;
 	}
 	.work-card__description,
 	.work-card__value {
-		font-size: 0.98rem;
+		font-size: 0.92rem;
 		line-height: 1.6;
 	}
 	.work-card__description {
@@ -65,11 +90,28 @@ const { title, description, capability, value, href } = Astro.props;
 	.work-card__value {
 		margin: 0 0 1.2rem;
 	}
+	.work-card--featured .work-card__description,
+	.work-card--featured .work-card__value {
+		color: rgba(247,250,251,.74);
+	}
+	.work-card--featured h3,
+	.work-card--featured h3 a {
+		color: #fff;
+	}
 	.work-card__link {
 		align-self: flex-start;
 		margin-top: auto;
 		font-size: 0.95rem;
 		font-weight: 700;
 		text-underline-offset: 0.2em;
+	}
+	.work-card--featured .work-card__link {
+		color: #fff;
+	}
+	@media (max-width: 820px) {
+		.work-card--featured {
+			min-height: 430px;
+			grid-row: auto;
+		}
 	}
 </style>

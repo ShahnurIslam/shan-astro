@@ -8,17 +8,19 @@ import { SITE_DESCRIPTION } from '../consts';
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title="CV" description={SITE_DESCRIPTION} />
+    <BaseHead title="CV | Shan Islam" description={SITE_DESCRIPTION} />
   </head>
   <body>
     <Header />
     <main class="cv-page">
-      <h1>CV</h1>
-      <p>You can view or download my latest CV below.</p>
-
-      <p>
-        <a class="cv-download" href="/cv/shan-islam-cv.pdf" download>Download CV</a>
-      </p>
+		<header class="cv-intro">
+			<p class="section-label">Experience &amp; capabilities</p>
+			<h1>Curriculum vitae.</h1>
+			<div class="cv-intro__lower">
+				<p>Lead Data Scientist specialising in pricing, forecasting, experimentation and applied machine learning.</p>
+				<a class="cv-download" href="/cv/shan-islam-cv.pdf" download>Download PDF <span aria-hidden="true">↓</span></a>
+			</div>
+		</header>
 
       <div class="cv-embed">
         <iframe src="/cv/shan-islam-cv.pdf" width="100%" height="900" title="Shan Islam CV">Your browser does not support embedded PDFs. You can <a href="/cv/shan-islam-cv.pdf">download the PDF</a>.</iframe>

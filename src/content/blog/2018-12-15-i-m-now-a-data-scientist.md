@@ -14,8 +14,6 @@ I spoke to a friend of mine when I got the job and he said I should write a blog
 
 I started looking for a new job earlier this year and I must have interviewed multiple times this year...I got rejected from them all.  After being really good at my current job for so long, the rejections definitely made me feel like an impostor. With hindsight, I realised the roles weren't right as they were either too technical or not going to further my career.
 
-![Impostor](http://chainsawsuit.com/wp-content/uploads/2014/09/20140902-impostor.png)
-
 I then just gave up on looking for a job...
 
 ### Recruitment Charity Hackathon
@@ -49,5 +47,4 @@ It's been a long journey and it's still going but here are things to take away:
 - _Trust the wife's instincts for she is never wrong (yes she wrote this part)_
  
 Thanks again for reading, till the next post!
-
 

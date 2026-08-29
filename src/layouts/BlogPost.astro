@@ -8,75 +8,44 @@ import Header from '../components/Header.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags = [] } = Astro.props;
 ---
 
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
+		<BaseHead title={`${title} | Shan Islam`} description={description} />
 	</head>
-
 	<body>
 		<Header />
-		<main>
+		<main class="article-page">
 			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+				<header class="article-header">
+					<p class="article-header__eyebrow">Writing · Field notes</p>
+					<h1>{title}</h1>
+					<p class="article-header__description">{description}</p>
+					{tags.length > 0 && (
+						<ul class="article-header__tags" aria-label="Article topics">
+							{tags.map((tag) => <li>{tag}</li>)}
+						</ul>
+					)}
+					<div class="article-header__meta">
+						<span><FormattedDate date={pubDate} /></span>
+						{
+							updatedDate && (
+								<span>Updated <FormattedDate date={updatedDate} /></span>
+							)
+						}
+						<a href="/blog/">All writing <span aria-hidden="true">↗</span></a>
 					</div>
+				</header>
+
+				{heroImage && (
+					<figure class="article-hero-image">
+						<Image width={1200} height={600} src={heroImage} alt="" />
+					</figure>
+				)}
+
+				<div class="article-prose prose">
 					<slot />
 				</div>
 			</article>
@@ -84,3 +53,147 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<Footer />
 	</body>
 </html>
+
+<style is:global>
+	.article-page {
+		width: min(1320px, calc(100% - 56px));
+		margin: 0 auto;
+		padding: clamp(4.5rem, 9vw, 8.5rem) 0 4rem;
+	}
+	.article-header {
+		max-width: 1080px;
+		margin: 0 0 4rem clamp(0px, 12vw, 190px);
+	}
+	.article-header__eyebrow {
+		margin: 0 0 1.15rem;
+		color: var(--site-accent);
+		font-size: 0.76rem;
+		font-weight: 700;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+	}
+	.article-header h1 {
+		max-width: 1050px;
+		margin: 0 0 1.6rem;
+		color: var(--site-blue);
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(3.7rem, 8vw, 8rem);
+		font-weight: 400;
+		letter-spacing: -0.06em;
+		line-height: 0.9;
+		text-wrap: balance;
+	}
+	.article-header__description {
+		max-width: 760px;
+		margin: 0 0 2rem;
+		color: var(--site-muted);
+		font-size: clamp(1.12rem, 1.8vw, 1.4rem);
+		line-height: 1.55;
+	}
+	.article-header__tags {
+		max-width: 760px;
+		margin: 0 0 1.4rem;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+		list-style: none;
+	}
+	.article-header__tags li {
+		padding: 0.3rem 0.55rem;
+		border: 1px solid var(--site-border);
+		color: var(--site-blue);
+		font-size: 0.72rem;
+		font-weight: 700;
+	}
+	.article-header__meta {
+		max-width: 760px;
+		padding-top: 1rem;
+		display: flex;
+		gap: 1.2rem;
+		border-top: 1px solid var(--site-border);
+		color: var(--site-muted);
+		font-size: 0.78rem;
+	}
+	.article-header__meta a {
+		margin-left: auto;
+		font-weight: 700;
+		text-underline-offset: 0.25em;
+	}
+	.article-hero-image {
+		max-width: 1100px;
+		margin: 0 0 4rem;
+	}
+	.article-hero-image img {
+		display: block;
+		width: 100%;
+		border: 1px solid var(--site-border);
+		border-radius: 0;
+	}
+	.article-prose {
+		width: min(760px, 100%);
+		margin-left: clamp(0px, 12vw, 190px);
+		color: var(--site-text);
+	}
+	.article-prose > :first-child { margin-top: 0; }
+	.article-prose p,
+	.article-prose li {
+		font-size: 1.08rem;
+		line-height: 1.78;
+	}
+	.article-prose h2 {
+		margin: 3.5rem 0 1.1rem;
+		color: var(--site-blue);
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(2rem, 4vw, 3rem);
+		font-weight: 400;
+		letter-spacing: -0.035em;
+	}
+	.article-prose h3 {
+		margin-top: 2.5rem;
+		font-size: 1.35rem;
+	}
+	.article-prose blockquote {
+		margin: 2.5rem 0;
+		padding: 0.4rem 0 0.4rem 1.5rem;
+		border-left: 3px solid var(--site-accent);
+		color: var(--site-blue);
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(1.45rem, 3vw, 2.1rem);
+		line-height: 1.35;
+	}
+	.article-prose code {
+		background: #e4ebee;
+	}
+	.article-prose pre {
+		padding: 1rem;
+		overflow-x: auto;
+		border-color: var(--site-border);
+		background: #102330;
+		color: #edf4f6;
+	}
+	.article-prose img {
+		display: block;
+		width: auto;
+		max-width: 100%;
+		margin: 2rem 0;
+		border: 1px solid var(--site-border);
+		border-radius: 0;
+	}
+	@media (max-width: 720px) {
+		.article-page {
+			width: min(100% - 28px, 1320px);
+			padding: 3.5rem 0 2rem;
+		}
+		.article-header { margin: 0 0 3rem; }
+		.article-header h1 { font-size: clamp(3.2rem, 16vw, 5rem); }
+		.article-header__meta { flex-wrap: wrap; }
+		.article-header__description,
+		.article-header__tags,
+		.article-header__meta { margin-left: 0; }
+		.article-header__meta a { width: 100%; margin-left: 0; }
+		.article-prose { margin-left: 0; }
+		.article-prose p,
+		.article-prose li { font-size: 1rem; }
+	}
+</style>

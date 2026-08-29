@@ -17,8 +17,8 @@ import WorkCard from '../../components/WorkCard.astro';
 		<Header />
 		<main class="work-page">
 			<header class="work-intro">
-				<p class="section-label">Lead Data Scientist</p>
-				<h1>Selected Work</h1>
+				<p class="section-label">Case studies · Lead Data Scientist</p>
+				<h1>Work designed to change the next decision.</h1>
 				<p class="work-intro__lead">
 					I help businesses turn messy commercial and operational data into better decisions.
 				</p>
@@ -31,6 +31,8 @@ import WorkCard from '../../components/WorkCard.astro';
 				<h2 id="work-cases" class="sr-only">Case studies</h2>
 				<div class="work-grid">
 					<WorkCard
+						number="01"
+						featured={true}
 						title="Marketplace Pricing & Demand Forecasting"
 						description="Turning noisy demand and capacity signals into actionable pricing decisions."
 						capability="Pricing & forecasting"
@@ -38,6 +40,7 @@ import WorkCard from '../../components/WorkCard.astro';
 						href="/work/marketplace-pricing-demand-forecasting/"
 					/>
 					<WorkCard
+						number="02"
 						title="Experimentation & Causal Decision Making"
 						description="Designing experiments that answer commercial decisions, not merely produce statistically significant results."
 						capability="Experimentation"
@@ -45,6 +48,7 @@ import WorkCard from '../../components/WorkCard.astro';
 						href="/work/experimentation-causal-decision-making/"
 					/>
 					<WorkCard
+						number="03"
 						title="Commercial Data Rescue"
 						description="Turning fragmented operational signals into a decision tool that tells teams where to look first."
 						capability="Commercial analytics"

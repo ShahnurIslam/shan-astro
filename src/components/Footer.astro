@@ -3,17 +3,36 @@ const today = new Date();
 ---
 
 <footer>
-	&copy; 2026 Shan Islam. All rights reserved.
+	<div class="footer-inner">
+		<p>&copy; 2026 Shan Islam · Lead Data Scientist</p>
+		<p>Bangladeshi roots, building in London.</p>
+	</div>
 </footer>
 <style>
 	footer {
-		padding: 2rem 1rem;
+		width: min(1320px, calc(100% - 56px));
+		margin: 4rem auto 0;
+		padding: 1.6rem 0 3rem;
+		border-top: 1px solid var(--site-border);
 		color: var(--site-muted);
-		text-align: center;
+		text-align: left;
 		background: transparent;
-		margin-top: 2rem;
+		font-size: 0.78rem;
 	}
-	@media (min-width: 720px) {
-		footer { padding-bottom: 3rem; }
+	.footer-inner {
+		display: flex;
+		justify-content: space-between;
+		gap: 2rem;
+	}
+	p { margin: 0; }
+	@media (max-width: 720px) {
+		footer {
+			width: min(100% - 28px, 1320px);
+			padding-bottom: 2rem;
+		}
+		.footer-inner {
+			flex-direction: column;
+			gap: 0.35rem;
+		}
 	}
 </style>

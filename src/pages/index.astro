@@ -1,33 +1,19 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
+import '../styles/prototypes.css';
 
 function normalisePath(src) {
-	if (!src || typeof src !== 'string') return null;
+	if (!src || typeof src !== 'string') return '#';
 	return src.startsWith('/') ? src : `/blog/${src.replace(/^\/+/, '')}`;
 }
 
-function normaliseImage(src) {
-	if (!src || typeof src !== 'string') return null;
-	return src.startsWith('/') ? src : `/${src}`;
-}
-
-function excerptFor(post, length = 200) {
-	const desc = post?.data?.description;
-	if (desc && typeof desc === 'string') return desc;
-	const body = typeof post.body === 'string' ? post.body : '';
-	return body.length > length ? body.substring(0, length) + '...' : body;
-}
-
 const allPosts = await getCollection('blog');
-const posts = allPosts
-	.filter((p) => !p.data?.draft)
-	.sort((a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf())
-	.slice(0, 3);
+const latestPost = allPosts
+	.filter((post) => !post.data?.draft)
+	.sort((a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf())[0];
 ---
 
 <!doctype html>
@@ -35,67 +21,98 @@ const posts = allPosts
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
-	<body>
-		<Header />
-		<main class="home-page">
-			<section class="home-hero">
-				<figure class="home-banner">
-					<img src="/images/home-banner.png" alt="" />
-				</figure>
-				<div class="home-intro">
-					<h1>Shan Islam</h1>
-					<p class="home-tagline">Data science for better commercial decisions</p>
-					<p class="home-summary">
-						I’m a Lead Data Scientist specialising in pricing, forecasting and experimentation. I build practical models and decision systems, and write about what I learn from doing the work.
+	<body class="prototype-body proto-editorial home-editorial" data-editorial-palette="blue">
+		<main class="editorial-page">
+			<header class="editorial-nav">
+				<a class="editorial-brand" href="/">Shan Islam</a>
+				<nav aria-label="Primary navigation">
+					<a href="/work/">Work</a>
+					<a href="/blog/">Writing</a>
+					<a href="/snippets/">Snippets</a>
+					<a href="/cv/">CV</a>
+				</nav>
+			</header>
+
+			<section class="editorial-hero" id="top">
+				<div class="editorial-hero__copy">
+					<p class="editorial-eyebrow">Lead Data Scientist · London</p>
+					<h1>Better commercial decisions, built from evidence.</h1>
+					<p class="editorial-deck">
+						I specialise in pricing, forecasting and experimentation—building practical models and decision systems for the moments where clarity matters.
 					</p>
-					<div class="home-actions" aria-label="Explore the site">
-						<a href="/work/">View selected work <span aria-hidden="true">→</span></a>
-						<a href="/blog/">Read my writing <span aria-hidden="true">→</span></a>
+					<div class="editorial-actions">
+						<a class="editorial-button" href="/work/">Explore selected work</a>
+						<a class="editorial-text-link" href="/cv/">View CV <span aria-hidden="true">↗</span></a>
+					</div>
+				</div>
+
+				<aside class="editorial-practice" aria-label="Areas of practice">
+					<p class="editorial-practice__label">Areas of practice</p>
+					<ol>
+						<li><span>01</span><strong>Pricing &amp; demand forecasting</strong></li>
+						<li><span>02</span><strong>Experimentation &amp; causal inference</strong></li>
+						<li><span>03</span><strong>Commercial decision systems</strong></li>
+					</ol>
+				</aside>
+			</section>
+
+			<div class="editorial-identity" aria-label="Identity and focus">
+				<span>Bangladeshi heritage</span>
+				<span>London perspective</span>
+				<span>Decision science</span>
+			</div>
+
+			<section class="editorial-work" aria-labelledby="editorial-work-title">
+				<header class="editorial-section-head">
+					<p>Selected work</p>
+					<h2 id="editorial-work-title">Work designed to change the next decision.</h2>
+				</header>
+				<div class="editorial-work-grid">
+					<a class="editorial-case editorial-case--lead" href="/work/marketplace-pricing-demand-forecasting/">
+						<span class="editorial-case__meta">Pricing &amp; forecasting · Case 01</span>
+						<h3>Marketplace pricing &amp; demand forecasting</h3>
+						<p>Using demand and capacity forecasts to decide when—and how much—to intervene on price.</p>
+						<span class="editorial-case__link">Read case study <span aria-hidden="true">→</span></span>
+					</a>
+					<div class="editorial-case-stack">
+						<a class="editorial-case" href="/work/experimentation-causal-decision-making/">
+							<span class="editorial-case__meta">Experimentation · Case 02</span>
+							<h3>Experimentation &amp; causal decision making</h3>
+							<p>Designing experiments around commercial decisions, not statistical significance alone.</p>
+						</a>
+						<a class="editorial-case" href="/work/commercial-data-rescue/">
+							<span class="editorial-case__meta">Commercial analytics · Case 03</span>
+							<h3>Commercial data rescue</h3>
+							<p>Turning fragmented signals into a shared diagnostic path.</p>
+						</a>
 					</div>
 				</div>
 			</section>
 
-			<section class="selected-work-preview" aria-labelledby="selected-work-heading">
-				<h2 id="selected-work-heading">Selected Work</h2>
-				<div class="home-work-grid">
-					<article class="home-work-entry">
-						<h3><a href="/work/marketplace-pricing-demand-forecasting/">Marketplace pricing &amp; demand forecasting</a></h3>
-						<p>Using demand and capacity forecasts to decide when and how much to intervene on price.</p>
-					</article>
-					<article class="home-work-entry">
-						<h3><a href="/work/experimentation-causal-decision-making/">Experimentation &amp; causal decision making</a></h3>
-						<p>Designing experiments around the commercial decision, not just statistical significance.</p>
-					</article>
-					<article class="home-work-entry">
-						<h3><a href="/work/commercial-data-rescue/">Commercial data rescue</a></h3>
-						<p>Turning fragmented trading signals into a shared diagnostic path.</p>
-					</article>
+			<section class="editorial-writing" aria-labelledby="editorial-writing-title">
+				<div>
+					<p class="editorial-writing__label">From the notebook</p>
+					<h2 id="editorial-writing-title">Thinking in public.</h2>
 				</div>
-				<p class="section-link"><a href="/work/">View all selected work <span aria-hidden="true">→</span></a></p>
+				{latestPost ? (
+					<a href={normalisePath(latestPost.slug ?? latestPost.id ?? '')}>
+						<span><FormattedDate date={latestPost.data.pubDate} /></span>
+						<strong>{latestPost.data.title}</strong>
+						<span aria-hidden="true">↗</span>
+					</a>
+				) : (
+					<a href="/blog/">
+						<span>Notebook</span>
+						<strong>Read my writing</strong>
+						<span aria-hidden="true">↗</span>
+					</a>
+				)}
 			</section>
 
-			<section class="home-writing" aria-labelledby="writing-heading">
-				<h2 id="writing-heading">Writing</h2>
-				<div class="home-writing-list">
-					{posts.length === 0 ? (
-						<p>No posts yet.</p>
-					) : (
-						posts.map((post) => (
-							<article class="home-writing-entry">
-								<p class="home-writing-entry__date"><FormattedDate date={post.data.pubDate} /></p>
-								<div>
-									<h3>
-										<a href={normalisePath(post.slug ?? post.id ?? '') ?? '#'}>{post.data.title}</a>
-									</h3>
-									<p>{excerptFor(post, 170)}</p>
-								</div>
-							</article>
-						))
-					)}
-				</div>
-				<p class="section-link"><a href="/blog/">Read all writing <span aria-hidden="true">→</span></a></p>
-			</section>
+			<footer class="editorial-footer">
+				<p>© 2026 Shan Islam · Lead Data Scientist</p>
+				<p>Bangladeshi roots, building in London.</p>
+			</footer>
 		</main>
-		<Footer />
 	</body>
 </html>
