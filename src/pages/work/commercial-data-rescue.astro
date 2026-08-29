@@ -1,0 +1,174 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+---
+
+<CaseStudy
+	title="Commercial Data Rescue"
+	description="How fragmented trading and operational signals became a shared diagnostic path for faster commercial decisions."
+	dek="Turning fragmented operational signals into a decision tool that tells teams where to look first."
+	capabilities={['Commercial Analytics', 'Monitoring', 'Decision Support', 'Data Analysis', 'Stakeholder Communication']}
+>
+	<section>
+		<h2>The situation</h2>
+		<p>
+			When trading performance moved unexpectedly, investigation was fragmented across teams and data sources. People repeatedly entered reactive investigation or war-room mode before they understood whether the change came from demand, conversion, price, supply and capacity, operations, or data quality.
+		</p>
+		<p>
+			The problem was not simply a lack of dashboards. It was the absence of a shared diagnostic path. Each team could see part of the system, but nobody had a consistent way to localise the change, compare it with a meaningful baseline, and decide where investigation should begin.
+		</p>
+	</section>
+
+	<section>
+		<h2>Organise signals around the questions</h2>
+		<p>
+			The work brought the relevant commercial and operational signals into one decision-support view. Signal selection began with the questions stakeholders needed answered: Is the change broad or local? Is traffic different, or is conversion moving? Has price or product mix shifted? Is supply constrained? Could the apparent movement be a data-quality problem?
+		</p>
+		<p>
+			Each measure used a comparison that made the change interpretable, rather than presenting an isolated number. The diagnostic sequence then moved from detection to localisation, likely cause and action. This created a common starting point for commercial, operational and data teams without pretending that a dashboard could replace judgement.
+		</p>
+		<ol class="decision-flow" aria-label="Commercial diagnostic workflow">
+			<li>Detect</li>
+			<li>Localise</li>
+			<li>Diagnose</li>
+			<li>Act</li>
+		</ol>
+	</section>
+
+	<section>
+		<h2>Show where to look first</h2>
+		<p>
+			The executive view was intentionally selective. It separated a headline trading movement from the signals that could plausibly explain it, then highlighted the first investigation path rather than asking everyone to inspect everything at once.
+		</p>
+		<figure class="executive-visual diagnostic-visual">
+			<div class="executive-visual__header">
+				<h3>Trading movement diagnostic</h3>
+				<span class="illustrative-label">Illustrative data</span>
+			</div>
+			<div class="diagnostic-summary">
+				<div><span>Detected</span><strong>Performance below expected range</strong></div>
+				<div class="diagnostic-summary__priority"><span>Look first</span><strong>Supply / capacity</strong></div>
+			</div>
+			<ul class="signal-list" aria-label="Illustrative diagnostic signals">
+				<li><span>Demand</span><i class="signal-status signal-status--stable">Stable</i><small>Within expected range</small></li>
+				<li><span>Conversion</span><i class="signal-status signal-status--watch">Watch</i><small>Soft in one segment</small></li>
+				<li><span>Price</span><i class="signal-status signal-status--stable">Stable</i><small>Mix-adjusted movement limited</small></li>
+				<li><span>Supply / capacity</span><i class="signal-status signal-status--priority">Priority</i><small>Constraint localised to peak periods</small></li>
+				<li><span>Data quality</span><i class="signal-status signal-status--stable">Clear</i><small>Core checks passing</small></li>
+			</ul>
+			<figcaption>
+				Illustrative data, not a historical dashboard. The view demonstrates a diagnostic sequence and contains no employer or client data.
+			</figcaption>
+		</figure>
+	</section>
+
+	<section>
+		<h2>The recommendation</h2>
+		<p>
+			Start investigation where the signal diverges most clearly from its expected range, after first confirming that core data-quality checks pass. Give the relevant owner a specific operational question, while other teams monitor their guardrails instead of launching parallel, unfocused investigations.
+		</p>
+		<p>
+			The value came from agreeing which signals mattered, establishing useful comparisons, and giving teams a common order of operations. The tool made the first decision faster: who needs to investigate what, and what evidence would change that direction?
+		</p>
+	</section>
+
+	<section class="outcome-panel">
+		<h2>Outcome</h2>
+		<p>
+			The trading-health approach reduced emergency investigation and meeting effort by <strong>roughly 80%</strong>.
+		</p>
+		<p>
+			It demonstrates commercial analytics as decision support: identifying useful signals, communicating likely causes clearly, and helping senior stakeholders move from an unexpected result to a focused action.
+		</p>
+	</section>
+</CaseStudy>
+
+<style is:global>
+	.diagnostic-summary {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1px;
+		margin-bottom: 1rem;
+		border: 1px solid var(--site-border);
+		background: var(--site-border);
+	}
+	.diagnostic-summary div {
+		padding: 1rem;
+		background: var(--site-bg);
+	}
+	.diagnostic-summary__priority {
+		border-left: 4px solid var(--site-accent);
+	}
+	.diagnostic-summary span {
+		display: block;
+		margin-bottom: 0.2rem;
+		color: var(--site-muted);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+	.diagnostic-summary strong {
+		font-size: 0.95rem;
+		line-height: 1.35;
+	}
+	.signal-list {
+		padding: 0 !important;
+		margin: 0 !important;
+		border-top: 1px solid var(--site-border);
+		list-style: none;
+	}
+	.signal-list li {
+		display: grid;
+		grid-template-columns: minmax(8rem, 1fr) auto minmax(12rem, 1.4fr);
+		align-items: center;
+		gap: 1rem;
+		max-width: none;
+		padding: 0.7rem 0;
+		border-bottom: 1px solid var(--site-border);
+		font-size: 0.88rem;
+		line-height: 1.35;
+	}
+	.signal-list li > span {
+		font-weight: 700;
+	}
+	.signal-list small {
+		color: var(--site-muted);
+		font-size: 0.8rem;
+	}
+	.signal-status {
+		padding: 0.2rem 0.5rem;
+		border-radius: 999px;
+		font-size: 0.68rem;
+		font-style: normal;
+		font-weight: 700;
+		line-height: 1.3;
+	}
+	.signal-status--stable {
+		background: #e5eee9;
+		color: var(--site-green);
+	}
+	.signal-status--watch {
+		background: #f3e7d2;
+		color: #6c4a1f;
+	}
+	.signal-status--priority {
+		background: #f3ddd8;
+		color: var(--site-accent);
+	}
+	@media (max-width: 620px) {
+		.diagnostic-summary {
+			grid-template-columns: 1fr;
+		}
+		.diagnostic-summary__priority {
+			border-top: 4px solid var(--site-accent);
+			border-left: 0;
+		}
+		.signal-list li {
+			grid-template-columns: 1fr auto;
+			gap: 0.3rem 0.75rem;
+		}
+		.signal-list small {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import WorkCard from '../components/WorkCard.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
 
@@ -42,19 +43,49 @@ const posts = allPosts
 					<img src="/images/home-banner.png" alt="Site banner" />
 				</figure>
 				<div class="home-intro">
-					<h1>Pricing, experiments and practical data science</h1>
+					<h1>Pricing, forecasting and better commercial decisions</h1>
 
 					<p>
-						I write about pricing, experimentation, forecasting and practical data science.
+						I’m Shan, a Lead Data Scientist specialising in pricing, forecasting, experimentation and applied machine learning.
 					</p>
 
 					<p>
-						Most of the writing here is about what I have learned from working on commercial data science problems:
-						A/B testing, dynamic pricing, demand forecasting, messy data and stakeholder decision making.
+						I help businesses turn messy commercial and operational data into better decisions. I also write about what I have learned from doing that work in practice.
 					</p>
 				</div>
 			</section>
 
+			<section class="selected-work-preview" aria-labelledby="selected-work-heading">
+				<p class="section-label">Commercial data science</p>
+				<h2 id="selected-work-heading">Selected Work</h2>
+				<p class="section-intro">
+					I help businesses turn messy commercial and operational data into better decisions.
+				</p>
+				<div class="work-grid">
+					<WorkCard
+						title="Marketplace Pricing & Demand Forecasting"
+						description="Turning noisy demand and capacity signals into actionable pricing decisions."
+						capability="Pricing & forecasting"
+						value="When and how much to intervene — and when to leave price alone."
+						href="/work/marketplace-pricing-demand-forecasting/"
+					/>
+					<WorkCard
+						title="Experimentation & Causal Decision Making"
+						description="Designing experiments that answer commercial decisions rather than merely produce significant results."
+						capability="Experimentation"
+						value="Whether a commercial change should be rolled out."
+						href="/work/experimentation-causal-decision-making/"
+					/>
+					<WorkCard
+						title="Commercial Data Rescue"
+						description="Turning fragmented operational signals into a decision tool that tells teams where to look first."
+						capability="Commercial analytics"
+						value="Find the cause of a performance change quickly."
+						href="/work/commercial-data-rescue/"
+					/>
+				</div>
+				<p class="section-link"><a href="/work/">Explore Selected Work</a></p>
+			</section>
 
 			<section class="latest-writing">
 				<h2>Latest writing</h2>

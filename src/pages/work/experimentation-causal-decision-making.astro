@@ -1,0 +1,183 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+---
+
+<CaseStudy
+	title="Experimentation & Causal Decision Making"
+	description="How disciplined experiment design turns uncertain pricing evidence into a clear commercial rollout decision."
+	dek="Designing experiments that answer commercial decisions rather than merely producing statistically significant results."
+	capabilities={['A/B Testing', 'Causal Inference', 'Experiment Design', 'Pricing', 'Python', 'SQL']}
+>
+	<section>
+		<h2>The situation</h2>
+		<p>
+			A commercial pricing change offered meaningful upside, but it also introduced conversion and customer-risk downside. Comparing two group averages would have been easy; deciding whether the change was credible, safe and worth rolling out was the harder problem.
+		</p>
+		<p>
+			The business needed to know whether the experiment was behaving correctly, whether guardrails were deteriorating, whether there was enough evidence to act, and what risk it would accept by making the decision. Measurement had to support that judgement rather than substitute for it.
+		</p>
+	</section>
+
+	<section>
+		<h2>Design backwards from the rollout decision</h2>
+		<p>
+			The experiment began with a deterministic assignment rule and a pre-defined primary commercial metric. Sample-ratio mismatch checks verified that allocation behaved as intended before anyone interpreted the result. Conversion and customer-risk measures were treated as guardrails, not footnotes added after seeing an attractive headline number.
+		</p>
+		<p>
+			Confidence intervals made the range of plausible commercial effects visible. A minimum worthwhile effect created a decision threshold, while futility and stopping reasoning prevented the team from waiting indefinitely for certainty the experiment could not provide. This kept statistical discipline connected to the cost of rolling out, holding, or gathering more evidence.
+		</p>
+		<ol class="decision-flow" aria-label="Experiment decision workflow">
+			<li>Validate</li>
+			<li>Estimate</li>
+			<li>Check risk</li>
+			<li>Decide</li>
+		</ol>
+	</section>
+
+	<section>
+		<h2>Put uncertainty next to the decision</h2>
+		<p>
+			The decision view brought the estimated effect, commercial threshold and guardrails together. That made it possible to discuss the evidence in plain terms: the most likely outcome, the downside still consistent with the data, and whether that residual risk was acceptable.
+		</p>
+		<figure class="executive-visual experiment-visual">
+			<div class="executive-visual__header">
+				<h3>Experiment rollout decision</h3>
+				<span class="illustrative-label">Illustrative data</span>
+			</div>
+			<div class="experiment-visual__plot" role="img" aria-label="Illustrative effect estimate. The confidence interval remains above the minimum worthwhile effect and the point estimate sits in the commercial upside range.">
+				<div class="experiment-visual__axis">
+					<span>Do not roll out</span><span>Minimum worthwhile effect</span><span>Commercial upside</span>
+				</div>
+				<div class="experiment-visual__track">
+					<i class="experiment-visual__threshold" aria-hidden="true"></i>
+					<i class="experiment-visual__interval" aria-hidden="true"></i>
+					<i class="experiment-visual__estimate" aria-hidden="true"></i>
+				</div>
+			</div>
+			<dl class="decision-checks">
+				<div><dt>Assignment</dt><dd>Balanced</dd></div>
+				<div><dt>Primary metric</dt><dd>Clears decision threshold</dd></div>
+				<div><dt>Guardrails</dt><dd>Within tolerance</dd></div>
+				<div><dt>Decision</dt><dd>Roll out with monitoring</dd></div>
+			</dl>
+			<figcaption>
+				Illustrative data, not a historical experiment readout. The view shows how effect uncertainty and guardrails can be evaluated together.
+			</figcaption>
+		</figure>
+	</section>
+
+	<section>
+		<h2>The recommendation</h2>
+		<p>
+			Rollout should follow only when assignment checks pass, the credible range of commercial impact clears the decision threshold, and guardrails remain within the business’s stated tolerance. If the likely upside is too small, stop for futility; if downside risk remains material, hold or gather more evidence rather than hiding uncertainty behind a binary “significant” label.
+		</p>
+		<p>
+			This gave stakeholders a decision they could defend: not simply that one variant won, but why the expected upside justified the remaining risk and how performance would be monitored after rollout.
+		</p>
+	</section>
+
+	<section class="outcome-panel">
+		<h2>Outcome</h2>
+		<p>A pricing experiment produced <strong>approximately 15% revenue growth</strong>.</p>
+		<p>
+			The work demonstrates pragmatic experiment design, causal reasoning and senior stakeholder communication: checking that measurement is trustworthy, making uncertainty legible, and translating the result into a commercial action.
+		</p>
+	</section>
+</CaseStudy>
+
+<style is:global>
+	.experiment-visual__plot {
+		padding: 1.25rem 0 0.65rem;
+	}
+	.experiment-visual__axis {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+		color: var(--site-muted);
+		font-size: 0.73rem;
+		font-weight: 700;
+		line-height: 1.3;
+	}
+	.experiment-visual__axis span:nth-child(2) {
+		text-align: center;
+	}
+	.experiment-visual__axis span:last-child {
+		text-align: right;
+	}
+	.experiment-visual__track {
+		position: relative;
+		height: 4.5rem;
+		border-top: 2px solid var(--site-border);
+		background: linear-gradient(to right, rgba(168, 50, 32, 0.05) 0 47%, rgba(20, 59, 47, 0.06) 47% 100%);
+	}
+	.experiment-visual__threshold {
+		position: absolute;
+		top: -0.7rem;
+		bottom: 0;
+		left: 47%;
+		border-left: 2px dashed var(--site-accent);
+	}
+	.experiment-visual__interval {
+		position: absolute;
+		top: 2.1rem;
+		left: 55%;
+		width: 31%;
+		border-top: 5px solid var(--site-green);
+	}
+	.experiment-visual__interval::before,
+	.experiment-visual__interval::after {
+		content: "";
+		position: absolute;
+		top: -0.45rem;
+		height: 0.75rem;
+		border-left: 3px solid var(--site-green);
+	}
+	.experiment-visual__interval::before { left: 0; }
+	.experiment-visual__interval::after { right: 0; }
+	.experiment-visual__estimate {
+		position: absolute;
+		top: 1.55rem;
+		left: 72%;
+		width: 1.1rem;
+		height: 1.1rem;
+		border: 4px solid var(--site-surface);
+		border-radius: 999px;
+		background: var(--site-accent);
+		box-shadow: 0 0 0 1px var(--site-accent);
+		transform: translateX(-50%);
+	}
+	.decision-checks {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1px;
+		margin: 1rem 0 0;
+		background: var(--site-border);
+		border: 1px solid var(--site-border);
+	}
+	.decision-checks div {
+		padding: 0.85rem 1rem;
+		background: var(--site-bg);
+	}
+	.decision-checks dt {
+		color: var(--site-muted);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+	.decision-checks dd {
+		margin: 0.2rem 0 0;
+		font-size: 0.9rem;
+		font-weight: 700;
+		line-height: 1.35;
+	}
+	@media (max-width: 520px) {
+		.experiment-visual__axis {
+			font-size: 0.66rem;
+		}
+		.decision-checks {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

@@ -13,6 +13,7 @@ import HeaderLink from './HeaderLink.astro';
 		</h2>
 			<div class="internal-links">
 				<HeaderLink href="/">Home</HeaderLink>
+				<HeaderLink href="/work">Selected Work</HeaderLink>
 				<HeaderLink href="/blog">Blog</HeaderLink>
 				<HeaderLink href="/snippets">Snippets</HeaderLink>
 				<HeaderLink href="/cv">CV</HeaderLink>
@@ -67,10 +68,20 @@ import HeaderLink from './HeaderLink.astro';
 	}
 	@media (max-width: 720px) {
 		.nav-inner {
-			padding: 0 1rem;
+			padding: 0.65rem 1rem 0;
+			flex-direction: column;
+			justify-content: center;
+			gap: 0.3rem;
 		}
 		.internal-links {
-			gap: 0.5rem;
+			width: 100%;
+			gap: 0.1rem;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+		nav a {
+			padding: 0.45rem 0.4rem;
+			font-size: 0.9rem;
 		}
 	}
 </style>
