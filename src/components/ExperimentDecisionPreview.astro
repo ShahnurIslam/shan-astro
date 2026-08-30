@@ -1,0 +1,102 @@
+<figure class="decision-preview experiment-preview">
+	<svg viewBox="0 0 500 150" role="img" aria-labelledby="experiment-preview-title experiment-preview-desc">
+		<title id="experiment-preview-title">Experiment effect clears the rollout threshold</title>
+		<desc id="experiment-preview-desc">The entire confidence interval is positioned beyond the minimum worthwhile effect, with its point estimate in the commercial upside range.</desc>
+		<text class="experiment-preview__label experiment-preview__label--hold" x="20" y="29">Do not roll out</text>
+		<text class="experiment-preview__label experiment-preview__label--threshold" x="210" y="18" text-anchor="middle">
+			<tspan x="210">Minimum worthwhile</tspan>
+			<tspan x="210" dy="18">effect</tspan>
+		</text>
+		<text class="experiment-preview__label experiment-preview__label--upside" x="480" y="29" text-anchor="end">Commercial upside</text>
+		<line class="experiment-preview__track" x1="20" y1="93" x2="480" y2="93" />
+		<line class="experiment-preview__threshold" x1="210" y1="45" x2="210" y2="128" />
+		<line class="experiment-preview__interval" x1="252" y1="93" x2="450" y2="93" />
+		<line class="experiment-preview__cap" x1="252" y1="82" x2="252" y2="104" />
+		<line class="experiment-preview__cap" x1="450" y1="82" x2="450" y2="104" />
+		<circle class="experiment-preview__estimate-ring" cx="360" cy="93" r="10" />
+		<circle class="experiment-preview__estimate" cx="360" cy="93" r="6" />
+	</svg>
+	<div class="experiment-preview__decision">
+		<span>Guardrails within tolerance</span>
+		<strong>Roll out with monitoring <span aria-hidden="true">→</span></strong>
+	</div>
+</figure>
+
+<style>
+	.decision-preview {
+		margin: 0;
+		padding: clamp(.75rem, 2vw, 1.25rem);
+		border: 1px solid var(--site-border);
+		background: rgba(255, 255, 255, .3);
+	}
+	.experiment-preview svg {
+		display: block;
+		width: 100%;
+		height: auto;
+		overflow: visible;
+	}
+	.experiment-preview__label {
+		fill: var(--site-muted);
+		font-family: var(--font-atkinson), ui-sans-serif, sans-serif;
+		font-size: 16px;
+		font-weight: 700;
+		letter-spacing: .01em;
+	}
+	.experiment-preview__label--threshold {
+		fill: var(--site-accent);
+	}
+	.experiment-preview__label--upside {
+		fill: var(--site-blue);
+	}
+	.experiment-preview__track {
+		stroke: var(--site-border);
+		stroke-width: 3;
+	}
+	.experiment-preview__threshold {
+		stroke: var(--site-accent);
+		stroke-width: 3;
+		stroke-dasharray: 7 6;
+	}
+	.experiment-preview__interval,
+	.experiment-preview__cap {
+		stroke: var(--site-blue);
+		stroke-width: 6;
+	}
+	.experiment-preview__cap {
+		stroke-width: 4;
+	}
+	.experiment-preview__estimate-ring {
+		fill: var(--site-surface);
+		stroke: var(--site-accent);
+		stroke-width: 2;
+	}
+	.experiment-preview__estimate {
+		fill: var(--site-accent);
+	}
+	.experiment-preview__decision {
+		display: flex;
+		justify-content: space-between;
+		gap: .75rem 1.5rem;
+		padding-top: .75rem;
+		border-top: 1px solid var(--site-border);
+		font-size: .76rem;
+		line-height: 1.35;
+	}
+	.experiment-preview__decision span {
+		color: var(--site-muted);
+	}
+	.experiment-preview__decision strong {
+		color: var(--site-blue);
+		text-align: right;
+	}
+	@media (max-width: 520px) {
+		.decision-preview { padding: .6rem; }
+		.experiment-preview__label { font-size: 18px; }
+		.experiment-preview__decision {
+			flex-direction: column;
+			gap: .2rem;
+			font-size: .78rem;
+		}
+		.experiment-preview__decision strong { text-align: left; }
+	}
+</style>

@@ -1,46 +1,90 @@
-<figure class="pricing-preview">
-	<svg viewBox="0 0 560 230" role="img" aria-labelledby="pricing-preview-title pricing-preview-desc">
-		<title id="pricing-preview-title">Demand forecast and pricing intervention</title>
-		<desc id="pricing-preview-desc">Observed bookings rise toward usable capacity. The forecast without intervention exceeds capacity, while the projected trajectory after a pricing intervention returns toward it.</desc>
-		<g class="pricing-preview__grid" aria-hidden="true">
-			<line x1="24" y1="38" x2="536" y2="38" />
-			<line x1="24" y1="108" x2="536" y2="108" />
-			<line x1="24" y1="190" x2="536" y2="190" />
-		</g>
-		<line class="pricing-preview__capacity" x1="24" y1="78" x2="536" y2="78" />
-		<path class="pricing-preview__observed" d="M 24 184 C 98 178, 152 165, 216 140 C 254 125, 281 101, 316 85" />
-		<path class="pricing-preview__forecast" d="M 316 85 C 362 62, 438 28, 536 16" />
-		<path class="pricing-preview__regulated" d="M 316 85 C 372 74, 452 70, 536 65" />
-		<circle class="pricing-preview__intervention" cx="316" cy="85" r="6" />
+<figure class="decision-preview pricing-preview">
+	<svg viewBox="0 0 500 190" role="img" aria-labelledby="pricing-preview-title pricing-preview-desc">
+		<title id="pricing-preview-title">Demand controlled by a pricing intervention</title>
+		<desc id="pricing-preview-desc">Observed demand rises toward an intervention point. Without intervention, forecast demand exceeds usable capacity. After a twelve percent pricing intervention, projected demand finishes at capacity.</desc>
+		<line class="pricing-preview__capacity" x1="20" y1="70" x2="480" y2="70" />
+		<text class="pricing-preview__capacity-label" x="20" y="57">Usable capacity</text>
+		<path class="pricing-preview__observed" d="M 20 171 C 92 164, 151 149, 198 129 C 220 119, 236 110, 250 104" />
+		<path class="pricing-preview__without" d="M 250 104 C 310 75, 378 42, 470 22" />
+		<path class="pricing-preview__after" d="M 250 104 C 317 86, 393 72, 470 70" />
+		<circle class="pricing-preview__point" cx="250" cy="104" r="7" />
 		<g class="pricing-preview__labels">
-			<text x="24" y="68">Usable capacity</text>
-			<text x="330" y="113">Pricing intervention</text>
+			<text class="pricing-preview__without-label" x="470" y="15" text-anchor="end">Without intervention</text>
+			<text class="pricing-preview__after-label" x="470" y="98" text-anchor="end">After pricing intervention</text>
+			<text class="pricing-preview__intervention-label" x="238" y="136" text-anchor="end">
+				<tspan x="238">Pricing intervention</tspan>
+				<tspan class="pricing-preview__price" x="238" dy="19">+12%</tspan>
+			</text>
 		</g>
 	</svg>
-	<div class="pricing-preview__key" aria-hidden="true">
-		<span><i class="pricing-preview__key-line pricing-preview__key-line--forecast"></i>Without intervention</span>
-		<span><i class="pricing-preview__key-line pricing-preview__key-line--regulated"></i>After intervention</span>
-	</div>
 </figure>
 
 <style>
-	.pricing-preview { margin: 0; padding: clamp(.75rem, 2vw, 1.25rem); border: 1px solid var(--site-border); background: rgba(255, 255, 255, .3); }
-	.pricing-preview svg { display: block; width: 100%; height: auto; overflow: visible; }
-	.pricing-preview path { fill: none; stroke-linecap: round; }
-	.pricing-preview__grid { stroke: var(--site-border); stroke-width: 1; }
-	.pricing-preview__capacity { stroke: #8b7652; stroke-width: 2; }
-	.pricing-preview__observed { fill: none; stroke: var(--site-accent); stroke-width: 5; stroke-linecap: round; }
-	.pricing-preview__forecast { fill: none; stroke: var(--site-accent); stroke-width: 4; stroke-dasharray: 9 8; stroke-linecap: round; }
-	.pricing-preview__regulated { fill: none; stroke: var(--site-blue); stroke-width: 5; stroke-linecap: round; }
-	.pricing-preview__intervention { fill: var(--site-surface); stroke: var(--site-accent); stroke-width: 3; }
-	.pricing-preview__labels { fill: var(--site-blue); font-family: var(--font-atkinson), ui-sans-serif, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .02em; }
-	.pricing-preview__key { display: flex; flex-wrap: wrap; gap: .45rem 1.2rem; margin-top: .4rem; color: var(--site-muted); font-size: .7rem; font-weight: 700; }
-	.pricing-preview__key span { display: inline-flex; align-items: center; gap: .4rem; }
-	.pricing-preview__key-line { width: 1.5rem; border-top: 3px solid; }
-	.pricing-preview__key-line--forecast { border-color: var(--site-accent); border-top-style: dashed; }
-	.pricing-preview__key-line--regulated { border-color: var(--site-blue); }
+	.decision-preview {
+		margin: 0;
+		padding: clamp(.75rem, 2vw, 1.25rem);
+		border: 1px solid var(--site-border);
+		background: rgba(255, 255, 255, .3);
+	}
+	.pricing-preview svg {
+		display: block;
+		width: 100%;
+		height: auto;
+		overflow: visible;
+	}
+	.pricing-preview path {
+		fill: none;
+		stroke-linecap: round;
+	}
+	.pricing-preview__capacity {
+		stroke: #8b7652;
+		stroke-width: 2;
+	}
+	.pricing-preview__capacity-label,
+	.pricing-preview__labels {
+		fill: var(--site-blue);
+		font-family: var(--font-atkinson), ui-sans-serif, sans-serif;
+		font-size: 17px;
+		font-weight: 700;
+		letter-spacing: .01em;
+	}
+	.pricing-preview__capacity-label {
+		fill: #6c5a3e;
+	}
+	.pricing-preview__observed {
+		stroke: var(--site-accent);
+		stroke-width: 6;
+	}
+	.pricing-preview__without {
+		stroke: var(--site-accent);
+		stroke-width: 4;
+		stroke-dasharray: 10 9;
+	}
+	.pricing-preview__after {
+		stroke: var(--site-blue);
+		stroke-width: 6;
+	}
+	.pricing-preview__point {
+		fill: var(--site-surface);
+		stroke: var(--site-accent);
+		stroke-width: 4;
+	}
+	.pricing-preview__without-label {
+		fill: var(--site-accent);
+	}
+	.pricing-preview__after-label {
+		fill: var(--site-blue);
+	}
+	.pricing-preview__intervention-label {
+		font-size: 16px;
+	}
+	.pricing-preview__price {
+		fill: var(--site-accent);
+	}
 	@media (max-width: 520px) {
-		.pricing-preview { padding: .6rem; }
-		.pricing-preview__labels { font-size: 15px; }
+		.decision-preview { padding: .6rem; }
+		.pricing-preview__capacity-label,
+		.pricing-preview__labels { font-size: 19px; }
+		.pricing-preview__intervention-label { font-size: 18px; }
 	}
 </style>
