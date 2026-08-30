@@ -2,6 +2,7 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
+import PricingForecastPreview from '../../components/PricingForecastPreview.astro';
 import WorkCard from '../../components/WorkCard.astro';
 ---
 
@@ -32,13 +33,14 @@ import WorkCard from '../../components/WorkCard.astro';
 				<div class="work-grid">
 					<WorkCard
 						number="01"
-						featured={true}
 						title="Marketplace Pricing & Demand Forecasting"
 						description="Turning noisy demand and capacity signals into actionable pricing decisions."
 						capability="Pricing & forecasting"
 						value="When and how much to intervene — and when to leave price alone."
 						href="/work/marketplace-pricing-demand-forecasting/"
-					/>
+					>
+						<PricingForecastPreview slot="preview" />
+					</WorkCard>
 					<WorkCard
 						number="02"
 						title="Experimentation & Causal Decision Making"

@@ -1,0 +1,46 @@
+<figure class="pricing-preview">
+	<svg viewBox="0 0 560 230" role="img" aria-labelledby="pricing-preview-title pricing-preview-desc">
+		<title id="pricing-preview-title">Demand forecast and pricing intervention</title>
+		<desc id="pricing-preview-desc">Observed bookings rise toward usable capacity. The forecast without intervention exceeds capacity, while the projected trajectory after a pricing intervention returns toward it.</desc>
+		<g class="pricing-preview__grid" aria-hidden="true">
+			<line x1="24" y1="38" x2="536" y2="38" />
+			<line x1="24" y1="108" x2="536" y2="108" />
+			<line x1="24" y1="190" x2="536" y2="190" />
+		</g>
+		<line class="pricing-preview__capacity" x1="24" y1="78" x2="536" y2="78" />
+		<path class="pricing-preview__observed" d="M 24 184 C 98 178, 152 165, 216 140 C 254 125, 281 101, 316 85" />
+		<path class="pricing-preview__forecast" d="M 316 85 C 362 62, 438 28, 536 16" />
+		<path class="pricing-preview__regulated" d="M 316 85 C 372 74, 452 70, 536 65" />
+		<circle class="pricing-preview__intervention" cx="316" cy="85" r="6" />
+		<g class="pricing-preview__labels">
+			<text x="24" y="68">Usable capacity</text>
+			<text x="330" y="113">Pricing intervention</text>
+		</g>
+	</svg>
+	<div class="pricing-preview__key" aria-hidden="true">
+		<span><i class="pricing-preview__key-line pricing-preview__key-line--forecast"></i>Without intervention</span>
+		<span><i class="pricing-preview__key-line pricing-preview__key-line--regulated"></i>After intervention</span>
+	</div>
+</figure>
+
+<style>
+	.pricing-preview { margin: 0; padding: clamp(.75rem, 2vw, 1.25rem); border: 1px solid var(--site-border); background: rgba(255, 255, 255, .3); }
+	.pricing-preview svg { display: block; width: 100%; height: auto; overflow: visible; }
+	.pricing-preview path { fill: none; stroke-linecap: round; }
+	.pricing-preview__grid { stroke: var(--site-border); stroke-width: 1; }
+	.pricing-preview__capacity { stroke: #8b7652; stroke-width: 2; }
+	.pricing-preview__observed { fill: none; stroke: var(--site-accent); stroke-width: 5; stroke-linecap: round; }
+	.pricing-preview__forecast { fill: none; stroke: var(--site-accent); stroke-width: 4; stroke-dasharray: 9 8; stroke-linecap: round; }
+	.pricing-preview__regulated { fill: none; stroke: var(--site-blue); stroke-width: 5; stroke-linecap: round; }
+	.pricing-preview__intervention { fill: var(--site-surface); stroke: var(--site-accent); stroke-width: 3; }
+	.pricing-preview__labels { fill: var(--site-blue); font-family: var(--font-atkinson), ui-sans-serif, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .02em; }
+	.pricing-preview__key { display: flex; flex-wrap: wrap; gap: .45rem 1.2rem; margin-top: .4rem; color: var(--site-muted); font-size: .7rem; font-weight: 700; }
+	.pricing-preview__key span { display: inline-flex; align-items: center; gap: .4rem; }
+	.pricing-preview__key-line { width: 1.5rem; border-top: 3px solid; }
+	.pricing-preview__key-line--forecast { border-color: var(--site-accent); border-top-style: dashed; }
+	.pricing-preview__key-line--regulated { border-color: var(--site-blue); }
+	@media (max-width: 520px) {
+		.pricing-preview { padding: .6rem; }
+		.pricing-preview__labels { font-size: 15px; }
+	}
+</style>
