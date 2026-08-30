@@ -3,7 +3,7 @@ title: "Perfection is still the enemy of good"
 description: "A short reflection on pricing, A/B testing and making business decisions without perfect evidence."
 pubDate: 2026-05-19
 tags: ["pricing", "A/B testing", "experimentation", "data science"]
-draft: true
+draft: false
 ---
 
 
