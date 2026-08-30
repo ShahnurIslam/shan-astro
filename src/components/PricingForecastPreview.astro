@@ -11,10 +11,6 @@
 		<g class="pricing-preview__labels">
 			<text class="pricing-preview__without-label" x="440" y="18" text-anchor="end">Without intervention</text>
 			<text class="pricing-preview__after-label" x="478" y="125" text-anchor="end">After pricing intervention</text>
-			<text class="pricing-preview__intervention-label" x="215" y="138" text-anchor="end">
-				<tspan x="215">Pricing intervention</tspan>
-				<tspan class="pricing-preview__price" x="215" dy="19">+12%</tspan>
-			</text>
 		</g>
 	</svg>
 </figure>
@@ -75,16 +71,9 @@
 	.pricing-preview__after-label {
 		fill: var(--site-blue);
 	}
-	.pricing-preview__intervention-label {
-		font-size: 16px;
-	}
-	.pricing-preview__price {
-		fill: var(--site-accent);
-	}
 	@media (max-width: 520px) {
 		.decision-preview { padding: .6rem; }
 		.pricing-preview__capacity-label,
 		.pricing-preview__labels { font-size: 19px; }
-		.pricing-preview__intervention-label { font-size: 18px; }
 	}
 </style>
