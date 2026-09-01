@@ -1,6 +1,9 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
+import CommercialDataRescuePreview from '../components/CommercialDataRescuePreview.astro';
+import ExperimentDecisionPreview from '../components/ExperimentDecisionPreview.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import PricingForecastPreview from '../components/PricingForecastPreview.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
 import '../styles/prototypes.css';
@@ -68,40 +71,27 @@ const latestPost = allPosts
 					<h2 id="editorial-work-title">Work designed to change the next decision.</h2>
 				</header>
 				<div class="editorial-work-grid">
-					<a class="editorial-case editorial-case--lead" href="/work/marketplace-pricing-demand-forecasting/">
+					<a class="editorial-case" href="/work/marketplace-pricing-demand-forecasting/">
 						<span class="editorial-case__meta">Pricing &amp; forecasting · Case 01</span>
-						<figure class="editorial-case__chart" aria-label="Demand forecast crossing capacity before a pricing intervention brings projected bookings back toward the operating limit.">
-							<svg viewBox="0 0 560 200" role="img" aria-hidden="true">
-								<g class="editorial-case__chart-grid">
-									<line x1="24" y1="34" x2="536" y2="34" />
-									<line x1="24" y1="98" x2="536" y2="98" />
-									<line x1="24" y1="166" x2="536" y2="166" />
-								</g>
-								<line class="editorial-case__capacity" x1="24" y1="72" x2="536" y2="72" />
-								<path class="editorial-case__observed" d="M 24 159 C 98 153, 152 142, 216 122 C 254 110, 281 92, 316 78" />
-								<path class="editorial-case__forecast" d="M 316 78 C 362 59, 438 28, 536 17" />
-								<path class="editorial-case__regulated" d="M 316 78 C 372 68, 452 62, 536 55" />
-								<circle class="editorial-case__intervention" cx="316" cy="78" r="6" />
-								<text x="24" y="62">Usable capacity</text>
-								<text x="330" y="104">Pricing intervention</text>
-							</svg>
-						</figure>
+						<div class="editorial-case__preview"><PricingForecastPreview /></div>
 						<h3>Marketplace pricing &amp; demand forecasting</h3>
 						<p>Using demand and capacity forecasts to decide when—and how much—to intervene on price.</p>
 						<span class="editorial-case__link">Read case study <span aria-hidden="true">→</span></span>
 					</a>
-					<div class="editorial-case-stack">
-						<a class="editorial-case" href="/work/experimentation-causal-decision-making/">
-							<span class="editorial-case__meta">Experimentation · Case 02</span>
-							<h3>Experimentation &amp; causal decision making</h3>
-							<p>Designing experiments around commercial decisions, not statistical significance alone.</p>
-						</a>
-						<a class="editorial-case" href="/work/commercial-data-rescue/">
-							<span class="editorial-case__meta">Commercial analytics · Case 03</span>
-							<h3>Commercial data rescue</h3>
-							<p>Turning fragmented signals into a shared diagnostic path.</p>
-						</a>
-					</div>
+					<a class="editorial-case" href="/work/experimentation-causal-decision-making/">
+						<span class="editorial-case__meta">Experimentation · Case 02</span>
+						<div class="editorial-case__preview"><ExperimentDecisionPreview /></div>
+						<h3>Experimentation &amp; causal decision making</h3>
+						<p>Designing experiments around commercial decisions, not statistical significance alone.</p>
+						<span class="editorial-case__link">Read case study <span aria-hidden="true">→</span></span>
+					</a>
+					<a class="editorial-case" href="/work/commercial-data-rescue/">
+						<span class="editorial-case__meta">Commercial analytics · Case 03</span>
+						<div class="editorial-case__preview"><CommercialDataRescuePreview /></div>
+						<h3>Commercial data rescue</h3>
+						<p>Turning fragmented signals into a shared diagnostic path.</p>
+						<span class="editorial-case__link">Read case study <span aria-hidden="true">→</span></span>
+					</a>
 				</div>
 			</section>
 
