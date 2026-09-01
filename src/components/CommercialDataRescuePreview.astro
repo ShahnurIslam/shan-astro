@@ -1,0 +1,141 @@
+<figure class="decision-preview diagnostic-preview" aria-labelledby="diagnostic-preview-title">
+	<div class="diagnostic-preview__header">
+		<strong id="diagnostic-preview-title">Trading movement diagnostic</strong>
+		<span>Illustrative data</span>
+	</div>
+	<div class="diagnostic-preview__summary">
+		<div>
+			<span>Detected</span>
+			<strong>Below expected range</strong>
+		</div>
+		<div class="diagnostic-preview__priority">
+			<span>Look first</span>
+			<strong>Supply / capacity</strong>
+		</div>
+	</div>
+	<ul aria-label="Diagnostic signals">
+		<li><strong>Demand</strong><span class="diagnostic-preview__stable">Stable</span><small>Within expected range</small></li>
+		<li><strong>Conversion</strong><span class="diagnostic-preview__watch">Watch</span><small>Soft in one segment</small></li>
+		<li><strong>Price</strong><span class="diagnostic-preview__stable">Stable</span><small>Mix-adjusted movement limited</small></li>
+		<li><strong>Supply / capacity</strong><span class="diagnostic-preview__alert">Priority</span><small>Peak-period constraint</small></li>
+		<li><strong>Data quality</strong><span class="diagnostic-preview__stable">Clear</span><small>Core checks passing</small></li>
+	</ul>
+	<figcaption class="sr-only">
+		An illustrative trading diagnostic highlighting supply and capacity as the first investigation path.
+	</figcaption>
+</figure>
+
+<style>
+	.decision-preview {
+		margin: 0;
+		padding: clamp(.75rem, 2vw, 1.25rem);
+		border: 1px solid var(--site-border);
+		background: rgba(255, 255, 255, .3);
+	}
+	.diagnostic-preview__header,
+	.diagnostic-preview__summary,
+	.diagnostic-preview li {
+		display: grid;
+	}
+	.diagnostic-preview__header {
+		grid-template-columns: 1fr auto;
+		align-items: center;
+		gap: 1rem;
+		padding-bottom: .75rem;
+		border-bottom: 1px solid var(--site-border);
+		font-size: .82rem;
+		line-height: 1.3;
+	}
+	.diagnostic-preview__header > strong {
+		color: var(--site-blue);
+	}
+	.diagnostic-preview__header > span {
+		color: var(--site-muted);
+		font-size: .68rem;
+		font-weight: 700;
+		letter-spacing: .04em;
+		text-transform: uppercase;
+	}
+	.diagnostic-preview__summary {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1px;
+		margin: .75rem 0;
+		background: var(--site-border);
+	}
+	.diagnostic-preview__summary > div {
+		padding: .65rem .75rem;
+		background: var(--site-surface);
+	}
+	.diagnostic-preview__summary > .diagnostic-preview__priority {
+		box-shadow: inset 4px 0 0 var(--site-accent);
+	}
+	.diagnostic-preview__summary span {
+		display: block;
+		margin-bottom: .15rem;
+		color: var(--site-muted);
+		font-size: .63rem;
+		font-weight: 700;
+		letter-spacing: .05em;
+		text-transform: uppercase;
+	}
+	.diagnostic-preview__summary strong {
+		color: var(--site-blue);
+		font-size: .8rem;
+		line-height: 1.3;
+	}
+	.diagnostic-preview ul {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+	}
+	.diagnostic-preview li {
+		grid-template-columns: minmax(7rem, .9fr) auto minmax(9rem, 1.25fr);
+		align-items: center;
+		gap: .7rem;
+		padding: .43rem 0;
+		border-top: 1px solid var(--site-border);
+		font-size: .72rem;
+		line-height: 1.3;
+	}
+	.diagnostic-preview li > strong {
+		color: var(--site-blue);
+	}
+	.diagnostic-preview li > span {
+		padding: .13rem .4rem;
+		border-radius: 999px;
+		font-size: .62rem;
+		font-weight: 700;
+	}
+	.diagnostic-preview li > small {
+		color: var(--site-muted);
+		font-size: .68rem;
+	}
+	.diagnostic-preview__stable {
+		background: #e5eee9;
+		color: var(--site-green);
+	}
+	.diagnostic-preview__watch {
+		background: #f3e7d2;
+		color: #6c4a1f;
+	}
+	.diagnostic-preview__alert {
+		background: #f3ddd8;
+		color: var(--site-accent);
+	}
+	@media (max-width: 520px) {
+		.decision-preview { padding: .6rem; }
+		.diagnostic-preview__summary {
+			grid-template-columns: 1fr;
+		}
+		.diagnostic-preview__summary > .diagnostic-preview__priority {
+			box-shadow: inset 4px 0 0 var(--site-accent);
+		}
+		.diagnostic-preview li {
+			grid-template-columns: minmax(0, 1fr) auto;
+			gap: .15rem .6rem;
+		}
+		.diagnostic-preview li > small {
+			grid-column: 1 / -1;
+		}
+	}
+</style>
