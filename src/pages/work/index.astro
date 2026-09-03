@@ -11,10 +11,7 @@ import WorkCard from '../../components/WorkCard.astro';
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead
-			title="Selected Work | Shan Islam"
-			description="Selected data science work in pricing, forecasting, experimentation and commercial decision support."
-		/>
+		<BaseHead title="Selected Work | Shan Islam" description="Selected data science work in pricing, forecasting, experimentation and commercial decision support." />
 	</head>
 	<body>
 		<Header />
@@ -22,54 +19,73 @@ import WorkCard from '../../components/WorkCard.astro';
 			<header class="work-intro">
 				<p class="section-label">Case studies · Lead Data Scientist</p>
 				<h1>Work designed to change the next decision.</h1>
-				<p class="work-intro__lead">
-					I help businesses turn messy commercial and operational data into better decisions.
-				</p>
-				<p>
-					I work on problems where better forecasting, experimentation or modelling can make the next action clearer.
-				</p>
+				<p class="work-intro__lead">I help businesses turn messy commercial and operational data into better decisions.</p>
+				<p>I work on problems where better forecasting, experimentation or modelling can make the next action clearer.</p>
 			</header>
 
 			<section aria-labelledby="work-cases">
 				<h2 id="work-cases" class="sr-only">Case studies</h2>
 				<div class="work-grid">
-					<WorkCard
-						number="01"
-						title="Marketplace Pricing & Demand Forecasting"
-						description="Turning noisy demand and capacity signals into actionable pricing decisions."
-						capability="Pricing & forecasting"
-						value="When and how much to intervene — and when to leave price alone."
-						href="/work/marketplace-pricing-demand-forecasting/"
-					>
+					<WorkCard number="01" title="Marketplace Pricing & Demand Forecasting" description="Turning noisy demand and capacity signals into actionable pricing decisions." capability="Pricing & forecasting" value="When and how much to intervene — and when to leave price alone." href="/work/marketplace-pricing-demand-forecasting/">
 						<PricingForecastPreview slot="preview" />
 					</WorkCard>
-					<WorkCard
-						number="02"
-						title="Experimentation & Causal Decision Making"
-						description="Designing experiments that answer commercial decisions, not merely produce statistically significant results."
-						capability="Experimentation"
-						value="Whether a commercial change should be rolled out, and what risk that decision accepts."
-						href="/work/experimentation-causal-decision-making/"
-					>
+					<WorkCard number="02" title="Experimentation & Causal Decision Making" description="Designing experiments that answer commercial decisions, not merely produce statistically significant results." capability="Experimentation" value="Whether a commercial change should be rolled out, and what risk that decision accepts." href="/work/experimentation-causal-decision-making/">
 						<ExperimentDecisionPreview slot="preview" />
 					</WorkCard>
-					<WorkCard
-						number="03"
-						title="Commercial Data Rescue"
-						description="Turning fragmented operational signals into a decision tool that tells teams where to look first."
-						capability="Commercial analytics"
-						value="Find the likely cause of a performance change quickly and focus investigation."
-						href="/work/commercial-data-rescue/"
-					>
+					<WorkCard number="03" title="Commercial Data Rescue" description="Turning fragmented operational signals into a decision tool that tells teams where to look first." capability="Commercial analytics" value="Find the likely cause of a performance change quickly and focus investigation." href="/work/commercial-data-rescue/">
 						<CommercialDataRescuePreview slot="preview" />
 					</WorkCard>
 				</div>
 			</section>
 
-			<p class="work-disclosure">
-				Case studies use anonymised descriptions and illustrative data. No confidential or proprietary employer/client data is shown.
-			</p>
+			<aside class="tool-entry" aria-labelledby="experiment-tool-title">
+				<div>
+					<p class="section-label">Interactive tool</p>
+					<h2 id="experiment-tool-title">Experiment Decision Checker</h2>
+					<p>Check a binary A/B test’s statistical signal, sample integrity, maturity and commercial decision readiness—entirely in your browser.</p>
+				</div>
+				<a href="/tools/experiment-decision-checker/">Open the checker <span aria-hidden="true">→</span></a>
+			</aside>
+
+			<p class="work-disclosure">Case studies use anonymised descriptions and illustrative data. No confidential or proprietary employer/client data is shown.</p>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	.tool-entry {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 2rem;
+		margin-top: 3rem;
+		padding: 1.5rem;
+		border: 1px solid var(--site-border);
+		border-left: 4px solid var(--site-blue);
+		background: var(--site-surface);
+	}
+	.tool-entry h2 {
+		margin: 0 0 0.35rem;
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(1.45rem, 2.8vw, 2rem);
+		font-weight: 400;
+		color: var(--site-blue);
+	}
+	.tool-entry p:last-child {
+		max-width: 48rem;
+		margin: 0;
+		color: var(--site-muted);
+	}
+	.tool-entry > a {
+		white-space: nowrap;
+		font-weight: 700;
+	}
+	@media (max-width: 650px) {
+		.tool-entry {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+			padding: 1.2rem;
+		}
+	}
+</style>

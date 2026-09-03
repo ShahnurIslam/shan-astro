@@ -2,30 +2,17 @@
 import CaseStudy from '../../layouts/CaseStudy.astro';
 ---
 
-<CaseStudy
-	title="Experimentation & Causal Decision Making"
-	description="How disciplined experiment design turns uncertain pricing evidence into a clear commercial rollout decision."
-	dek="Designing experiments that answer commercial decisions rather than merely producing statistically significant results."
-	capabilities={['A/B Testing', 'Causal Inference', 'Experiment Design', 'Pricing', 'Python', 'SQL']}
->
+<CaseStudy title="Experimentation & Causal Decision Making" description="How disciplined experiment design turns uncertain pricing evidence into a clear commercial rollout decision." dek="Designing experiments that answer commercial decisions rather than merely producing statistically significant results." capabilities={['A/B Testing', 'Causal Inference', 'Experiment Design', 'Pricing', 'Python', 'SQL']}>
 	<section>
 		<h2>The situation</h2>
-		<p>
-			A commercial pricing change offered meaningful upside, but it also introduced conversion and customer-risk downside. Comparing two group averages would have been easy; deciding whether the change was credible, safe and worth rolling out was the harder problem.
-		</p>
-		<p>
-			The business needed to know whether the experiment was behaving correctly, whether guardrails were deteriorating, whether there was enough evidence to act, and what risk it would accept by making the decision. Measurement had to support that judgement rather than substitute for it.
-		</p>
+		<p>A commercial pricing change offered meaningful upside, but it also introduced conversion and customer-risk downside. Comparing two group averages would have been easy; deciding whether the change was credible, safe and worth rolling out was the harder problem.</p>
+		<p>The business needed to know whether the experiment was behaving correctly, whether guardrails were deteriorating, whether there was enough evidence to act, and what risk it would accept by making the decision. Measurement had to support that judgement rather than substitute for it.</p>
 	</section>
 
 	<section>
 		<h2>Design backwards from the rollout decision</h2>
-		<p>
-			The experiment began with a deterministic assignment rule and a pre-defined primary commercial metric. Sample-ratio mismatch checks verified that allocation behaved as intended before anyone interpreted the result. Conversion and customer-risk measures were treated as guardrails, not footnotes added after seeing an attractive headline number.
-		</p>
-		<p>
-			Confidence intervals made the range of plausible commercial effects visible. A minimum worthwhile effect created a decision threshold, while futility and stopping reasoning prevented the team from waiting indefinitely for certainty the experiment could not provide. This kept statistical discipline connected to the cost of rolling out, holding, or gathering more evidence.
-		</p>
+		<p>The experiment began with a deterministic assignment rule and a pre-defined primary commercial metric. Sample-ratio mismatch checks verified that allocation behaved as intended before anyone interpreted the result. Conversion and customer-risk measures were treated as guardrails, not footnotes added after seeing an attractive headline number.</p>
+		<p>Confidence intervals made the range of plausible commercial effects visible. A minimum worthwhile effect created a decision threshold, while futility and stopping reasoning prevented the team from waiting indefinitely for certainty the experiment could not provide. This kept statistical discipline connected to the cost of rolling out, holding, or gathering more evidence.</p>
 		<ol class="decision-flow" aria-label="Experiment decision workflow">
 			<li>Validate</li>
 			<li>Estimate</li>
@@ -36,9 +23,7 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 
 	<section>
 		<h2>Put uncertainty next to the decision</h2>
-		<p>
-			The decision view brought the estimated effect, commercial threshold and guardrails together. That made it possible to discuss the evidence in plain terms: the most likely outcome, the downside still consistent with the data, and whether that residual risk was acceptable.
-		</p>
+		<p>The decision view brought the estimated effect, commercial threshold and guardrails together. That made it possible to discuss the evidence in plain terms: the most likely outcome, the downside still consistent with the data, and whether that residual risk was acceptable.</p>
 		<figure class="executive-visual experiment-visual">
 			<div class="executive-visual__header">
 				<h3>Experiment rollout decision</h3>
@@ -60,32 +45,63 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 				<div><dt>Guardrails</dt><dd>Within tolerance</dd></div>
 				<div><dt>Decision</dt><dd>Roll out with monitoring</dd></div>
 			</dl>
-			<figcaption>
-				Illustrative data, not a historical experiment readout. The view shows how effect uncertainty and guardrails can be evaluated together.
-			</figcaption>
+			<figcaption>Illustrative data, not a historical experiment readout. The view shows how effect uncertainty and guardrails can be evaluated together.</figcaption>
 		</figure>
+		<aside class="experiment-tool-cta">
+			<p>Interactive tool</p>
+			<h3>Test an experiment readout</h3>
+			<span>Apply the same validity, uncertainty and commercial-threshold checks to a binary A/B test. Your inputs stay in your browser.</span>
+			<a href="/tools/experiment-decision-checker/">Try the Experiment Decision Checker <span aria-hidden="true">→</span></a>
+		</aside>
 	</section>
 
 	<section>
 		<h2>The recommendation</h2>
-		<p>
-			Rollout should follow only when assignment checks pass, the credible range of commercial impact clears the decision threshold, and guardrails remain within the business’s stated tolerance. If the likely upside is too small, stop for futility; if downside risk remains material, hold or gather more evidence rather than hiding uncertainty behind a binary “significant” label.
-		</p>
-		<p>
-			This gave stakeholders a decision they could defend: not simply that one variant won, but why the expected upside justified the remaining risk and how performance would be monitored after rollout.
-		</p>
+		<p>Rollout should follow only when assignment checks pass, the credible range of commercial impact clears the decision threshold, and guardrails remain within the business’s stated tolerance. If the likely upside is too small, stop for futility; if downside risk remains material, hold or gather more evidence rather than hiding uncertainty behind a binary “significant” label.</p>
+		<p>This gave stakeholders a decision they could defend: not simply that one variant won, but why the expected upside justified the remaining risk and how performance would be monitored after rollout.</p>
 	</section>
 
 	<section class="outcome-panel">
 		<h2>Outcome</h2>
-		<p>A pricing experiment produced <strong>approximately 15% revenue growth</strong>.</p>
 		<p>
-			The work demonstrates pragmatic experiment design, causal reasoning and senior stakeholder communication: checking that measurement is trustworthy, making uncertainty legible, and translating the result into a commercial action.
+			A pricing experiment produced <strong>approximately 15% revenue growth</strong>.
 		</p>
+		<p>The work demonstrates pragmatic experiment design, causal reasoning and senior stakeholder communication: checking that measurement is trustworthy, making uncertainty legible, and translating the result into a commercial action.</p>
 	</section>
 </CaseStudy>
 
 <style is:global>
+	.experiment-tool-cta {
+		margin-top: 1.5rem;
+		padding: 1.35rem 1.5rem;
+		border: 1px solid var(--site-border);
+		border-left: 4px solid var(--site-blue);
+		background: var(--site-surface);
+	}
+	.experiment-tool-cta > p {
+		margin: 0 0 0.35rem;
+		color: var(--site-accent);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	.experiment-tool-cta h3 {
+		margin: 0 0 0.45rem;
+		color: var(--site-blue);
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: 1.45rem;
+		font-weight: 400;
+	}
+	.experiment-tool-cta > span {
+		display: block;
+		color: var(--site-muted);
+	}
+	.experiment-tool-cta a {
+		display: inline-block;
+		margin-top: 0.85rem;
+		font-weight: 700;
+	}
 	.experiment-visual__plot {
 		padding: 1.25rem 0 0.65rem;
 	}
@@ -127,14 +143,18 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 	}
 	.experiment-visual__interval::before,
 	.experiment-visual__interval::after {
-		content: "";
+		content: '';
 		position: absolute;
 		top: -0.45rem;
 		height: 0.75rem;
 		border-left: 3px solid var(--site-green);
 	}
-	.experiment-visual__interval::before { left: 0; }
-	.experiment-visual__interval::after { right: 0; }
+	.experiment-visual__interval::before {
+		left: 0;
+	}
+	.experiment-visual__interval::after {
+		right: 0;
+	}
 	.experiment-visual__estimate {
 		position: absolute;
 		top: 1.55rem;

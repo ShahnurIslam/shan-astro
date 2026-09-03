@@ -1,0 +1,23 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import ExperimentChecker from "../../components/experiment/ExperimentChecker";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title="Experiment Decision Checker | Shan Islam"
+      description="A local, browser-based tool for checking A/B test statistics, sample ratio mismatch, maturity and commercial decision readiness."
+    />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <ExperimentChecker client:load />
+    </main>
+    <Footer />
+  </body>
+</html>
