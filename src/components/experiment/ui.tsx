@@ -32,7 +32,13 @@ export function Input({
   className = "",
   ...props
 }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={`ui-input ${className}`.trim()} {...props} />;
+  return (
+    <input
+      data-slot="input"
+      className={`ui-input ${className}`.trim()}
+      {...props}
+    />
+  );
 }
 
 export function Label({
@@ -48,8 +54,13 @@ export function NativeSelect({
   ...props
 }: SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <span className={`ui-select ${className}`.trim()}>
-      <select {...props}>{children}</select>
+    <span
+      data-slot="native-select-wrapper"
+      className={`ui-select ${className}`.trim()}
+    >
+      <select data-slot="native-select" {...props}>
+        {children}
+      </select>
       <ChevronDown aria-hidden="true" />
     </span>
   );
