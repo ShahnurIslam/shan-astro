@@ -17,6 +17,15 @@ draft: false
   .article-prose li {
     line-height: 1.62;
   }
+
+  .article-prose blockquote {
+    margin: 1.75rem 0;
+  }
+
+  .article-prose blockquote p {
+    margin: 0;
+    line-height: 1.4;
+  }
 </style>
 
 Imagine we are testing a new checkout experience.
