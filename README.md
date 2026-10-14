@@ -70,13 +70,13 @@ Some ideas to get started:
 
 ## Snippets page
 
-Snippets live in:
+The snippet content and date-format reference live in:
 
 ```text
-src/pages/snippets.astro
+src/data/snippets.ts
 ```
 
-Snippets are stored as strings in the frontmatter to avoid Astro parsing issues with braces and code syntax. Use Astro's `Code` component for syntax highlighting where appropriate.
+`src/pages/snippets.astro` renders the grouped, searchable page with Astro's `Code` component. Add a new entry to the `snippets` array to publish another example. The original local exports remain in `Code Snippets/` as source material. Examples removed from the public page during curation are preserved in `docs/snippets-archive.md`.
 
 ## Static assets
 

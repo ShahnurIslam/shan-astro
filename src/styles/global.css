@@ -964,6 +964,69 @@ body:not(.prototype-body) main {
 	color: var(--site-text);
 }
 
+.snippet-search-label {
+	display: block;
+	margin: 2rem 0 0.45rem;
+	font-size: 0.76rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.snippet-search {
+	width: min(100%, 640px);
+	padding: 0.8rem 1rem;
+	border: 1px solid var(--site-border);
+	border-radius: 0;
+	background: var(--site-surface);
+	color: var(--site-text);
+	font: inherit;
+}
+
+.snippet-search:focus-visible {
+	outline: 2px solid var(--site-blue);
+	outline-offset: 2px;
+}
+
+.snippets-page .snippet-results {
+	margin: 0.6rem 0 0;
+	color: var(--site-muted);
+	font-size: 0.85rem;
+}
+
+.snippets-page .snippet-description {
+	margin: 0;
+	padding: 0.7rem 1rem;
+	color: var(--site-muted);
+	font-size: 0.82rem;
+}
+
+.date-reference {
+	margin: 0 0 1.5rem;
+	padding: 1.25rem;
+	border: 1px solid var(--site-border);
+	background: var(--site-surface);
+}
+
+.date-reference h4 {
+	margin: 0 0 0.5rem;
+	font-size: 1.1rem;
+}
+
+.snippets-page .date-reference p {
+	margin: 0 0 1rem;
+	font-size: 0.86rem;
+	line-height: 1.5;
+}
+
+.date-reference__scroll { overflow-x: auto; }
+.date-reference table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.date-reference th, .date-reference td { padding: 0.4rem 0.65rem; border-bottom: 1px solid var(--site-border); text-align: left; }
+.date-reference thead th { color: var(--site-accent); font-size: 0.7rem; text-transform: uppercase; }
+.date-reference tbody th { width: 5rem; }
+
+.snippets-page [hidden] { display: none !important; }
+
 /* CV */
 .cv-page {
 	width: min(1320px, calc(100% - 56px));
