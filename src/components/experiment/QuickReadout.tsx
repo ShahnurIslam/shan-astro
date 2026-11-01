@@ -212,7 +212,13 @@ function Readout({
             {signedPoints(result.interval.lower)} to{" "}
             {signedPoints(result.interval.upper)}
           </dd>
-          <span>Newcombe score interval</span>
+          <span>Absolute uplift · Newcombe score interval</span>
+          <dd className="quick-diagnostics__relative">
+            {result.relativeInterval
+              ? `${signedPercent(result.relativeInterval.lower)} to ${signedPercent(result.relativeInterval.upper)}`
+              : "Not available"}
+          </dd>
+          <span>Relative uplift · risk ratio interval</span>
         </div>
         <div>
           <dt>Two-sided p-value</dt>
@@ -303,6 +309,7 @@ export default function QuickReadout({
             conclusion: quickConclusion(nextResult).label,
             absoluteUplift: nextResult.absoluteEffect,
             relativeUplift: nextResult.relativeUplift,
+            relativeInterval: nextResult.relativeInterval,
             interval: nextResult.interval,
             pValue: nextResult.pValue,
             srmPassed: nextResult.srm.passed,

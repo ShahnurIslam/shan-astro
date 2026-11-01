@@ -50,6 +50,10 @@ void test("QA 01: quick positive reference matches trusted fixed-horizon values"
   close(result.treatmentRate, 0.132, 1e-12);
   close(result.absoluteEffect, 0.012, 1e-12);
   close(result.relativeUplift, 0.1, 1e-12);
+  assert.ok(result.relativeInterval);
+  assert.ok(result.relativeInterval.lower < result.relativeUplift!);
+  assert.ok(result.relativeInterval.upper > result.relativeUplift!);
+  assert.ok(result.relativeInterval.lower > 0);
   close(result.pValue, 0.010558899038851658, 1e-8);
   close(result.interval.lower, 0.002801436595135303, 1e-12);
   close(result.interval.upper, 0.021200322131384612, 1e-12);
@@ -403,6 +407,21 @@ void test("QA 22: zero control rate never creates an infinite relative uplift", 
     treatmentConversions: 1,
   });
   assert.equal(result.relativeUplift, null);
+  assert.equal(result.relativeInterval, null);
   assert.ok(Number.isFinite(result.interval.lower));
   assert.ok(Number.isFinite(result.interval.upper));
+});
+
+void test("zero treatment conversions retain a finite relative interval", () => {
+  const result = analyse({
+    controlAssigned: 100,
+    controlMature: 100,
+    controlConversions: 10,
+    treatmentAssigned: 100,
+    treatmentMature: 100,
+    treatmentConversions: 0,
+  });
+  assert.equal(result.relativeUplift, -1);
+  assert.equal(result.relativeInterval?.lower, -1);
+  assert.ok(Number.isFinite(result.relativeInterval?.upper));
 });

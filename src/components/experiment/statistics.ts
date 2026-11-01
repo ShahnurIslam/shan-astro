@@ -81,6 +81,7 @@ export interface AnalysisResult {
   treatmentRate: number | null;
   absoluteEffect: number | null;
   relativeUplift: number | null;
+  relativeInterval: { lower: number; upper: number } | null;
   interval: Interval;
   pValue: number | null;
   hypothesisMethod:
@@ -293,6 +294,41 @@ export function wilsonInterval(successes: number, total: number, z = Z_95) {
   return {
     lower: Math.max(0, centre - halfWidth),
     upper: Math.min(1, centre + halfWidth),
+  };
+}
+
+/** 95% log risk-ratio interval, expressed as relative uplift. */
+export function relativeUpliftInterval(
+  controlSuccesses: number,
+  controlTotal: number,
+  treatmentSuccesses: number,
+  treatmentTotal: number,
+) {
+  if (controlSuccesses === 0 || controlTotal === 0 || treatmentTotal === 0)
+    return null;
+  if (treatmentSuccesses === 0) {
+    // The log ratio is undefined at zero. Wilson bounds retain the -100%
+    // boundary and give a finite conservative upper bound.
+    const control = wilsonInterval(
+      controlSuccesses,
+      controlTotal,
+      2.241402727604947,
+    );
+    const treatment = wilsonInterval(0, treatmentTotal, 2.241402727604947);
+    return { lower: -1, upper: treatment.upper / control.lower - 1 };
+  }
+  const logRatio = Math.log(
+    treatmentSuccesses / treatmentTotal / (controlSuccesses / controlTotal),
+  );
+  const standardError = Math.sqrt(
+    1 / treatmentSuccesses -
+      1 / treatmentTotal +
+      1 / controlSuccesses -
+      1 / controlTotal,
+  );
+  return {
+    lower: Math.exp(logRatio - Z_95 * standardError) - 1,
+    upper: Math.exp(logRatio + Z_95 * standardError) - 1,
   };
 }
 
@@ -847,6 +883,15 @@ export function analyseExperiment(input: ExperimentInput): AnalysisResult {
     absoluteEffect === null || controlRate === null || controlRate === 0
       ? null
       : absoluteEffect / controlRate;
+  const relativeInterval =
+    !hasMatureData || input.monitoringMode !== "fixed"
+      ? null
+      : relativeUpliftInterval(
+          input.controlConversions,
+          input.controlMature,
+          input.treatmentConversions,
+          input.treatmentMature,
+        );
 
   let interval: Interval;
   let pValue: number | null = null;
@@ -1049,6 +1094,7 @@ export function analyseExperiment(input: ExperimentInput): AnalysisResult {
     treatmentRate,
     absoluteEffect,
     relativeUplift,
+    relativeInterval,
     interval,
     pValue,
     hypothesisMethod,
