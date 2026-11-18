@@ -40,11 +40,11 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 	<section>
 		<h2>Make the intervention window visible</h2>
 		<p>
-			The executive view showed whether the cumulative booking trajectory was likely to exceed usable capacity by the service date. That forecast created time to intervene, regulate subsequent bookings, and still allow enough gross demand to fill capacity after expected attrition.
+			The executive view compared projected demand with available capacity ahead of the service date. This gave teams time to consider whether pricing intervention was necessary, while balancing commercial performance and operational constraints.
 		</p>
 		<figure class="executive-visual">
 			<div class="executive-visual__header">
-				<h3>Forecast demand early, regulate bookings toward capacity</h3>
+				<h3>Forecast demand early to guide pricing decisions</h3>
 				<span class="illustrative-label">Illustrative data</span>
 			</div>
 			<div class="chart-key" aria-hidden="true">
@@ -54,7 +54,7 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 			</div>
 			<svg class="pricing-chart" viewBox="0 0 760 430" role="img" aria-labelledby="pricing-chart-title pricing-chart-desc">
 				<title id="pricing-chart-title">Cumulative bookings forecast and pricing intervention</title>
-				<desc id="pricing-chart-desc">Illustrative cumulative bookings from 90 days before service to the service date. At 35 days, the current trajectory indicates demand will exceed 100 jobs of usable capacity. A recommended illustrative price increase of 12% slows subsequent booking growth. Projected gross bookings finish at approximately 105 jobs so expected cancellations and rescheduling bring fulfilled jobs back toward usable capacity.</desc>
+				<desc id="pricing-chart-desc">Illustrative cumulative bookings from 90 days before service to the service date. At 35 days, the current trajectory indicates demand will exceed 100 jobs of usable capacity. A recommended illustrative price increase of 12% slows subsequent booking growth. Projected bookings finish at usable capacity.</desc>
 				<defs>
 					<marker id="pricing-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
 						<path d="M 0 0 L 10 5 L 0 10 z" fill="#a83220" />
@@ -75,7 +75,7 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 					<line x1="480" y1="340" x2="480" y2="348" />
 				</g>
 				<line x1="72" y1="120" x2="500" y2="120" stroke="#8b7652" stroke-width="3" />
-				<g class="pricing-chart__axis" fill="#5f574c" font-family="Atkinson, sans-serif" font-size="15">
+				<g class="pricing-chart__axis" fill="#5f574c" font-family="Inter Variable, sans-serif" font-size="15">
 					<text x="62" y="125" text-anchor="end">100</text>
 					<text x="72" y="370" text-anchor="middle">90</text>
 					<text x="208" y="370" text-anchor="middle">60</text>
@@ -86,28 +86,17 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 				</g>
 				<path d="M 72 326 C 132 322, 190 311, 240 292 C 270 280, 292 253, 321 228" fill="none" stroke="#a83220" stroke-width="5" stroke-linecap="round" />
 				<path d="M 321 228 C 350 203, 445 94, 480 58" fill="none" stroke="#a83220" stroke-width="4" stroke-dasharray="10 9" stroke-linecap="round" />
-				<path d="M 321 228 C 350 203, 445 124, 480 105" fill="none" stroke="#143b2f" stroke-width="5" stroke-linecap="round" />
+				<path d="M 321 228 C 350 203, 445 124, 480 120" fill="none" stroke="#143b2f" stroke-width="5" stroke-linecap="round" />
 				<circle cx="321" cy="228" r="7" fill="#fffdf7" stroke="#a83220" stroke-width="4" />
-				<g class="pricing-intervention" fill="#151210" font-family="Atkinson, sans-serif" font-size="16" font-weight="700">
+				<g class="pricing-intervention" fill="#151210" font-family="Inter Variable, sans-serif" font-size="16" font-weight="700">
 					<text x="160" y="180">Pricing intervention</text>
 					<text class="pricing-intervention__price" x="160" y="201" fill="#a83220" font-size="14">Recommended price: +12%</text>
 				</g>
 				<line x1="304" y1="204" x2="318" y2="219" stroke="#a83220" stroke-width="2" marker-end="url(#pricing-arrow)" />
-				<line x1="480" y1="105" x2="500" y2="105" stroke="#143b2f" stroke-width="2" />
-				<g stroke="#8b7652" stroke-width="2">
-					<line x1="500" y1="105" x2="500" y2="120" />
-					<line x1="494" y1="105" x2="506" y2="105" />
-					<line x1="494" y1="120" x2="506" y2="120" />
-				</g>
-				<g class="pricing-buffer" fill="#5f574c" font-family="Atkinson, sans-serif" font-size="14" font-weight="700">
-					<text class="pricing-buffer__label" x="520" y="101">Expected cancellations</text>
-					<text class="pricing-buffer__label" x="520" y="118">&amp; rescheduling</text>
-					<text class="pricing-buffer__caption" x="520" y="139" font-size="12" font-weight="400">Gross-booking buffer</text>
-				</g>
-				<text x="276" y="408" text-anchor="middle" fill="#5f574c" font-family="Atkinson, sans-serif" font-size="14">Days before service</text>
+				<text x="276" y="408" text-anchor="middle" fill="#5f574c" font-family="Inter Variable, sans-serif" font-size="14">Days before service</text>
 			</svg>
 			<figcaption>
-				Illustrative data. Pricing is used to slow booking growth when forecast demand exceeds capacity. Gross bookings deliberately finish slightly above usable capacity to allow for expected cancellations and rescheduling.
+				Illustrative data showing how projected demand and available capacity can inform earlier pricing decisions. This is not a historical operational forecast.
 			</figcaption>
 		</figure>
 	</section>
@@ -125,7 +114,7 @@ import CaseStudy from '../../layouts/CaseStudy.astro';
 	<section class="outcome-panel">
 		<h2>Outcome</h2>
 		<p>
-			The work contributed to reducing blocked days from <strong>21 to 1</strong> and to an <strong>approximately 10% revenue premium</strong> from the resulting surge-pricing approach.
+			The work helped teams anticipate capacity pressure earlier and make more informed pricing decisions, balancing commercial opportunity with operational risk.
 		</p>
 		<p>
 			It demonstrates the full path from ambiguous commercial problem, through forecasting and scenario reasoning, to a recommendation the business could act on and test safely.

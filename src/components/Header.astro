@@ -9,14 +9,14 @@ const isToolPage = Astro.url.pathname.startsWith(
 
 <header>
 	<nav class="nav-inner">
-		<a class="site-title" href="/">{SITE_TITLE}</a>
+		<a class="site-title" href="/" aria-label="Shan Islam, home"><svg class="site-botanical" viewBox="0 0 32 38" fill="none" aria-hidden="true"><path d="M8 35c9-9 11-18 13-32" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 19C9 18 7 14 8 9c5 1 8 4 8 10ZM19 12c0-6 3-9 8-10 0 5-2 9-8 10ZM12 27c-6 0-9-3-10-8 5 0 8 2 10 8ZM18 22c2-5 6-7 11-6-2 5-5 7-11 6Z" fill="currentColor" opacity=".85"/></svg><span>{SITE_TITLE}</span></a>
 			<div class="internal-links">
 				<HeaderLink href="/work">Work</HeaderLink>
 				<HeaderLink
 					href="/tools/experiment-decision-checker/"
 					class={isToolPage ? 'active' : undefined}
 				>
-					Tool
+					Tools
 				</HeaderLink>
 				<HeaderLink href="/blog">Writing</HeaderLink>
 				<HeaderLink href="/snippets">Snippets</HeaderLink>
@@ -33,25 +33,30 @@ const isToolPage = Astro.url.pathname.startsWith(
 	header::after {
 		content: '';
 		display: block;
-		width: min(1320px, calc(100% - 56px));
+		width: min(1120px, calc(100% - 64px));
 		margin: 0 auto;
 		border-bottom: 1px solid var(--site-border);
 	}
 		.nav-inner {
-			width: min(1320px, calc(100% - 56px));
+			width: min(1120px, calc(100% - 64px));
 			margin: 0 auto;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			min-height: 94px;
+			min-height: 64px;
 		}
 
 	.site-title {
 		color: var(--site-text);
-		font-family: Georgia, 'Times New Roman', serif;
-		font-size: 1.4rem;
+		font-family: var(--font-heading);
+		font-size: 1.25rem;
+		font-weight: 700;
 		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
 	}
+	.site-botanical { width: 27px; height: 32px; color: var(--site-sage); flex: none; }
 	.site-title:hover,
 	.site-title:focus-visible {
 		text-decoration: none;
@@ -59,34 +64,39 @@ const isToolPage = Astro.url.pathname.startsWith(
 	}
 	.internal-links {
 		display: flex;
-		gap: 2.2rem;
+			gap: 24px;
 	}
 	nav a {
 		padding: 0.6rem 0;
 		color: var(--site-text);
 		border-bottom: 2px solid transparent;
 		text-decoration: none;
-		font-size: 0.86rem;
-		font-weight: 700;
-		letter-spacing: 0.04em;
+		font-size: 0.93rem;
+		font-weight: 500;
 	}
 	nav a.active {
 		text-decoration: none;
-		border-bottom-color: var(--site-accent);
+		border-bottom-color: var(--site-green);
 	}
 	@media (max-width: 720px) {
 		header::after,
 		.nav-inner {
-			width: min(100% - 28px, 1320px);
+			width: min(100% - 40px, 1120px);
 		}
 		.nav-inner {
-			min-height: 82px;
+			min-height: 64px;
+			flex-wrap: wrap;
+			padding: 8px 0;
+			gap: 0 12px;
 		}
 		.internal-links {
-			gap: 0.75rem;
+			gap: 12px;
+			width: 100%;
+			overflow-x: auto;
+			white-space: nowrap;
 		}
 		nav a {
-			font-size: 0.72rem;
+			font-size: 0.82rem;
 		}
 	}
 </style>

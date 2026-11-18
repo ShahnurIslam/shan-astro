@@ -48,6 +48,7 @@ const DEFAULT_INPUT: ExperimentInput = {
   expectedTreatmentShare: 0.5,
   minimumWorthwhileGainPp: null,
   maximumTolerableLossPp: null,
+  thresholdsPreSpecified: "unsure",
 };
 
 const EXAMPLE_INPUT: ExperimentInput = {
@@ -67,6 +68,7 @@ const EXAMPLE_INPUT: ExperimentInput = {
   expectedTreatmentShare: 0.5,
   minimumWorthwhileGainPp: 0.5,
   maximumTolerableLossPp: 0.25,
+  thresholdsPreSpecified: "yes",
 };
 
 type CountField =
@@ -1000,6 +1002,12 @@ export default function Checker() {
                     <FieldError>{errors.maximumTolerableLossPp}</FieldError>
                   </div>
                 </div>
+                <ChoiceButtons
+                  label="Were these boundaries set before seeing the result?"
+                  helper="A boundary chosen after seeing the data is exploratory."
+                  value={input.thresholdsPreSpecified}
+                  onChange={(value) => setInput((current) => ({ ...current, thresholdsPreSpecified: value }))}
+                />
               </div>
             </details>
             <Button type="submit" size="lg" className="check-button">

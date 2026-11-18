@@ -19,18 +19,18 @@
 .quick-intro {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
-  gap: clamp(45px, 8vw, 130px);
+  gap: clamp(40px, 7vw, 100px);
   align-items: end;
-  padding: clamp(44px, 6vw, 76px) 0;
+  padding: clamp(36px, 5vw, 60px) 0;
 }
 .quick-intro h1 {
   margin: 0;
   color: var(--primary);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.7rem, 5vw, 4.7rem);
-  font-weight: 400;
+  font-family: var(--font-heading);
+  font-size: clamp(2.6rem, 4.2vw, 3.9rem);
+  font-weight: 650;
   letter-spacing: -0.05em;
-  line-height: 0.95;
+  line-height: 1.07;
 }
 .quick-intro > div:last-child > p {
   max-width: 34rem;
@@ -81,13 +81,14 @@
 .quick-results__heading h2 {
   margin: 0;
   color: var(--primary);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.75rem;
-  font-weight: 400;
+  font-family: var(--font-heading);
+  font-size: 1.55rem;
+  font-weight: 650;
   letter-spacing: -0.03em;
 }
 .quick-section-heading > span {
   color: var(--muted-foreground);
+  font-family: var(--font-mono);
   font-size: 0.62rem;
 }
 .quick-input form {
@@ -108,6 +109,7 @@
 .quick-variant legend {
   padding: 0 5px;
   color: var(--accent);
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   font-weight: 750;
   letter-spacing: 0.08em;
@@ -135,6 +137,7 @@
   padding: 6px 9px;
   border: 1px solid currentColor;
   color: var(--green);
+  font-family: var(--font-mono);
   font-size: 0.64rem;
   font-weight: 700;
 }
@@ -163,11 +166,13 @@
 .quick-diagnostics dt {
   margin-bottom: 7px;
   color: var(--muted-foreground);
+  font-family: var(--font-mono);
   font-size: 0.64rem;
   font-weight: 650;
 }
 .quick-metrics dd {
   margin: 0;
+  font-family: var(--font-mono);
   font-size: clamp(1.1rem, 2vw, 1.5rem);
   font-weight: 720;
   letter-spacing: -0.04em;
@@ -178,6 +183,7 @@
   display: block;
   margin-top: 5px;
   color: var(--muted-foreground);
+  font-family: var(--font-mono);
   font-size: 0.6rem;
 }
 .quick-conclusion {
@@ -204,6 +210,7 @@
 .quick-conclusion p {
   margin: 0 0 2px;
   color: var(--accent);
+  font-family: var(--font-mono);
   font-size: 0.59rem;
   font-weight: 750;
   letter-spacing: 0.1em;
@@ -212,9 +219,9 @@
 .quick-conclusion h3 {
   margin: 0 0 4px;
   color: var(--primary);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.45rem;
-  font-weight: 400;
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 650;
 }
 .quick-conclusion span {
   color: var(--muted-foreground);
@@ -241,41 +248,12 @@
 .quick-diagnostics dd {
   margin: 0;
   overflow-wrap: anywhere;
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   font-weight: 700;
 }
-.suite-cta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 15px 17px;
-  border: 1px solid var(--primary);
-  color: var(--primary);
-  text-decoration: none;
-  width: 100%;
-  background: transparent;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.suite-cta strong,
-.suite-cta span {
-  display: block;
-}
-.suite-cta strong {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1rem;
-  font-weight: 400;
-}
-.suite-cta span {
-  margin-top: 2px;
-  color: var(--muted-foreground);
-  font-size: 0.63rem;
-}
-.suite-cta svg {
-  flex: none;
-  width: 16px;
+.quick-diagnostics dd.quick-diagnostics__relative {
+  margin-top: 11px;
 }
 @media (max-width: 900px) {
   .quick-workspace {
@@ -350,7 +328,87 @@
     padding: 0;
     border-left: 0;
   }
-  .suite-cta {
-    align-items: flex-start;
-  }
+}
+/* Shared publication design for both checker modes. */
+.experiment-checker {
+  --background: #FAF8F4;
+  --foreground: #18201C;
+  --card: #FAF8F4;
+  --card-foreground: #18201C;
+  --primary: #075544;
+  --primary-foreground: #fff;
+  --secondary: #EDF0E9;
+  --secondary-foreground: #18201C;
+  --muted: #EDF0E9;
+  --muted-foreground: #5C655F;
+  --accent: #C46D42;
+  --destructive: #9c3c31;
+  --border: #D6DCD4;
+  --input: #AAB6AC;
+  --ring: #075544;
+  --green: #075544;
+  --green-soft: #E5EEE8;
+  --red-soft: #F5E5DE;
+  --amber-soft: #F6EBD7;
+  --blue-soft: #E7EEE9;
+  width: min(1120px, calc(100% - 64px));
+  margin: 0 auto;
+}
+.experiment-checker *:not(code):not(pre) { font-family: var(--font-body); }
+.tool-mode-header { padding: 40px 0 0; }
+.tool-mode-header h1 { margin: 0 0 4px; font-size: clamp(36px, 3.2vw, 44px); line-height: 1.12; }
+.tool-mode-header > p { margin: 0 0 24px; color: var(--site-muted); font-size: 19px; }
+.tool-mode-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); }
+.tool-mode-tabs button { min-height: 44px; padding: 8px 16px; border: 1px solid var(--border); border-bottom: 0; border-radius: 5px 5px 0 0; background: transparent; color: var(--primary); font-weight: 650; cursor: pointer; }
+.tool-mode-tabs button[aria-selected="true"] { background: var(--primary); border-color: var(--primary); color: #fff; }
+.tool-mode-tabs button:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.experiment-checker .checker-main { width: 100%; padding-bottom: 0; }
+.experiment-checker .quick-intro { display: flex; justify-content: flex-end; padding: 16px 0; }
+.experiment-checker .quick-intro > div:first-child { display: none; }
+.experiment-checker .quick-intro > div:last-child { display: flex; justify-content: space-between; align-items: center; gap: 24px; width: 100%; }
+.experiment-checker .quick-intro > div:last-child > p { max-width: 570px; margin: 0; font-size: 15px; }
+.experiment-checker .quick-actions { flex: none; }
+.experiment-checker .quick-workspace, .experiment-checker .workspace { border-top: 0; background: transparent; box-shadow: none; }
+.experiment-checker .quick-workspace { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+.experiment-checker .workspace { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+.experiment-checker .quick-input, .experiment-checker .quick-results, .experiment-checker .input-panel, .experiment-checker .results { padding: 24px 20px; background: transparent; }
+.experiment-checker .quick-input, .experiment-checker .input-panel { padding-left: 0; border-right: 1px solid var(--border); }
+.experiment-checker .quick-results, .experiment-checker .results { padding-right: 0; }
+.experiment-checker .quick-section-heading h2, .experiment-checker .quick-results__heading h2, .experiment-checker .panel-heading h2 { color: var(--foreground); font-size: 24px; font-weight: 700; }
+.experiment-checker .quick-section-heading, .experiment-checker .quick-results__heading { margin-bottom: 16px; }
+.experiment-checker .quick-results__heading { padding-bottom: 12px; }
+.experiment-checker .quick-variant { padding: 12px; border-color: var(--border); border-radius: 5px; }
+.experiment-checker .quick-variant legend, .experiment-checker .eyebrow { color: var(--muted-foreground); font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.experiment-checker .quick-submit, .experiment-checker .check-button { border-radius: 5px; background: var(--primary); color: #fff; }
+.experiment-checker .quick-srm, .experiment-checker .srm-pill { border-radius: 999px; background: var(--green-soft); color: var(--primary); }
+.experiment-checker .quick-srm--fail, .experiment-checker .srm-pill--fail { background: var(--red-soft); color: #893e2e; }
+.experiment-checker .quick-metrics dd, .experiment-checker .metric dd { color: var(--foreground); font-size: clamp(20px, 2vw, 26px); font-weight: 700; letter-spacing: -.025em; }
+.experiment-checker .quick-conclusion { padding: 16px 0; border-top: 1px solid var(--border); background: transparent; }
+.experiment-checker .quick-conclusion--positive { color: var(--primary); }
+.experiment-checker .quick-conclusion--negative, .experiment-checker .quick-conclusion--investigate { color: #893e2e; }
+.experiment-checker .hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: 16px 0; }
+.experiment-checker .hero > .eyebrow, .experiment-checker .hero > h1 { display: none; }
+.experiment-checker .hero__deck { max-width: 570px; margin: 0; font-size: 15px; }
+.experiment-checker .hero__actions { display: flex; gap: 8px; }
+.experiment-checker .config-section { border-color: var(--border); }
+.experiment-checker .decision-card { background: var(--site-code); border-color: var(--border); }
+.experiment-checker .product-footer { border-top-color: var(--border); color: var(--muted-foreground); }
+@media (max-width: 900px) {
+  .experiment-checker .quick-workspace, .experiment-checker .workspace { grid-template-columns: 1fr; }
+  .experiment-checker .quick-input, .experiment-checker .input-panel { padding: 20px 0; border-right: 0; border-bottom: 1px solid var(--border); }
+  .experiment-checker .quick-results, .experiment-checker .results { padding: 20px 0; }
+}
+@media (max-width: 720px) {
+  .experiment-checker { width: min(1120px, calc(100% - 40px)); }
+  .tool-mode-header { padding-top: 32px; }
+  .tool-mode-header h1 { font-size: 28px; }
+  .tool-mode-header > p { font-size: 16px; margin-bottom: 16px; }
+  .tool-mode-tabs button { padding-inline: 12px; font-size: 14px; }
+  .experiment-checker .quick-intro, .experiment-checker .hero { padding: 16px 0; }
+  .experiment-checker .quick-intro > div:last-child { display: block; }
+  .experiment-checker .quick-intro > div:last-child > p { margin-bottom: 10px; }
+  .experiment-checker .hero__deck { margin-bottom: 10px; }
+  .experiment-checker .quick-metrics { gap: 16px 0; }
+  .experiment-checker .quick-metrics > div { padding-inline: 10px; }
+  .experiment-checker .quick-metrics > div:nth-child(odd) { padding-left: 0; border-left: 0; }
 }

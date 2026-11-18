@@ -17,10 +17,8 @@ import WorkCard from '../../components/WorkCard.astro';
 		<Header />
 		<main class="work-page">
 			<header class="work-intro">
-				<p class="section-label">Case studies · Lead Data Scientist</p>
-				<h1>Work designed to change the next decision.</h1>
-				<p class="work-intro__lead">I help businesses turn messy commercial and operational data into better decisions.</p>
-				<p>I work on problems where better forecasting, experimentation or modelling can make the next action clearer.</p>
+				<h1>Selected work</h1>
+				<p class="work-intro__lead">Commercial data science, from messy problems to practical decisions.</p>
 			</header>
 
 			<section aria-labelledby="work-cases">
@@ -42,7 +40,7 @@ import WorkCard from '../../components/WorkCard.astro';
 				<div>
 					<p class="section-label">Interactive tool</p>
 					<h2 id="experiment-tool-title">Experiment Decision Checker</h2>
-					<p>Check a binary A/B test’s statistical signal, sample integrity, maturity and commercial decision readiness—entirely in your browser.</p>
+					<p>Check a binary A/B test’s statistical signal and sample ratio mismatch—entirely in your browser.</p>
 				</div>
 				<a href="/tools/experiment-decision-checker/">Open the checker <span aria-hidden="true">→</span></a>
 			</aside>
@@ -67,9 +65,9 @@ import WorkCard from '../../components/WorkCard.astro';
 	}
 	.tool-entry h2 {
 		margin: 0 0 0.35rem;
-		font-family: Georgia, 'Times New Roman', serif;
+		font-family: var(--font-heading);
 		font-size: clamp(1.45rem, 2.8vw, 2rem);
-		font-weight: 400;
+		font-weight: 650;
 		color: var(--site-blue);
 	}
 	.tool-entry p:last-child {

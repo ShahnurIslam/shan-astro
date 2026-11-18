@@ -6,194 +6,74 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
-
-const { title, description, pubDate, updatedDate, heroImage, tags = [] } = Astro.props;
+type Props = CollectionEntry<'blog'>['data'] & { headings?: { depth: number; slug: string; text: string }[] };
+const { title, description, pubDate, updatedDate, heroImage, headings = [] } = Astro.props;
+const sections = headings.filter((heading) => heading.depth === 2);
 ---
 
+<!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={`${title} | Shan Islam`} description={description} />
-	</head>
-	<body>
-		<Header />
-		<main class="article-page">
-			<article>
-				<header class="article-header">
-					<p class="article-header__eyebrow">Writing · Field notes</p>
-					<h1>{title}</h1>
-					<p class="article-header__description">{description}</p>
-					{tags.length > 0 && (
-						<ul class="article-header__tags" aria-label="Article topics">
-							{tags.map((tag) => <li>{tag}</li>)}
-						</ul>
-					)}
-					<div class="article-header__meta">
-						<span><FormattedDate date={pubDate} /></span>
-						{
-							updatedDate && (
-								<span>Updated <FormattedDate date={updatedDate} /></span>
-							)
-						}
-						<a href="/blog/">All writing <span aria-hidden="true">↗</span></a>
-					</div>
-				</header>
-
-				{heroImage && (
-					<figure class="article-hero-image">
-						<Image width={1200} height={600} src={heroImage} alt="" />
-					</figure>
-				)}
-
-				<div class="article-prose prose">
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
+  <head><BaseHead title={`${title} | Shan Islam`} description={description} /></head>
+  <body>
+    <Header />
+    <main class="article-page">
+      <div class="article-layout">
+        <article>
+          <header class="article-header">
+            <a class="text-link article-back" href="/blog/">← All writing</a>
+            <h1>{title}</h1>
+            <p class="article-header__description">{description}</p>
+            <div class="article-header__meta">Shan Islam <span aria-hidden="true">·</span> <FormattedDate date={pubDate} />{updatedDate && <> <span aria-hidden="true">·</span> Updated <FormattedDate date={updatedDate} /></>}</div>
+          </header>
+          {heroImage && <figure class="article-hero-image"><Image width={1200} height={600} src={heroImage} alt="" /></figure>}
+          <div class="article-prose prose"><slot /></div>
+        </article>
+        {sections.length > 1 && <aside class="article-toc" aria-label="In this article">
+          <strong>In this article</strong>
+          <nav><ul>{sections.map((section) => <li><a href={`#${section.slug}`}>{section.text}</a></li>)}</ul></nav>
+        </aside>}
+      </div>
+    </main>
+    <Footer />
+  </body>
 </html>
 
 <style is:global>
-	.article-page {
-		width: min(1320px, calc(100% - 56px));
-		margin: 0 auto;
-		padding: clamp(4.5rem, 9vw, 8.5rem) 0 4rem;
-	}
-	.article-header {
-		max-width: 1080px;
-		margin: 0 0 4rem clamp(0px, 12vw, 190px);
-	}
-	.article-header__eyebrow {
-		margin: 0 0 1.15rem;
-		color: var(--site-accent);
-		font-size: 0.76rem;
-		font-weight: 700;
-		letter-spacing: 0.13em;
-		text-transform: uppercase;
-	}
-	.article-header h1 {
-		max-width: 1050px;
-		margin: 0 0 1.6rem;
-		color: var(--site-blue);
-		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(3.7rem, 8vw, 8rem);
-		font-weight: 400;
-		letter-spacing: -0.06em;
-		line-height: 0.9;
-		text-wrap: balance;
-	}
-	.article-header__description {
-		max-width: 760px;
-		margin: 0 0 2rem;
-		color: var(--site-muted);
-		font-size: clamp(1.12rem, 1.8vw, 1.4rem);
-		line-height: 1.55;
-	}
-	.article-header__tags {
-		max-width: 760px;
-		margin: 0 0 1.4rem;
-		padding: 0;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
-		list-style: none;
-	}
-	.article-header__tags li {
-		padding: 0.3rem 0.55rem;
-		border: 1px solid var(--site-border);
-		color: var(--site-blue);
-		font-size: 0.72rem;
-		font-weight: 700;
-	}
-	.article-header__meta {
-		max-width: 760px;
-		padding-top: 1rem;
-		display: flex;
-		gap: 1.2rem;
-		border-top: 1px solid var(--site-border);
-		color: var(--site-muted);
-		font-size: 0.78rem;
-	}
-	.article-header__meta a {
-		margin-left: auto;
-		font-weight: 700;
-		text-underline-offset: 0.25em;
-	}
-	.article-hero-image {
-		max-width: 1100px;
-		margin: 0 0 4rem;
-	}
-	.article-hero-image img {
-		display: block;
-		width: 100%;
-		border: 1px solid var(--site-border);
-		border-radius: 0;
-	}
-	.article-prose {
-		width: min(760px, 100%);
-		margin-left: clamp(0px, 12vw, 190px);
-		color: var(--site-text);
-	}
-	.article-prose > :first-child { margin-top: 0; }
-	.article-prose p,
-	.article-prose li {
-		font-size: 1.08rem;
-		line-height: 1.78;
-	}
-	.article-prose h2 {
-		margin: 3.5rem 0 1.1rem;
-		color: var(--site-blue);
-		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(2rem, 4vw, 3rem);
-		font-weight: 400;
-		letter-spacing: -0.035em;
-	}
-	.article-prose h3 {
-		margin-top: 2.5rem;
-		font-size: 1.35rem;
-	}
-	.article-prose blockquote {
-		margin: 2.5rem 0;
-		padding: 0.4rem 0 0.4rem 1.5rem;
-		border-left: 3px solid var(--site-accent);
-		color: var(--site-blue);
-		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(1.45rem, 3vw, 2.1rem);
-		line-height: 1.35;
-	}
-	.article-prose code {
-		background: #e4ebee;
-	}
-	.article-prose pre {
-		padding: 1rem;
-		overflow-x: auto;
-		border-color: var(--site-border);
-		background: #102330;
-		color: #edf4f6;
-	}
-	.article-prose img {
-		display: block;
-		width: auto;
-		max-width: 100%;
-		margin: 2rem 0;
-		border: 1px solid var(--site-border);
-		border-radius: 0;
-	}
-	@media (max-width: 720px) {
-		.article-page {
-			width: min(100% - 28px, 1320px);
-			padding: 3.5rem 0 2rem;
-		}
-		.article-header { margin: 0 0 3rem; }
-		.article-header h1 { font-size: clamp(3.2rem, 16vw, 5rem); }
-		.article-header__meta { flex-wrap: wrap; }
-		.article-header__description,
-		.article-header__tags,
-		.article-header__meta { margin-left: 0; }
-		.article-header__meta a { width: 100%; margin-left: 0; }
-		.article-prose { margin-left: 0; }
-		.article-prose p,
-		.article-prose li { font-size: 1rem; }
-	}
+  .article-page { width: min(1120px, calc(100% - 64px)); margin: 0 auto; padding: 24px 0 32px; }
+  .article-layout { display: grid; grid-template-columns: minmax(0, 760px) minmax(0, 220px); gap: 40px; justify-content: center; align-items: start; }
+  .article-layout > article { min-width: 0; }
+  .article-header { margin: 0 0 16px; padding-bottom: 16px; border-bottom: 1px solid var(--site-border); }
+  .article-back { margin-bottom: 16px; font-size: 14px; }
+  .article-header h1 { margin: 0 0 8px; font-size: clamp(34px, 3.3vw, 44px); line-height: 1.13; }
+  .article-header__description { margin: 0 0 8px; color: var(--site-muted); font-size: 17px; line-height: 1.5; }
+  .article-header__meta { display: flex; flex-wrap: wrap; gap: 6px; color: var(--site-muted); font-size: 13px; }
+  .article-hero-image { margin: 0 0 20px; }
+  .article-hero-image img { display: block; width: 100%; height: auto; }
+  .article-prose { min-width: 0; color: var(--site-text); }
+  .article-prose > :first-child { margin-top: 0; }
+  .article-prose p, .article-prose li { font-size: 17px; line-height: 1.6; }
+  .article-prose p { margin: 0 0 13px; }
+  .article-prose ul, .article-prose ol { margin: 0 0 14px; padding-left: 24px; }
+  .article-prose li { margin-bottom: 4px; }
+  .article-prose h2 { margin: 32px 0 12px; font-size: 26px; scroll-margin-top: 24px; }
+  .article-prose h3 { margin: 24px 0 10px; font-size: 21px; scroll-margin-top: 24px; }
+  .article-prose hr { margin: 24px 0; border-color: var(--site-border); }
+  .article-prose blockquote { margin: 20px 0; padding: 4px 0 4px 16px; border-left: 3px solid var(--site-sage); color: var(--site-text); font-size: 17px; font-weight: 400; line-height: 1.6; }
+  .article-prose blockquote p { margin-bottom: 0; }
+  .article-prose pre { margin: 18px 0; padding: 16px; background: var(--site-code); color: var(--site-text); }
+  .article-prose :not(pre) > code { padding: 2px 4px; background: var(--site-code); }
+  .article-prose figure { margin: 20px 0 !important; }
+  .article-prose img { display: block; max-width: 100%; height: auto; margin: 0; border: 1px solid var(--site-border); }
+  .article-prose table { width: 100%; margin: 18px 0 20px; border-collapse: collapse; font-size: 15px; }
+  .article-prose th, .article-prose td { padding: 8px 12px; border: 1px solid var(--site-border); text-align: left; }
+  .article-prose thead { background: var(--site-code); }
+  .article-prose :is(td, th):not(:first-child) { text-align: right; }
+  .article-toc { position: sticky; top: 24px; margin-top: 80px; padding-left: 20px; border-left: 1px solid var(--site-border); font-size: 13px; }
+  .article-toc strong { display: block; margin: 0 0 12px; color: var(--site-text); font-size: 14px; }
+  .article-toc ul { margin: 0; padding: 0; list-style: none; }
+  .article-toc li { margin: 0 0 8px; }
+  .article-toc a { color: var(--site-muted); text-decoration: none; }
+  .article-toc a:hover, .article-toc a:focus-visible { color: var(--site-green); text-decoration: underline; }
+  @media (max-width: 900px) { .article-layout { grid-template-columns: minmax(0, 760px); } .article-toc { display: none; } }
+  @media (max-width: 720px) { .article-page { width: min(1120px, calc(100% - 40px)); padding-top: 24px; } .article-header h1 { font-size: 32px; } .article-header__description { font-size: 16px; } .article-prose p, .article-prose li { font-size: 16px; } .article-prose table { display: block; overflow-x: auto; white-space: nowrap; } }
 </style>

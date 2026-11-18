@@ -1,125 +1,53 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import CommercialDataRescuePreview from '../components/CommercialDataRescuePreview.astro';
-import ExperimentDecisionPreview from '../components/ExperimentDecisionPreview.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import PricingForecastPreview from '../components/PricingForecastPreview.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
-import '../styles/prototypes.css';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/home.css';
 
-function normalisePath(src) {
-	if (!src || typeof src !== 'string') return '#';
-	return src.startsWith('/') ? src : `/blog/${src.replace(/^\/+/, '')}`;
-}
-
-const allPosts = await getCollection('blog');
-const latestPost = allPosts
-	.filter((post) => !post.data?.draft)
-	.sort((a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf())[0];
+const posts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const featured = posts.find((post) => post.id === 'a-b-testing-is-a-decision-problem');
+const latest = posts.slice(0, 3);
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body class="prototype-body proto-editorial home-editorial" data-editorial-palette="blue">
-		<main class="editorial-page">
-			<header class="editorial-nav">
-				<a class="editorial-brand" href="/">Shan Islam</a>
-				<nav aria-label="Primary navigation">
-					<a href="/work/">Work</a>
-					<a href="/tools/experiment-decision-checker/">Tool</a>
-					<a href="/blog/">Writing</a>
-					<a href="/snippets/">Snippets</a>
-					<a href="/cv/">CV</a>
-				</nav>
-			</header>
+  <head>
+    <BaseHead title="Shan Islam | Data science, experiments and decisions" description="Shan Islam explores commercial data science, experimentation and machine learning through practical work, tools and writing." />
+  </head>
+  <body>
+    <Header />
+    <main class="page-shell home-page">
+      <section class="home-intro" aria-labelledby="home-title">
+        <h1 id="home-title">Hi, I’m Shan.</h1>
+        <p>I’m a data scientist interested in how evidence becomes decisions.</p>
+      </section>
 
-			<section class="editorial-hero" id="top">
-				<div class="editorial-hero__copy">
-					<p class="editorial-eyebrow">Lead Data Scientist · London</p>
-					<h1>Better commercial decisions, built from evidence.</h1>
-					<p class="editorial-deck">
-						I specialise in pricing, forecasting and experimentation—building practical models and decision systems for the moments where clarity matters.
-					</p>
-					<div class="editorial-actions">
-						<a class="editorial-button" href="/work/">Explore selected work</a>
-						<a class="editorial-text-link" href="/cv/">View CV <span aria-hidden="true">↗</span></a>
-					</div>
-				</div>
+      {featured && <section class="home-feature" aria-label="Featured article">
+        <a class="home-feature__image" href={`/blog/${featured.id}/`} aria-label={`Read ${featured.data.title}`}>
+          <img src="/images/ab-testing-decision-cover.webp" alt="A traveller pauses where two paths diverge through green and terracotta hills" width="1859" height="846" />
+        </a>
+        <div class="home-feature__copy">
+          <h2>{featured.data.title}</h2>
+          <p>{featured.data.description}</p>
+          <a class="text-link" href={`/blog/${featured.id}/`}>Read the article <span aria-hidden="true">→</span></a>
+        </div>
+      </section>}
 
-				<aside class="editorial-practice" aria-label="Areas of practice">
-					<p class="editorial-practice__label">Areas of practice</p>
-					<ol>
-						<li><span>01</span><strong>Pricing &amp; demand forecasting</strong></li>
-						<li><span>02</span><strong>Experimentation &amp; causal inference</strong></li>
-						<li><span>03</span><strong>Commercial decision systems</strong></li>
-					</ol>
-				</aside>
-			</section>
-
-			<div class="editorial-identity" aria-label="Identity and focus">
-				<span>Bangladeshi heritage</span>
-				<span>London perspective</span>
-				<span>Decision science</span>
-			</div>
-
-			<section class="editorial-work" aria-labelledby="editorial-work-title">
-				<header class="editorial-section-head">
-					<p>Selected work</p>
-					<h2 id="editorial-work-title">Work designed to change the next decision.</h2>
-				</header>
-				<div class="editorial-work-grid">
-					<a class="editorial-case" href="/work/marketplace-pricing-demand-forecasting/">
-						<span class="editorial-case__meta">Pricing &amp; forecasting · Case 01</span>
-						<div class="editorial-case__preview"><PricingForecastPreview /></div>
-						<h3>Marketplace pricing &amp; demand forecasting</h3>
-						<p>Using demand and capacity forecasts to decide when—and how much—to intervene on price.</p>
-						<span class="editorial-case__link">Read case study <span aria-hidden="true">→</span></span>
-					</a>
-					<a class="editorial-case" href="/work/experimentation-causal-decision-making/">
-						<span class="editorial-case__meta">Experimentation · Case 02</span>
-						<div class="editorial-case__preview"><ExperimentDecisionPreview /></div>
-						<h3>Experimentation &amp; causal decision making</h3>
-						<p>Designing experiments around commercial decisions, not statistical significance alone.</p>
-						<span class="editorial-case__link">Read case study <span aria-hidden="true">→</span></span>
-					</a>
-					<a class="editorial-case" href="/work/commercial-data-rescue/">
-						<span class="editorial-case__meta">Commercial analytics · Case 03</span>
-						<div class="editorial-case__preview"><CommercialDataRescuePreview /></div>
-						<h3>Commercial data rescue</h3>
-						<p>Turning fragmented signals into a shared diagnostic path.</p>
-						<span class="editorial-case__link">Read case study <span aria-hidden="true">→</span></span>
-					</a>
-				</div>
-			</section>
-
-			<section class="editorial-writing" aria-labelledby="editorial-writing-title">
-				<div>
-					<p class="editorial-writing__label">From the notebook</p>
-					<h2 id="editorial-writing-title">Thinking in public.</h2>
-				</div>
-				{latestPost ? (
-					<a href={normalisePath(latestPost.slug ?? latestPost.id ?? '')}>
-						<span><FormattedDate date={latestPost.data.pubDate} /></span>
-						<strong>{latestPost.data.title}</strong>
-						<span aria-hidden="true">↗</span>
-					</a>
-				) : (
-					<a href="/blog/">
-						<span>Notebook</span>
-						<strong>Read my writing</strong>
-						<span aria-hidden="true">↗</span>
-					</a>
-				)}
-			</section>
-
-			<footer class="editorial-footer">
-				<p>© 2026 Shan Islam · Lead Data Scientist</p>
-				<p>Bangladeshi roots, building in London.</p>
-			</footer>
-		</main>
-	</body>
+      <section class="home-latest" aria-labelledby="latest-title">
+        <h2 id="latest-title">Latest writing</h2>
+        <div class="editorial-list">
+          {latest.map((post) => <a class="editorial-row" href={`/blog/${post.id}/`}>
+            <strong>{post.data.title}</strong>
+            <span>{post.data.description}</span>
+            <span class="editorial-row__arrow" aria-hidden="true">→</span>
+          </a>)}
+        </div>
+        <p class="home-explore"><a class="text-link" href="/work/">Explore my work</a><span aria-hidden="true"> · </span><a class="text-link" href="/tools/experiment-decision-checker/">Try the tools <span aria-hidden="true">→</span></a></p>
+      </section>
+    </main>
+    <Footer />
+  </body>
 </html>

@@ -231,13 +231,6 @@ rather than presenting one impressive-looking sample size.
 
 A more sophisticated analysis could use time-to-event methods and make use of partially observed users rather than simply excluding them. But even the basic discipline of acknowledging maturity avoids a surprising amount of false confidence.
 
-<figure class="article-screenshot" style="margin: 2.5rem 0;">
-  <a href="https://shanislam.com/tools/experiment-decision-checker/" style="display: block; overflow-x: auto;">
-    <img src="/images/ab-test-sample-maturity-sequential.png" alt="Decision Suite showing Keep running, 71.0% sample maturity, a +1.00 percentage point effect, and an anytime-valid interval from -1.97 to +3.97 percentage points." loading="lazy" decoding="async" style="width: 100%; min-width: 680px; max-width: none; margin: 0;" />
-  </a>
-  <figcaption style="margin-top: 0.75rem; color: var(--site-muted); font-size: 0.9rem; font-style: italic; line-height: 1.55;">The same idea becomes much less reassuring once outcome maturity and repeated monitoring are included. The observed uplift is positive, but a large amount of uncertainty remains.</figcaption>
-</figure>
-
 ---
 
 ## There isn't even one statistical question
@@ -424,13 +417,6 @@ Or:
 
 **Something about this experiment needs investigating before we interpret anything.**
 
-<figure class="article-screenshot" style="margin: 2.5rem 0;">
-  <a href="https://shanislam.com/tools/experiment-decision-checker/" style="display: block; overflow-x: auto;">
-    <img src="/images/ab-test-commercial-rollout-decision.png" alt="Decision Suite showing Roll out treatment, a +1.00 percentage point effect, a fixed-horizon interval from +0.40 to +1.60 percentage points, and the commercial decision range." loading="lazy" decoding="async" style="width: 100%; min-width: 680px; max-width: none; margin: 0;" />
-  </a>
-  <figcaption style="margin-top: 0.75rem; color: var(--site-muted); font-size: 0.9rem; font-style: italic; line-height: 1.55;">When the entire plausible effect range clears the commercial threshold, the statistics and the decision finally line up. The important boundary isn't zero; it's the point at which the effect becomes worth acting on.</figcaption>
-</figure>
-
 ---
 
 ## Statistics doesn't remove the risk
@@ -461,7 +447,7 @@ The real job is to understand the uncertainty well enough to make a decision whi
 
 **Statistics cannot remove uncertainty. It helps us understand it well enough to choose which risk we're willing to take.**
 
-That's the idea behind the [Experiment Decision Checker](https://shanislam.com/tools/experiment-decision-checker/) I've been building: moving the conversation away from _“did the p-value turn green?”_ and towards validity, maturity, uncertainty and commercial consequences.
+The [Experiment Decision Checker](https://shanislam.com/tools/experiment-decision-checker/) offers a quick statistical readout for a binary A/B test. Its numbers are one part of the wider decision, which also depends on validity, maturity and commercial consequences.
 
 Because the point of an experiment was never the p-value.
 

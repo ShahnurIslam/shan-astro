@@ -6,6 +6,9 @@
 
 /* (removed duplicate :root block) */
 :root {
+	--font-heading: 'Inter Variable', 'Arial', sans-serif;
+	--font-body: 'Inter Variable', 'Arial', sans-serif;
+	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
 	/* Muted-blue editorial palette */
 	--site-bg: #f0f4f6;
 	--site-surface: #f8fafb;
@@ -30,7 +33,7 @@
 		0 16px 32px rgba(var(--gray), 33%);
 }
 body {
-	font-family: var(--font-atkinson);
+	font-family: var(--font-body);
 	margin: 0;
 	padding: 0;
 	text-align: left;
@@ -38,8 +41,8 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: var(--site-text);
-	font-size: 20px;
-	line-height: 1.7;
+	font-size: 18px;
+	line-height: 1.65;
 }
 /* Page shell: keep footer at bottom on short pages */
 html, body {
@@ -117,6 +120,8 @@ h5,
 h6 {
 	margin: 0 0 0.5rem 0;
 	color: rgb(var(--black));
+	font-family: var(--font-heading);
+	font-weight: 700;
 	line-height: 1.2;
 }
 h1 {
@@ -191,6 +196,13 @@ pre {
 }
 pre > code {
 	all: unset;
+}
+code,
+pre,
+pre code,
+kbd,
+samp {
+	font-family: var(--font-mono);
 }
 blockquote {
 	border-left: 4px solid var(--accent);
@@ -297,7 +309,7 @@ hr {
 	padding: 0.75rem;
 	border-radius: 6px;
 	overflow: auto;
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Noto Mono', monospace;
+	font-family: var(--font-mono);
 	font-size: 13px;
 	line-height: 1.4;
 	white-space: pre;
@@ -426,6 +438,7 @@ hr {
 .section-label {
 	margin: 0 0 0.55rem;
 	color: var(--site-accent);
+	font-family: var(--font-mono);
 	font-size: 0.78rem;
 	font-weight: 700;
 	letter-spacing: 0.09em;
@@ -611,22 +624,22 @@ body:not(.prototype-body) main {
 /* Selected work */
 .work-page {
 	width: min(1320px, calc(100% - 56px));
-	padding: clamp(5rem, 9vw, 9rem) 0 4rem;
+	padding: clamp(3.5rem, 6vw, 6rem) 0 4rem;
 }
 
 .work-intro {
 	max-width: 1080px;
-	margin-bottom: 5rem;
+	margin-bottom: 3.5rem;
 }
 
 .work-intro h1 {
 	max-width: 1050px;
 	margin-bottom: 1.8rem;
-	font-family: Georgia, 'Times New Roman', serif;
-	font-size: clamp(4.2rem, 8.2vw, 8rem);
-	font-weight: 400;
-	letter-spacing: -0.06em;
-	line-height: 0.9;
+	font-family: var(--font-heading);
+	font-size: clamp(2.8rem, 5.4vw, 4.75rem);
+	font-weight: 650;
+	letter-spacing: -0.045em;
+	line-height: 1.08;
 }
 
 .work-intro__lead {
@@ -654,22 +667,22 @@ body:not(.prototype-body) main {
 .blog-page {
 	width: min(1320px, calc(100% - 56px));
 	margin: 0 auto;
-	padding: clamp(5rem, 9vw, 9rem) 0 4rem;
+	padding: clamp(3.5rem, 6vw, 6rem) 0 4rem;
 }
 
 .blog-intro {
 	max-width: 1080px;
-	margin-bottom: clamp(4rem, 8vw, 7rem);
+	margin-bottom: clamp(3rem, 5vw, 4.5rem);
 }
 
 .blog-intro h1 {
 	max-width: 980px;
 	margin-bottom: 1.6rem;
-	font-family: Georgia, 'Times New Roman', serif;
-	font-size: clamp(4.2rem, 8.4vw, 8rem);
-	font-weight: 400;
-	letter-spacing: -0.06em;
-	line-height: 0.9;
+	font-family: var(--font-heading);
+	font-size: clamp(2.8rem, 5.4vw, 4.75rem);
+	font-weight: 650;
+	letter-spacing: -0.045em;
+	line-height: 1.08;
 }
 
 .blog-intro > p:not(.section-label):not(.blog-intro__count) {
@@ -708,7 +721,7 @@ body:not(.prototype-body) main {
 .blog-entry__number {
 	align-self: start;
 	color: var(--site-accent);
-	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: 0.72rem;
 	font-weight: 700;
 }
@@ -716,6 +729,7 @@ body:not(.prototype-body) main {
 .blog-entry__title > p {
 	margin: 0 0 0.7rem;
 	color: var(--site-accent);
+	font-family: var(--font-mono);
 	font-size: 0.72rem;
 	font-weight: 700;
 	letter-spacing: 0.08em;
@@ -728,11 +742,11 @@ body:not(.prototype-body) main {
 
 .blog-entry h2 {
 	margin: 0;
-	font-family: Georgia, 'Times New Roman', serif;
-	font-size: clamp(1.8rem, 3vw, 3rem);
-	font-weight: 400;
+	font-family: var(--font-heading);
+	font-size: clamp(1.5rem, 2.5vw, 2.35rem);
+	font-weight: 650;
 	letter-spacing: -0.04em;
-	line-height: 1.02;
+	line-height: 1.15;
 }
 
 .blog-entry__excerpt {
@@ -761,21 +775,21 @@ body:not(.prototype-body) main {
 	width: min(1180px, calc(100% - 56px));
 	max-width: none;
 	margin: 0 auto;
-	padding: clamp(5rem, 9vw, 9rem) 0 4rem;
+	padding: clamp(3.5rem, 6vw, 6rem) 0 4rem;
 }
 
 .snippets-intro {
 	max-width: 980px;
-	margin-bottom: 4rem;
+	margin-bottom: 3rem;
 }
 
 .snippets-page .snippets-intro h1 {
 	margin-bottom: 1.4rem;
-	font-family: Georgia, 'Times New Roman', serif;
-	font-size: clamp(4.2rem, 8vw, 7.5rem);
-	font-weight: 400;
-	letter-spacing: -0.06em;
-	line-height: 0.9;
+	font-family: var(--font-heading);
+	font-size: clamp(2.8rem, 5.4vw, 4.75rem);
+	font-weight: 650;
+	letter-spacing: -0.045em;
+	line-height: 1.08;
 }
 
 .snippets-page .snippets-intro > p:last-child {
@@ -812,6 +826,7 @@ body:not(.prototype-body) main {
 	display: block;
 	margin-bottom: 0.8rem;
 	color: var(--site-accent);
+	font-family: var(--font-mono);
 	font-size: 0.72rem;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
@@ -869,15 +884,15 @@ body:not(.prototype-body) main {
 
 .snippet-section__header h2 {
 	margin: 0;
-	font-family: Georgia, 'Times New Roman', serif;
-	font-size: clamp(2.5rem, 5vw, 4.2rem);
-	font-weight: 400;
+	font-family: var(--font-heading);
+	font-size: clamp(2rem, 3.5vw, 3rem);
+	font-weight: 650;
 	letter-spacing: -0.045em;
 }
 
 .snippet-section__header > span {
 	color: var(--site-muted);
-	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: 0.68rem;
 	text-transform: uppercase;
 }
@@ -898,7 +913,7 @@ body:not(.prototype-body) main {
 .snippet-subsection > h3 span {
 	margin-left: 0.35rem;
 	color: var(--site-muted);
-	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-family: var(--font-mono);
 }
 
 .snippet-stack {
@@ -968,6 +983,7 @@ body:not(.prototype-body) main {
 	display: block;
 	margin: 2rem 0 0.45rem;
 	font-size: 0.76rem;
+	font-family: var(--font-mono);
 	font-weight: 700;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -1032,20 +1048,20 @@ body:not(.prototype-body) main {
 	width: min(1320px, calc(100% - 56px));
 	max-width: none;
 	margin: 0 auto;
-	padding: clamp(5rem, 9vw, 9rem) 0 4rem;
+	padding: clamp(3.5rem, 6vw, 6rem) 0 4rem;
 }
 
 .cv-intro {
-	margin-bottom: 4rem;
+	margin-bottom: 3rem;
 }
 
 .cv-page .cv-intro h1 {
 	margin-bottom: 2rem;
-	font-family: Georgia, 'Times New Roman', serif;
-	font-size: clamp(4.2rem, 9vw, 8.5rem);
-	font-weight: 400;
-	letter-spacing: -0.06em;
-	line-height: 0.88;
+	font-family: var(--font-heading);
+	font-size: clamp(2.8rem, 5.4vw, 4.75rem);
+	font-weight: 650;
+	letter-spacing: -0.045em;
+	line-height: 1.08;
 }
 
 .cv-intro__lower {
@@ -1149,7 +1165,7 @@ body:not(.prototype-body) main {
 	.blog-intro h1,
 	.snippets-page .snippets-intro h1,
 	.cv-page .cv-intro h1 {
-		font-size: clamp(3.3rem, 16vw, 5rem);
+		font-size: clamp(2.3rem, 9vw, 3.25rem);
 	}
 	.blog-entry {
 		min-height: 160px;

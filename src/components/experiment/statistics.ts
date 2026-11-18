@@ -25,13 +25,16 @@ export type OutcomeWindow =
   "session" | "1-day" | "3-day" | "7-day" | "14-day" | "custom";
 export type DecisionLabel =
   | "Decision incomplete"
-  | "Roll out treatment"
-  | "Keep running"
+  | "Primary metric supports rollout"
+  | "Primary metric clears supplied threshold"
+  | "Evidence unresolved"
+  | "Effect falls within supplied thresholds"
+  | "Investigate possible harm"
   | "Stop treatment"
   | "Conclude no material effect"
   | "Investigate before deciding";
 export type DecisionTone =
-  "incomplete" | "rollout" | "running" | "stop" | "neutral" | "investigate";
+  "incomplete" | "rollout" | "unresolved" | "stop" | "neutral" | "investigate";
 
 export interface ExperimentInput {
   experimentName?: string;
@@ -51,6 +54,7 @@ export interface ExperimentInput {
   expectedTreatmentShare: number;
   minimumWorthwhileGainPp: number | null;
   maximumTolerableLossPp: number | null;
+  thresholdsPreSpecified: TriState;
 }
 
 export interface Warning {
@@ -81,6 +85,7 @@ export interface AnalysisResult {
   treatmentRate: number | null;
   absoluteEffect: number | null;
   relativeUplift: number | null;
+  relativeInterval: { lower: number; upper: number } | null;
   interval: Interval;
   pValue: number | null;
   hypothesisMethod:
@@ -108,6 +113,8 @@ export interface AnalysisResult {
     complete: boolean;
     harmBoundary: number | null;
     benefitBoundary: number | null;
+    provenance: TriState;
+    interpretation: "pre-specified" | "retrospective" | "uncertain";
   };
   integrity: Array<{
     label: string;
@@ -131,6 +138,36 @@ export class InputValidationError extends Error {
     this.name = "InputValidationError";
     this.fieldErrors = fieldErrors;
   }
+}
+
+/**
+ * Safe defaults for browser-agent calls. Missing design information remains
+ * unknown rather than inheriting the optimistic values used by a UI example.
+ */
+export function normaliseProgrammaticExperimentInput(
+  values: Partial<ExperimentInput>,
+): ExperimentInput {
+  return {
+    experimentName: "",
+    metricPreSpecified: "unsure",
+    randomAssignment: "unsure",
+    analysisUnitMatches: "unsure",
+    interference: "unsure",
+    monitoringMode: "continuous",
+    outcomeWindow: "custom",
+    customOutcomeWindow: "Unspecified outcome window",
+    controlAssigned: Number.NaN,
+    controlMature: Number.NaN,
+    controlConversions: Number.NaN,
+    treatmentAssigned: Number.NaN,
+    treatmentMature: Number.NaN,
+    treatmentConversions: Number.NaN,
+    expectedTreatmentShare: Number.NaN,
+    minimumWorthwhileGainPp: null,
+    maximumTolerableLossPp: null,
+    thresholdsPreSpecified: "unsure",
+    ...values,
+  };
 }
 
 const Z_95 = 1.959963984540054;
@@ -296,6 +333,41 @@ export function wilsonInterval(successes: number, total: number, z = Z_95) {
   };
 }
 
+/** 95% log risk-ratio interval, expressed as relative uplift. */
+export function relativeUpliftInterval(
+  controlSuccesses: number,
+  controlTotal: number,
+  treatmentSuccesses: number,
+  treatmentTotal: number,
+) {
+  if (controlSuccesses === 0 || controlTotal === 0 || treatmentTotal === 0)
+    return null;
+  if (treatmentSuccesses === 0) {
+    // The log ratio is undefined at zero. Wilson bounds retain the -100%
+    // boundary and give a finite conservative upper bound.
+    const control = wilsonInterval(
+      controlSuccesses,
+      controlTotal,
+      2.241402727604947,
+    );
+    const treatment = wilsonInterval(0, treatmentTotal, 2.241402727604947);
+    return { lower: -1, upper: treatment.upper / control.lower - 1 };
+  }
+  const logRatio = Math.log(
+    treatmentSuccesses / treatmentTotal / (controlSuccesses / controlTotal),
+  );
+  const standardError = Math.sqrt(
+    1 / treatmentSuccesses -
+      1 / treatmentTotal +
+      1 / controlSuccesses -
+      1 / controlTotal,
+  );
+  return {
+    lower: Math.exp(logRatio - Z_95 * standardError) - 1,
+    upper: Math.exp(logRatio + Z_95 * standardError) - 1,
+  };
+}
+
 /**
  * Newcombe (1998) hybrid-score interval, method 10, without continuity
  * correction, for treatment proportion minus control proportion.
@@ -305,12 +377,17 @@ export function newcombeDifferenceInterval(
   controlTotal: number,
   treatmentSuccesses: number,
   treatmentTotal: number,
+  z = Z_95,
 ) {
   const controlRate = controlSuccesses / controlTotal;
   const treatmentRate = treatmentSuccesses / treatmentTotal;
   const difference = treatmentRate - controlRate;
-  const controlWilson = wilsonInterval(controlSuccesses, controlTotal);
-  const treatmentWilson = wilsonInterval(treatmentSuccesses, treatmentTotal);
+  const controlWilson = wilsonInterval(controlSuccesses, controlTotal, z);
+  const treatmentWilson = wilsonInterval(
+    treatmentSuccesses,
+    treatmentTotal,
+    z,
+  );
   const lower =
     difference -
     Math.sqrt(
@@ -332,7 +409,7 @@ export function newcombeDifferenceInterval(
   };
 }
 
-function twoProportionTest(
+export function twoProportionTest(
   controlSuccesses: number,
   controlTotal: number,
   treatmentSuccesses: number,
@@ -579,7 +656,7 @@ function validateInput(input: ExperimentInput) {
   if (Object.keys(errors).length > 0) throw new InputValidationError(errors);
 }
 
-function allocationCheck(
+export function allocationCheck(
   controlAssigned: number,
   treatmentAssigned: number,
   expectedTreatmentShare: number,
@@ -693,6 +770,16 @@ function integritySummary(input: ExperimentInput, srmPassed: boolean) {
         ? "Assigned traffic is compatible with the expected allocation."
         : "Observed assignment is unlikely under the expected randomisation ratio.",
     },
+    {
+      label: "Commercial thresholds chosen in advance",
+      status: input.thresholdsPreSpecified === "yes" ? "pass" : "warn",
+      detail:
+        input.thresholdsPreSpecified === "yes"
+          ? "The supplied boundaries are treated as pre-specified decision assumptions."
+          : input.thresholdsPreSpecified === "no"
+            ? "The boundaries were supplied after inspecting the result, so the commercial interpretation is retrospective."
+            : "It is unclear whether the boundaries were chosen before the result was inspected.",
+    },
   ] as AnalysisResult["integrity"];
 }
 
@@ -716,13 +803,13 @@ function makeDecision(
   maturity: AnalysisResult["maturity"],
   srmPassed: boolean,
 ): AnalysisResult["decision"] {
-  const blockers = [
+  const hardBlockers = [
     input.randomAssignment === "no",
     input.analysisUnitMatches === "no",
     input.interference === "yes",
     !srmPassed,
   ];
-  if (blockers.some(Boolean)) {
+  if (hardBlockers.some(Boolean)) {
     return {
       label: "Investigate before deciding",
       tone: "investigate",
@@ -731,6 +818,75 @@ function makeDecision(
       detail:
         "Resolve the failed integrity checks before using this readout for rollout or stopping decisions.",
     };
+  }
+
+  if (maturity.imbalance) {
+    return {
+      label: "Investigate before deciding",
+      tone: "investigate",
+      reason:
+        "Outcome maturity differs materially between variants, so the comparison may not be like-for-like.",
+      detail:
+        "The existing maturity diagnostic requires both a difference of at least 5 percentage points and p < 0.01. Treat it as a conservative screening flag: check enrolment timing, ramps, filtering and instrumentation before using the effect for rollout or stopping.",
+    };
+  }
+
+  const unresolvedValidity = [
+    input.randomAssignment === "unsure" ? "random assignment" : null,
+    input.analysisUnitMatches === "unsure" ? "analysis unit" : null,
+    input.interference === "unsure" ? "cross-group interference" : null,
+  ].filter((value): value is string => value !== null);
+  if (unresolvedValidity.length > 0) {
+    return {
+      label: "Decision incomplete",
+      tone: "incomplete",
+      reason:
+        "A fundamental validity assumption has not been confirmed, so the apparent effect cannot support an unqualified action.",
+      detail: `Resolve the ${unresolvedValidity.join(
+        ", ",
+      )} before using this comparison for rollout or stopping. The statistical readout remains visible, but its causal interpretation is uncertain.`,
+    };
+  }
+
+  const showsStatisticalHarm = absoluteEffect !== null && interval.upper < 0;
+  if (input.metricPreSpecified === "no") {
+    return showsStatisticalHarm
+      ? {
+          label: "Investigate possible harm",
+          tone: "investigate",
+          reason:
+            "This exploratory metric shows a clear negative signal, even though it was selected after the results were seen.",
+          detail:
+            "Do not treat the result as confirmatory causal proof, but do not hide the possible harm. Investigate the metric, exposure and wider evidence before further rollout or continued exposure.",
+        }
+      : {
+          label: "Decision incomplete",
+          tone: "incomplete",
+          reason:
+            "This metric was selected after the results were seen, so the evidence is exploratory.",
+          detail:
+            "Use the pattern to form a hypothesis and confirm it with a fresh pre-specified experiment before making a strong rollout claim.",
+        };
+  }
+
+  if (input.metricPreSpecified === "unsure") {
+    return showsStatisticalHarm
+      ? {
+          label: "Investigate possible harm",
+          tone: "investigate",
+          reason:
+            "The metric's status is unclear and the observed interval indicates a negative signal.",
+          detail:
+            "Confirm whether the metric was selected before results were reviewed, and investigate the possible harm before further rollout or continued exposure.",
+        }
+      : {
+          label: "Decision incomplete",
+          tone: "incomplete",
+          reason:
+            "It is unclear whether this metric was chosen before the results were reviewed.",
+          detail:
+            "Confirm the metric's status before treating this as confirmatory evidence for rollout or stopping.",
+        };
   }
 
   const missingThresholds = [
@@ -747,44 +903,56 @@ function makeDecision(
           : "The statistical readout is available, but the commercial decision boundaries are not fully defined.",
       detail: `Add the ${missingThresholds.join(
         " and ",
-      )}. Both thresholds are required for Roll out, Keep running, Stop or No material effect recommendations.`,
+      )}. Both thresholds are required to interpret the interval against the user's commercial judgement.`,
     };
   }
 
   if (absoluteEffect === null) {
     return {
-      label: "Keep running",
-      tone: "running",
+      label: "Evidence unresolved",
+      tone: "unresolved",
       reason: "There are not yet mature observations in both variants.",
       detail:
-        "Wait for users to complete the outcome window; pending users are not extrapolated.",
-    };
-  }
-
-  if (input.metricPreSpecified === "no") {
-    return {
-      label: "Keep running",
-      tone: "running",
-      reason:
-        "This metric was selected after the results were seen, so the evidence is exploratory.",
-      detail:
-        "Use the pattern to form a hypothesis, then confirm it with a fresh pre-specified experiment before a strong rollout or stop decision.",
+        "Wait for already-assigned users to complete the outcome window before interpreting the effect. Pending users are not extrapolated; this is not a recommendation to enrol additional traffic.",
     };
   }
 
   const benefit = input.minimumWorthwhileGainPp! / 100;
   const harm = input.maximumTolerableLossPp! / 100;
+  const thresholdsArePreSpecified = input.thresholdsPreSpecified === "yes";
+  const thresholdQualification =
+    input.thresholdsPreSpecified === "no"
+      ? "These boundaries were supplied after the result was inspected, so the commercial interpretation is retrospective and may have been influenced by the observed effect."
+      : "It is unclear whether these boundaries were chosen before the result was inspected, so treat the commercial interpretation as retrospective and provisional.";
   if (interval.lower > benefit) {
+    if (!thresholdsArePreSpecified) {
+      return {
+        label: "Primary metric clears supplied threshold",
+        tone: "incomplete",
+        reason:
+          "The interval is above the worthwhile-gain boundary supplied by the user, but that boundary was not confirmed in advance.",
+        detail: `${thresholdQualification} Guardrails and wider business effects have not been evaluated.`,
+      };
+    }
     return {
-      label: "Roll out treatment",
+      label: "Primary metric supports rollout",
       tone: "rollout",
       reason:
         "The remaining plausible effects are all above your minimum worthwhile gain.",
       detail:
-        "Evidence supports rollout under the commercial thresholds you supplied. Continue to consider operational and guardrail context outside this binary metric.",
+        "This conclusion covers this binary primary metric only. Guardrails and wider business effects have not been evaluated.",
     };
   }
   if (interval.upper < -harm) {
+    if (!thresholdsArePreSpecified) {
+      return {
+        label: "Investigate possible harm",
+        tone: "investigate",
+        reason:
+          "The interval is worse than the supplied unacceptable-loss boundary, but that boundary was not confirmed in advance.",
+        detail: `${thresholdQualification} The negative signal should still be investigated before further rollout or continued exposure.`,
+      };
+    }
     return {
       label: "Stop treatment",
       tone: "stop",
@@ -795,6 +963,15 @@ function makeDecision(
     };
   }
   if (interval.lower >= -harm && interval.upper <= benefit) {
+    if (!thresholdsArePreSpecified) {
+      return {
+        label: "Effect falls within supplied thresholds",
+        tone: "neutral",
+        reason:
+          "The interval sits inside the supplied commercial indifference region, but those boundaries were not confirmed in advance.",
+        detail: `${thresholdQualification} This does not establish that the true effect is zero.`,
+      };
+    }
     return {
       label: "Conclude no material effect",
       tone: "neutral",
@@ -813,13 +990,13 @@ function makeDecision(
         ? "The treatment is concerning, but uncertainty still crosses a decision boundary."
         : "The current interval still spans more than one commercial decision region.";
   return {
-    label: "Keep running",
-    tone: "running",
+    label: "Evidence unresolved",
+    tone: "unresolved",
     reason: direction,
     detail:
       pendingShare >= PENDING_COMMUNICATION_SHARE
-        ? "A substantial share of assigned users is still pending. Later mature cohorts can change the aggregate readout, and no pending conversions are extrapolated."
-        : "More mature outcome data is needed to distinguish worthwhile gain, acceptable outcomes and unacceptable harm.",
+        ? "A substantial share of already-assigned users is still pending. Waiting for those outcomes may change the readout, but this tool cannot determine whether enrolling more traffic is worthwhile."
+        : "Additional data might narrow the interval, but this tool does not know the available traffic, maximum sample, deadline or cost of waiting, so it cannot recommend continuing the experiment.",
   };
 }
 
@@ -847,6 +1024,15 @@ export function analyseExperiment(input: ExperimentInput): AnalysisResult {
     absoluteEffect === null || controlRate === null || controlRate === 0
       ? null
       : absoluteEffect / controlRate;
+  const relativeInterval =
+    !hasMatureData || input.monitoringMode !== "fixed"
+      ? null
+      : relativeUpliftInterval(
+          input.controlConversions,
+          input.controlMature,
+          input.treatmentConversions,
+          input.treatmentMature,
+        );
 
   let interval: Interval;
   let pValue: number | null = null;
@@ -997,7 +1183,7 @@ export function analyseExperiment(input: ExperimentInput): AnalysisResult {
       title: "Maturity differs materially by variant",
       detail:
         "The mature shares differ by at least 5 percentage points and the allocation comparison has p < 0.01. Check enrolment timing, ramps, filtering and instrumentation; do not automatically attribute this to treatment.",
-      severity: "caution",
+      severity: "blocker",
     });
   }
   if (
@@ -1040,6 +1226,32 @@ export function analyseExperiment(input: ExperimentInput): AnalysisResult {
       severity: "note",
     });
   }
+  if (thresholdsComplete && input.thresholdsPreSpecified === "no") {
+    warnings.push({
+      title: "Retrospective commercial thresholds",
+      detail:
+        "These decision boundaries were supplied after the result was inspected. The statistical interval is unchanged, but the commercial interpretation may have been influenced by the observed effect.",
+      severity: "caution",
+    });
+  } else if (thresholdsComplete && input.thresholdsPreSpecified === "unsure") {
+    warnings.push({
+      title: "Threshold timing is unclear",
+      detail:
+        "Treat the commercial interpretation as provisional because it is not known whether the decision boundaries were chosen before inspecting the result.",
+      severity: "caution",
+    });
+  }
+  if (
+    decision.label === "Primary metric supports rollout" ||
+    decision.label === "Primary metric clears supplied threshold"
+  ) {
+    warnings.push({
+      title: "Guardrails not evaluated",
+      detail:
+        "This tool assessed one binary primary metric only. It did not evaluate customer, operational, financial or other business guardrails.",
+      severity: "caution",
+    });
+  }
 
   return {
     experimentName: input.experimentName?.trim() ?? "",
@@ -1049,6 +1261,7 @@ export function analyseExperiment(input: ExperimentInput): AnalysisResult {
     treatmentRate,
     absoluteEffect,
     relativeUplift,
+    relativeInterval,
     interval,
     pValue,
     hypothesisMethod,
@@ -1065,6 +1278,13 @@ export function analyseExperiment(input: ExperimentInput): AnalysisResult {
         input.minimumWorthwhileGainPp === null
           ? null
           : input.minimumWorthwhileGainPp / 100,
+      provenance: input.thresholdsPreSpecified,
+      interpretation:
+        input.thresholdsPreSpecified === "yes"
+          ? "pre-specified"
+          : input.thresholdsPreSpecified === "no"
+            ? "retrospective"
+            : "uncertain",
     },
     integrity,
     decision,

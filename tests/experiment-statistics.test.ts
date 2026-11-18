@@ -8,6 +8,7 @@ import {
   fisherExactTwoSided,
   InputValidationError,
   newcombeDifferenceInterval,
+  normaliseProgrammaticExperimentInput,
   type ExperimentInput,
 } from "../src/components/experiment/statistics.ts";
 
@@ -28,11 +29,12 @@ const base: ExperimentInput = {
   expectedTreatmentShare: 0.5,
   minimumWorthwhileGainPp: 0.5,
   maximumTolerableLossPp: 0.25,
+  thresholdsPreSpecified: "yes",
 };
 
 void test("1. clear fixed-horizon benefit supports rollout", () => {
   const result = analyseExperiment(base);
-  assert.equal(result.decision.label, "Roll out treatment");
+  assert.equal(result.decision.label, "Primary metric supports rollout");
   assert.ok(result.interval.lower > 0.005);
 });
 
@@ -46,7 +48,7 @@ void test("2. clear harmful effect supports stopping treatment", () => {
   assert.ok(result.interval.upper < -0.0025);
 });
 
-void test("3. interval spanning decision regions keeps running", () => {
+void test("3. interval spanning decision regions remains unresolved", () => {
   const result = analyseExperiment({
     ...base,
     controlAssigned: 1000,
@@ -56,7 +58,7 @@ void test("3. interval spanning decision regions keeps running", () => {
     treatmentMature: 1000,
     treatmentConversions: 105,
   });
-  assert.equal(result.decision.label, "Keep running");
+  assert.equal(result.decision.label, "Evidence unresolved");
   assert.ok(result.interval.lower < -0.0025);
   assert.ok(result.interval.upper > 0.005);
 });
@@ -109,7 +111,7 @@ void test("8. cross-group interference blocks a decision", () => {
 void test("9. post-hoc primary metric is exploratory without strong recommendation", () => {
   const result = analyseExperiment({ ...base, metricPreSpecified: "no" });
   assert.equal(result.evidenceType, "exploratory");
-  assert.equal(result.decision.label, "Keep running");
+  assert.equal(result.decision.label, "Decision incomplete");
   assert.ok(
     result.warnings.some((warning) => warning.title === "Exploratory evidence"),
   );
@@ -278,4 +280,176 @@ void test("22. materially different maturity proportions trigger a diagnostic", 
       (warning) => warning.title === "Maturity differs materially by variant",
     ),
   );
+});
+
+void test("23. unresolved fundamental integrity assumptions block a positive action", () => {
+  for (const field of [
+    "randomAssignment",
+    "analysisUnitMatches",
+    "interference",
+    "metricPreSpecified",
+  ] as const) {
+    const result = analyseExperiment({ ...base, [field]: "unsure" });
+    assert.equal(result.decision.label, "Decision incomplete", field);
+    assert.notEqual(result.decision.label, "Primary metric supports rollout");
+  }
+});
+
+void test("24. serious differential maturity blocks apparently positive and harmful actions", () => {
+  for (const treatmentConversions of [6000, 4000]) {
+    const result = analyseExperiment({
+      ...base,
+      controlMature: 100000,
+      controlConversions: 10000,
+      treatmentMature: 50000,
+      treatmentConversions,
+    });
+    assert.equal(result.maturity.imbalance, true);
+    assert.equal(result.decision.label, "Investigate before deciding");
+    assert.ok(
+      result.warnings.some(
+        (warning) =>
+          warning.title === "Maturity differs materially by variant" &&
+          warning.severity === "blocker",
+      ),
+    );
+  }
+});
+
+void test("25. a clearly harmful post-hoc metric surfaces possible harm", () => {
+  const result = analyseExperiment({
+    ...base,
+    metricPreSpecified: "no",
+    controlConversions: 12000,
+    treatmentConversions: 8000,
+  });
+  assert.equal(result.evidenceType, "exploratory");
+  assert.equal(result.decision.label, "Investigate possible harm");
+  assert.match(result.decision.reason, /exploratory.*negative signal/i);
+});
+
+void test("26. an ordinary unresolved interval does not recommend more traffic", () => {
+  const result = analyseExperiment({
+    ...base,
+    controlAssigned: 1000,
+    controlMature: 1000,
+    controlConversions: 100,
+    treatmentAssigned: 1000,
+    treatmentMature: 1000,
+    treatmentConversions: 105,
+  });
+  assert.equal(result.decision.label, "Evidence unresolved");
+  assert.match(result.decision.detail, /cannot recommend continuing/i);
+});
+
+void test("27. a positive primary result states that guardrails were not evaluated", () => {
+  const result = analyseExperiment(base);
+  assert.equal(result.decision.label, "Primary metric supports rollout");
+  assert.match(result.decision.detail, /guardrails.*not been evaluated/i);
+  assert.ok(
+    result.warnings.some(
+      (warning) => warning.title === "Guardrails not evaluated",
+    ),
+  );
+});
+
+void test("28. retrospective or uncertain thresholds qualify rather than block the analysis", () => {
+  const retrospective = analyseExperiment({
+    ...base,
+    thresholdsPreSpecified: "no",
+  });
+  assert.equal(
+    retrospective.decision.label,
+    "Primary metric clears supplied threshold",
+  );
+  assert.equal(retrospective.thresholds.interpretation, "retrospective");
+  assert.ok(
+    retrospective.warnings.some(
+      (warning) => warning.title === "Retrospective commercial thresholds",
+    ),
+  );
+
+  const uncertain = analyseExperiment({
+    ...base,
+    thresholdsPreSpecified: "unsure",
+  });
+  assert.equal(
+    uncertain.decision.label,
+    "Primary metric clears supplied threshold",
+  );
+  assert.equal(uncertain.thresholds.interpretation, "uncertain");
+  assert.ok(
+    uncertain.warnings.some(
+      (warning) => warning.title === "Threshold timing is unclear",
+    ),
+  );
+});
+
+void test("29. missing programmatic integrity fields remain unknown", () => {
+  const input = normaliseProgrammaticExperimentInput({
+    monitoringMode: "fixed",
+    outcomeWindow: "session",
+    controlAssigned: 100000,
+    controlMature: 100000,
+    controlConversions: 10000,
+    treatmentAssigned: 100000,
+    treatmentMature: 100000,
+    treatmentConversions: 12000,
+    expectedTreatmentShare: 0.5,
+    minimumWorthwhileGainPp: 0.5,
+    maximumTolerableLossPp: 0.25,
+  });
+  assert.equal(input.randomAssignment, "unsure");
+  assert.equal(input.analysisUnitMatches, "unsure");
+  assert.equal(input.interference, "unsure");
+  assert.equal(input.metricPreSpecified, "unsure");
+  assert.equal(input.thresholdsPreSpecified, "unsure");
+  assert.equal(analyseExperiment(input).decision.label, "Decision incomplete");
+});
+
+void test("30. missing programmatic allocation is not manufactured as 50/50", () => {
+  const input = normaliseProgrammaticExperimentInput({
+    controlAssigned: 100,
+    controlMature: 100,
+    controlConversions: 10,
+    treatmentAssigned: 100,
+    treatmentMature: 100,
+    treatmentConversions: 12,
+  });
+  assert.ok(Number.isNaN(input.expectedTreatmentShare));
+  assert.throws(
+    () => analyseExperiment(input),
+    (error: unknown) =>
+      error instanceof InputValidationError &&
+      Boolean(error.fieldErrors.expectedTreatmentShare),
+  );
+});
+
+void test("31. retrospective thresholds qualify harm and no-material-effect interpretations", () => {
+  const harm = analyseExperiment({
+    ...base,
+    thresholdsPreSpecified: "no",
+    controlConversions: 12000,
+    treatmentConversions: 10000,
+  });
+  assert.equal(harm.decision.label, "Investigate possible harm");
+  assert.match(harm.decision.detail, /retrospective/i);
+
+  const immaterial = analyseExperiment({
+    ...base,
+    thresholdsPreSpecified: "no",
+    controlAssigned: 1000000,
+    controlMature: 1000000,
+    controlConversions: 100000,
+    treatmentAssigned: 1000000,
+    treatmentMature: 1000000,
+    treatmentConversions: 100100,
+    minimumWorthwhileGainPp: 0.5,
+    maximumTolerableLossPp: 0.5,
+  });
+  assert.equal(
+    immaterial.decision.label,
+    "Effect falls within supplied thresholds",
+  );
+  assert.match(immaterial.decision.detail, /retrospective/i);
 });

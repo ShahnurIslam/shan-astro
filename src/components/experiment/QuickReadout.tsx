@@ -61,10 +61,10 @@ type CountField =
 function toExperimentInput(input: QuickInput): ExperimentInput {
   return {
     experimentName: input.experimentName,
-    metricPreSpecified: "yes",
-    randomAssignment: "yes",
-    analysisUnitMatches: "yes",
-    interference: "no",
+    metricPreSpecified: "unsure",
+    randomAssignment: "unsure",
+    analysisUnitMatches: "unsure",
+    interference: "unsure",
     monitoringMode: "fixed",
     outcomeWindow: "session",
     controlAssigned: input.controlVisitors,
@@ -76,6 +76,7 @@ function toExperimentInput(input: QuickInput): ExperimentInput {
     expectedTreatmentShare: input.expectedTreatmentShare,
     minimumWorthwhileGainPp: null,
     maximumTolerableLossPp: null,
+    thresholdsPreSpecified: "unsure",
   };
 }
 
@@ -105,7 +106,7 @@ function quickConclusion(result: AnalysisResult) {
     return {
       label: "Evidence treatment is ahead",
       detail:
-        "The 95% interval excludes no effect. Use the decision suite before making a rollout call.",
+        "The 95% interval excludes no effect. Check the experiment design and practical impact before making a rollout call.",
       tone: "positive",
       icon: ArrowUpRight,
     } as const;
@@ -114,7 +115,7 @@ function quickConclusion(result: AnalysisResult) {
     return {
       label: "Evidence treatment is behind",
       detail:
-        "The 95% interval excludes no effect. Use the decision suite before making a stop call.",
+        "The 95% interval excludes no effect. Check the experiment design and practical impact before making a stop call.",
       tone: "negative",
       icon: ArrowDownRight,
     } as const;
@@ -128,14 +129,9 @@ function quickConclusion(result: AnalysisResult) {
   } as const;
 }
 
-function Readout({
-  result,
-  stale,
-  onOpenSuite,
-}: {
+function Readout({ result, stale }: {
   result: AnalysisResult;
   stale: boolean;
-  onOpenSuite: () => void;
 }) {
   const conclusion = quickConclusion(result);
   const ConclusionIcon = conclusion.icon;
@@ -212,7 +208,13 @@ function Readout({
             {signedPoints(result.interval.lower)} to{" "}
             {signedPoints(result.interval.upper)}
           </dd>
-          <span>Newcombe score interval</span>
+          <span>Absolute uplift · Newcombe score interval</span>
+          <dd className="quick-diagnostics__relative">
+            {result.relativeInterval
+              ? `${signedPercent(result.relativeInterval.lower)} to ${signedPercent(result.relativeInterval.upper)}`
+              : "Not available"}
+          </dd>
+          <span>Relative uplift · risk ratio interval</span>
         </div>
         <div>
           <dt>Two-sided p-value</dt>
@@ -228,26 +230,11 @@ function Readout({
           <span>SRM p-value {formatPValue(result.srm.pValue)}</span>
         </div>
       </dl>
-
-      <button className="suite-cta" type="button" onClick={onOpenSuite}>
-        <div>
-          <strong>Need an action recommendation?</strong>
-          <span>
-            Add design integrity, maturity, monitoring and commercial
-            thresholds.
-          </span>
-        </div>
-        <ArrowRight aria-hidden="true" />
-      </button>
     </section>
   );
 }
 
-export default function QuickReadout({
-  onOpenSuite,
-}: {
-  onOpenSuite: () => void;
-}) {
+export default function QuickReadout() {
   const [input, setInput] = useState(DEFAULT_INPUT);
   const [analysedInput, setAnalysedInput] = useState(DEFAULT_INPUT);
   const [result, setResult] = useState(() =>
@@ -303,9 +290,13 @@ export default function QuickReadout({
             conclusion: quickConclusion(nextResult).label,
             absoluteUplift: nextResult.absoluteEffect,
             relativeUplift: nextResult.relativeUplift,
+            relativeInterval: nextResult.relativeInterval,
             interval: nextResult.interval,
             pValue: nextResult.pValue,
             srmPassed: nextResult.srm.passed,
+            designIntegrityEvaluated: false,
+            scope:
+              "Statistical signal only; randomisation, analysis unit, interference, maturity and commercial guardrails were not evaluated.",
           };
         },
       },
@@ -496,7 +487,7 @@ export default function QuickReadout({
             </Button>
           </form>
         </section>
-        <Readout result={result} stale={isStale} onOpenSuite={onOpenSuite} />
+        <Readout result={result} stale={isStale} />
       </div>
       <footer className="product-footer">
         <p>Fixed-horizon statistical readout · 95% confidence level</p>

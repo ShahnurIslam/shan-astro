@@ -24,6 +24,7 @@ const fixedBase: ExperimentInput = {
   expectedTreatmentShare: 0.5,
   minimumWorthwhileGainPp: 0.5,
   maximumTolerableLossPp: 0.25,
+  thresholdsPreSpecified: "yes",
 };
 
 function analyse(overrides: Partial<ExperimentInput> = {}) {
@@ -50,6 +51,10 @@ void test("QA 01: quick positive reference matches trusted fixed-horizon values"
   close(result.treatmentRate, 0.132, 1e-12);
   close(result.absoluteEffect, 0.012, 1e-12);
   close(result.relativeUplift, 0.1, 1e-12);
+  assert.ok(result.relativeInterval);
+  assert.ok(result.relativeInterval.lower < result.relativeUplift!);
+  assert.ok(result.relativeInterval.upper > result.relativeUplift!);
+  assert.ok(result.relativeInterval.lower > 0);
   close(result.pValue, 0.010558899038851658, 1e-8);
   close(result.interval.lower, 0.002801436595135303, 1e-12);
   close(result.interval.upper, 0.021200322131384612, 1e-12);
@@ -70,7 +75,7 @@ void test("QA 02: statistically and commercially positive result rolls out", () 
   close(result.pValue, 0.0011060019738741123, 1e-8);
   close(result.interval.lower, 0.00399202049110018, 1e-12);
   close(result.interval.upper, 0.01600977290825191, 1e-12);
-  assert.equal(result.decision.label, "Roll out treatment");
+  assert.equal(result.decision.label, "Primary metric supports rollout");
   assert.match(result.decision.reason, /minimum worthwhile gain/i);
 });
 
@@ -94,7 +99,7 @@ void test("QA 04: statistical significance alone does not trigger rollout", () =
   const result = analyse();
   assert.ok((result.pValue ?? 1) < 0.05);
   assert.ok(result.interval.lower < 0.005);
-  assert.equal(result.decision.label, "Keep running");
+  assert.equal(result.decision.label, "Evidence unresolved");
 });
 
 void test("QA 05: precise commercial equivalence concludes no material effect", () => {
@@ -144,7 +149,7 @@ void test("QA 06: continuous maturity anchor uses mature denominators and assign
   close(result.interval.upper, 0.03972423928133027, 1e-10);
   assert.equal(result.srm.pValue, 1);
   assert.equal(result.pValue, null);
-  assert.equal(result.decision.label, "Keep running");
+  assert.equal(result.decision.label, "Evidence unresolved");
 });
 
 void test("QA 07: continuous evidence can support rollout", () => {
@@ -159,7 +164,7 @@ void test("QA 07: continuous evidence can support rollout", () => {
   });
   close(result.interval.lower, 0.006032321631682783, 1e-10);
   close(result.interval.upper, 0.013967119673940681, 1e-10);
-  assert.equal(result.decision.label, "Roll out treatment");
+  assert.equal(result.decision.label, "Primary metric supports rollout");
 });
 
 void test("QA 08: continuous harmful evidence can support stopping", () => {
@@ -403,6 +408,94 @@ void test("QA 22: zero control rate never creates an infinite relative uplift", 
     treatmentConversions: 1,
   });
   assert.equal(result.relativeUplift, null);
+  assert.equal(result.relativeInterval, null);
   assert.ok(Number.isFinite(result.interval.lower));
   assert.ok(Number.isFinite(result.interval.upper));
+});
+
+void test("zero treatment conversions retain a finite relative interval", () => {
+  const result = analyse({
+    controlAssigned: 100,
+    controlMature: 100,
+    controlConversions: 10,
+    treatmentAssigned: 100,
+    treatmentMature: 100,
+    treatmentConversions: 0,
+  });
+  assert.equal(result.relativeUplift, -1);
+  assert.equal(result.relativeInterval?.lower, -1);
+  assert.ok(Number.isFinite(result.relativeInterval?.upper));
+});
+
+void test("QA 23: unsure validity answers cannot produce an unqualified action", () => {
+  for (const field of [
+    "randomAssignment",
+    "analysisUnitMatches",
+    "interference",
+    "metricPreSpecified",
+  ] as const) {
+    const result = analyse({
+      [field]: "unsure",
+      minimumWorthwhileGainPp: 0.25,
+    });
+    assert.equal(result.decision.label, "Decision incomplete", field);
+  }
+});
+
+void test("QA 24: differential maturity prevents confident action", () => {
+  const result = analyse({
+    controlAssigned: 100_000,
+    controlMature: 100_000,
+    controlConversions: 10_000,
+    treatmentAssigned: 100_000,
+    treatmentMature: 50_000,
+    treatmentConversions: 6_000,
+    minimumWorthwhileGainPp: 0.25,
+  });
+  assert.equal(result.maturity.imbalance, true);
+  assert.equal(result.decision.label, "Investigate before deciding");
+  assert.match(result.decision.detail, /5 percentage points.*p < 0\.01/i);
+});
+
+void test("QA 25: retrospective thresholds produce a qualified commercial interpretation", () => {
+  const result = analyse({
+    controlAssigned: 20_000,
+    controlMature: 20_000,
+    controlConversions: 2_000,
+    treatmentAssigned: 20_000,
+    treatmentMature: 20_000,
+    treatmentConversions: 2_200,
+    minimumWorthwhileGainPp: 0.25,
+    thresholdsPreSpecified: "no",
+  });
+  assert.equal(
+    result.decision.label,
+    "Primary metric clears supplied threshold",
+  );
+  assert.equal(result.decision.tone, "incomplete");
+  assert.match(result.decision.detail, /retrospective/i);
+  assert.ok(
+    result.warnings.some(
+      (warning) => warning.title === "Guardrails not evaluated",
+    ),
+  );
+});
+
+void test("QA 26: uncertain threshold timing remains useful but provisional", () => {
+  const result = analyse({
+    controlAssigned: 20_000,
+    controlMature: 20_000,
+    controlConversions: 2_000,
+    treatmentAssigned: 20_000,
+    treatmentMature: 20_000,
+    treatmentConversions: 2_200,
+    minimumWorthwhileGainPp: 0.25,
+    thresholdsPreSpecified: "unsure",
+  });
+  assert.equal(
+    result.decision.label,
+    "Primary metric clears supplied threshold",
+  );
+  assert.equal(result.thresholds.interpretation, "uncertain");
+  assert.match(result.decision.detail, /provisional/i);
 });

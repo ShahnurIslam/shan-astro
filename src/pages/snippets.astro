@@ -26,15 +26,16 @@ const categories = [...new Set(snippets.map((snippet) => snippet.category))].map
     <Header />
     <main class="snippets-page">
       <header class="snippets-intro">
-        <p class="section-label">Working notebook</p>
-        <h1>Code snippets.</h1>
-        <p>Reusable examples for data, analysis and development. Search the collection or browse by topic.</p>
-        <label class="snippet-search-label" for="snippet-search">Find a snippet</label>
-        <input id="snippet-search" class="snippet-search" type="search" placeholder="Try pandas, dates, CloudWatch…" autocomplete="off" />
+        <h1>Code snippets</h1>
+        <p>Reusable examples for data, analysis and development.</p>
+        <label class="snippet-search-label" for="snippet-search">Search snippets</label>
+        <input id="snippet-search" class="snippet-search" type="search" placeholder="Search snippets…" autocomplete="off" />
         <p id="snippet-results" class="snippet-results" aria-live="polite">{snippets.length} snippets</p>
       </header>
 
       <div class="snippets-layout">
+        <details class="snippets-topics" open>
+        <summary>Browse topics</summary>
         <nav class="snippets-toc" aria-label="Snippet topics">
           <strong>Browse snippets</strong>
           <ul>
@@ -46,6 +47,7 @@ const categories = [...new Set(snippets.map((snippet) => snippet.category))].map
             ))}
           </ul>
         </nav>
+        </details>
 
         <div class="snippets-content">
           {categories.map((category) => (
@@ -90,6 +92,11 @@ const categories = [...new Set(snippets.map((snippet) => snippet.category))].map
     </main>
     <Footer />
     <script is:inline>
+      const topicMenu = document.querySelector('.snippets-topics');
+      if (topicMenu && matchMedia('(max-width: 820px)').matches) topicMenu.open = false;
+      topicMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+        if (matchMedia('(max-width: 820px)').matches) topicMenu.open = false;
+      }));
       const search = document.querySelector('#snippet-search');
       const results = document.querySelector('#snippet-results');
       const cards = [...document.querySelectorAll('[data-snippet-card]')];
