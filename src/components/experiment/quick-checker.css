@@ -255,23 +255,6 @@
 .quick-diagnostics dd.quick-diagnostics__relative {
   margin-top: 11px;
 }
-.suite-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  border: 0;
-  border-bottom: 1px solid currentColor;
-  color: var(--primary);
-  background: transparent;
-  font: 650 15px var(--font-body);
-  text-align: left;
-  cursor: pointer;
-}
-.suite-cta svg {
-  flex: none;
-  width: 16px;
-}
 @media (max-width: 900px) {
   .quick-workspace {
     grid-template-columns: 1fr;
@@ -372,13 +355,9 @@
   margin: 0 auto;
 }
 .experiment-checker *:not(code):not(pre) { font-family: var(--font-body); }
-.tool-mode-header { padding: 40px 0 0; }
+.tool-mode-header { padding: 40px 0 0; border-bottom: 1px solid var(--border); }
 .tool-mode-header h1 { margin: 0 0 4px; font-size: clamp(36px, 3.2vw, 44px); line-height: 1.12; }
-.tool-mode-header > p { margin: 0 0 24px; color: var(--site-muted); font-size: 19px; }
-.tool-mode-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); }
-.tool-mode-tabs button { min-height: 44px; padding: 8px 16px; border: 1px solid var(--border); border-bottom: 0; border-radius: 5px 5px 0 0; background: transparent; color: var(--primary); font-weight: 650; cursor: pointer; }
-.tool-mode-tabs button[aria-selected="true"] { background: var(--primary); border-color: var(--primary); color: #fff; }
-.tool-mode-tabs button:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.tool-mode-header > p { margin: 0 0 16px; color: var(--site-muted); font-size: 19px; }
 .experiment-checker .checker-main { width: 100%; padding-bottom: 0; }
 .experiment-checker .quick-intro { display: flex; justify-content: flex-end; padding: 16px 0; }
 .experiment-checker .quick-intro > div:first-child { display: none; }
@@ -420,7 +399,6 @@
   .tool-mode-header { padding-top: 32px; }
   .tool-mode-header h1 { font-size: 28px; }
   .tool-mode-header > p { font-size: 16px; margin-bottom: 16px; }
-  .tool-mode-tabs button { padding-inline: 12px; font-size: 14px; }
   .experiment-checker .quick-intro, .experiment-checker .hero { padding: 16px 0; }
   .experiment-checker .quick-intro > div:last-child { display: block; }
   .experiment-checker .quick-intro > div:last-child > p { margin-bottom: 10px; }

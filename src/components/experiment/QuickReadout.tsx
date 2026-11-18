@@ -129,10 +129,9 @@ function quickConclusion(result: AnalysisResult) {
   } as const;
 }
 
-function Readout({ result, stale, onOpenSuite }: {
+function Readout({ result, stale }: {
   result: AnalysisResult;
   stale: boolean;
-  onOpenSuite: () => void;
 }) {
   const conclusion = quickConclusion(result);
   const ConclusionIcon = conclusion.icon;
@@ -231,14 +230,11 @@ function Readout({ result, stale, onOpenSuite }: {
           <span>SRM p-value {formatPValue(result.srm.pValue)}</span>
         </div>
       </dl>
-      <button className="suite-cta" type="button" onClick={onOpenSuite}>
-        Open the decision suite <ArrowRight aria-hidden="true" />
-      </button>
     </section>
   );
 }
 
-export default function QuickReadout({ onOpenSuite }: { onOpenSuite: () => void }) {
+export default function QuickReadout() {
   const [input, setInput] = useState(DEFAULT_INPUT);
   const [analysedInput, setAnalysedInput] = useState(DEFAULT_INPUT);
   const [result, setResult] = useState(() =>
@@ -491,7 +487,7 @@ export default function QuickReadout({ onOpenSuite }: { onOpenSuite: () => void 
             </Button>
           </form>
         </section>
-        <Readout result={result} stale={isStale} onOpenSuite={onOpenSuite} />
+        <Readout result={result} stale={isStale} />
       </div>
       <footer className="product-footer">
         <p>Fixed-horizon statistical readout · 95% confidence level</p>
