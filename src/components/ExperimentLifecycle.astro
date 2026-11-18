@@ -1,0 +1,23 @@
+<figure class="experiment-lifecycle" aria-labelledby="lifecycle-title">
+  <figcaption id="lifecycle-title">Experiment lifecycle and decision points</figcaption>
+  <ol>
+    <li><strong>Launch</strong><span>Implementation and assignment checks</span></li>
+    <li><strong>Early monitoring</strong><span>Harm and technical alerts</span></li>
+    <li><strong>Interim evaluation</strong><span>Commercial action and guardrails</span></li>
+    <li><strong>Information assessment</strong><span>Sample, duration and maturity</span></li>
+    <li><strong>Final evaluation</strong><span>Effect and commercial relevance</span></li>
+  </ol>
+  <p>The article table below gives the full question and approach at each stage.</p>
+</figure>
+
+<style>
+  .experiment-lifecycle { margin: 18px 0 18px !important; padding: 14px 0; border-top: 1px solid var(--site-border); border-bottom: 1px solid var(--site-border); }
+  figcaption { margin-bottom: 10px; color: var(--site-text); font-size: 15px; font-weight: 700; }
+  ol { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; margin: 0 !important; padding: 0 !important; list-style: none; }
+  li { position: relative; margin: 0 !important; padding: 9px 9px 7px 12px; border-top: 3px solid var(--site-green); border-right: 1px solid var(--site-border); }
+  li:first-child { padding-left: 0; } li:last-child { border-right: 0; }
+  strong { display: block; color: var(--site-green); font-size: 11px; line-height: 1.3; }
+  span { display: block; margin-top: 4px; color: var(--site-muted); font-size: 10px; line-height: 1.3; }
+  p { margin: 9px 0 0 !important; color: var(--site-muted); font-size: 11px !important; }
+  @media (max-width: 600px) { ol { grid-template-columns: 1fr; } li, li:first-child { display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: baseline; padding: 7px 0; border-top: 0; border-bottom: 1px solid var(--site-border); border-right: 0; } li:first-child { border-top: 1px solid var(--site-border); } span { margin: 0; } }
+</style>

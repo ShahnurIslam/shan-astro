@@ -8,7 +8,7 @@ import { SITE_TITLE } from '../../consts';
 
 const posts = (await getCollection('blog'))
 	.filter((p) => !p.data?.draft)
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf() || (a.data.seriesPart ?? 99) - (b.data.seriesPart ?? 99));
 
 function stripBasicMarkdown(text: string) {
 	if (!text || typeof text !== 'string') return '';
@@ -58,12 +58,13 @@ function excerptFromPost(post: CollectionEntry<'blog'>, len = 180) {
 				{
 					posts.length === 0 ? (<p>No posts yet.</p>) : (
 						posts.map((post, index) => (
-							<a class="blog-entry" href={`/blog/${post.id}/`}>
+							<a class:list={['blog-entry', { 'blog-entry--series': post.data.seriesPart }]} href={`/blog/${post.id}/`}>
 								<span class="blog-entry__number">{String(index + 1).padStart(2, '0')}</span>
+								{post.data.seriesPart && <img class="blog-entry__thumbnail" src={`/images/experimentation-part-${post.data.seriesPart}.svg`} alt="" width="128" height="80" loading="lazy" />}
 								<div class="blog-entry__title">
 									<p>
 										<FormattedDate date={post.data.pubDate} />
-										{post.data.tags.length > 0 && <span> · {post.data.tags.slice(0, 2).join(' · ')}</span>}
+										{post.data.seriesPart ? <span> · Experimentation in the Real World · Part {post.data.seriesPart} of 3</span> : post.data.tags.length > 0 && <span> · {post.data.tags.slice(0, 2).join(' · ')}</span>}
 									</p>
 									<h2>{post.data.title}</h2>
 								</div>

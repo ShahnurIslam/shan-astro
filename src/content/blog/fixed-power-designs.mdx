@@ -1,0 +1,80 @@
+---
+title: "Fixed-power designs: How much data do we really need?"
+description: "We normally use historical data to estimate how many observations an experiment needs."
+pubDate: 2026-11-18
+tags: ["experimentation", "A/B testing", "decision making"]
+seriesPart: 2
+draft: false
+---
+
+import ExperimentChart from "../../components/ExperimentChart.astro";
+
+In [Part 1](/blog/beyond-peeking-part-1/), I discussed a six-week checkout experiment with an early positive signal. But what if the original six-week estimate was wrong? We normally use historical data to estimate how many observations an experiment needs. The actual experiment may turn out to be more or less noisy than expected.
+
+## What I find interesting about fixed-power designs
+
+One assumption we make when planning an experiment is that historical data provides a reasonable estimate of the variability we expect. What happens if that assumption is wrong?
+
+Spotify researchers Mattias Nordin and Mårten Schultzberg proposed [fixed-power designs](https://arxiv.org/abs/2405.03487), which use accumulating outcome data to assess the required sample size. The MDE, target power and significance level stay fixed; the estimated variance and required sample size may change.
+
+For an equally allocated two-arm experiment, a simplified normal-approximation calculation is:
+
+$$n_{\mathrm{required}}=\frac{(\sigma_C^2+\sigma_T^2)(z_{1-\alpha/2}+z_{1-\beta})^2}{\delta^2}$$
+
+Here $n$ is the sample size per arm, $\delta$ is the absolute MDE, and the two variances describe the outcomes in control and treatment. For binary conversion, $\sigma_g^2=p_g(1-p_g)$.
+
+Suppose the historical seven-day conversion rate is 24%, the MDE is 2.4 percentage points, alpha is 5% and target power is 80%. Assuming the historical variance in both groups gives about 4,971 customers per arm.
+
+In a fixed-power design we update the variance estimates from mature outcomes in each arm and stop when:
+
+$$n_{\mathrm{mature}}\geq\widehat n_{\mathrm{required}}$$
+
+subject to the other planned completion criteria. The absolute MDE remains 0.024 throughout; we don't redefine it using the observed uplift or the changing baseline.
+
+The distinction is that the stopping rule is based on estimated precision, not whether the treatment is winning. Under the conditions in the paper, standard non-sequential confidence intervals retain nominal coverage asymptotically. The authors also discuss conservative finite-sample alternatives.
+
+### What happens when our historical estimate is wrong?
+
+In another simulation, I held the absolute MDE constant at 2.4 percentage points but varied the actual underlying conversion rate. Each scenario was repeated 100,000 times. I inspected mature outcomes every 250 customers per arm, with a minimum of 1,000 per arm for fixed-power stopping.
+
+| Actual control conversion | Fixed sample power | Fixed-power power | Mean fixed-power sample per arm |
+|---|---:|---:|---:|
+| 10% | 96.8% | 81.6% | 2,824 |
+| 24% | 79.0% | 81.0% | 5,252 |
+| 40% | 68.5% | 80.9% | 6,750 |
+
+<ExperimentChart chart="power" />
+
+<ExperimentChart chart="sample" />
+
+The fixed comparison used 5,000 customers per arm. Fixed-power stopping shortened or lengthened the experiment according to the underlying variance. It isn't necessarily a way to finish sooner; it is a way to better target the information requirement.
+
+### How would this look during an experiment?
+
+Suppose we review our mature seven-day conversion outcomes at three checkpoints. The estimated information requirement changes as the variance estimate improves.
+
+| Checkpoint | Mature customers per group | Estimated requirement per group | Decision |
+|---|---:|---:|---|
+| 1 | 2,000 | 4,356 | Continue |
+| 2 | 4,700 | 4,966 | Continue |
+| 3 | 5,200 | 5,104 | Information target reached |
+
+<ExperimentChart chart="requirement" />
+
+These figures are illustrative. Completion still depends on the planned minimum duration, outcome maturity and any other requirements specified upfront.
+
+In the null scenario at a 24% baseline, the simulation also gave a 5.1% false positive rate for fixed-power stopping, compared with 5.1% for a single fixed-sample test and 25.2% for repeated unadjusted tests. This is not a proof of general validity; it illustrates the distinction between stopping on the estimated information requirement and stopping on significance.
+
+## Final thoughts
+
+I particularly like the idea of committing to a level of statistical sensitivity rather than an initially estimated number of customers. It is useful when historical data does not accurately describe the population or treatment.
+
+Fixed-power design doesn't itself provide an early efficacy decision rule. In [Part 3](/blog/early-rollout/), I explore how we might design for early commercial action while retaining a meaningful final comparison.
+
+## Further reading
+
+- [Nordin and Schultzberg (2024): Precision-based designs for sequential randomized experiments](https://arxiv.org/abs/2405.03487)
+- [Spotify Engineering: Fixed-power designs](https://engineering.atspotify.com/2024/05/fixed-power-designs-its-not-if-you-peek-its-what-you-peek-at)
+
+
+*The ideas and perspectives in this article are my own, informed by practical experience. I used an LLM to assist with research, simulations, visualisations and editing. All numerical examples are fictional or simulated.*

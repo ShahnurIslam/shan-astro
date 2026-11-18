@@ -1,0 +1,122 @@
+---
+title: "Beyond peeking: Making decisions during A/B tests"
+description: "Imagine you are two weeks into a planned six-week e-commerce experiment."
+pubDate: 2026-11-18
+tags: ["experimentation", "A/B testing", "decision making"]
+seriesPart: 1
+draft: false
+---
+
+import ExperimentChart from "../../components/ExperimentChart.astro";
+
+Imagine you are two weeks into a planned six-week e-commerce experiment. A new checkout experience is showing a 20% uplift in conversion, and an important trading period is approaching. Do you wait another four weeks or start rolling it out?
+
+In a commercial environment, particularly a startup with a relatively small customer base, experiments can take weeks to reach their required sample size. At the same time, the business needs to move quickly.
+
+When faced with a decision like this, I tend to consider four questions:
+
+- What is the risk of a false positive?
+- What is the cost of being wrong?
+- What is the potential upside of acting now?
+- Can we turn it off if we're wrong?
+
+Waiting is itself a commercial decision. Rather than treating early rollout as an exception, I think we should consider the possibility when designing an experiment in the first place.
+
+## 1. Not all peeking is the same
+
+I tend to divide the evaluation of an experiment into three stages: technical implementation, early commercial signals and final evaluation.
+
+### Technical implementation
+
+When I launch an experiment, one of the first things I do is test the feature myself in production. Am I receiving the intended treatment when assigned to the variant? Is the existing functionality unchanged when assigned to control?
+
+Alongside this, I want to check for sample ratio mismatch (SRM), assignment consistency and leakage between groups. I also want to see whether requests return the expected HTTP response codes, whether errors have increased and whether the implementation is behaving as expected.
+
+I want early visibility of commercial KPIs too. At this stage, I'm looking for harm rather than success. Waiting until the experiment concludes to discover that checkout is broken makes little commercial sense.
+
+Technical monitoring can start immediately. Statistical alerts, where used repeatedly, should have an appropriate false-alarm policy.
+
+### Early commercial signals
+
+When looking seriously at commercial performance, I consider both time and sample size. I would typically want at least a full week of recruitment to account for day-of-week effects. But a week isn't necessarily enough: if we have only collected 100 customers, the KPIs could still be fluctuating considerably.
+
+As more data comes in, I start looking at how the metrics are behaving. Are we still seeing large swings, or are estimates beginning to settle? Experience with the business, its customers and the normal variability of its KPIs informs that judgement. Statistical methods help quantify uncertainty; they don't replace that experience. A stable-looking chart alone is not a statistical stopping rule.
+
+### Final evaluation
+
+At the end, I want to understand the effect, its uncertainty, whether the guardrails are acceptable and whether the change is worth retaining. Detecting harm, making an early commercial decision and measuring the final effect are different objectives.
+
+## 2. There are two clocks in an experiment
+
+Suppose an online retailer finds that 30 out of every 100 visitors purchase within 30 days, but 24 of those purchases occur within seven days. Waiting another 23 days to capture the remaining six purchases may not be commercially worthwhile.
+
+I would consider defining conversion within seven days of assignment as the primary experiment metric, informed by the historical customer journey. Purchases outside that window would not count towards that particular metric, although longer-term performance could still be reviewed separately.
+
+<ExperimentChart chart="maturity" />
+
+There is a distinction between seven-day conversion and incomplete 30-day conversion. There is also a distinction between how long the experiment has been running and how long each customer has been observed.
+
+If a visitor was assigned yesterday, they haven't completed their seven-day window. They should not enter the mature seven-day analysis yet, whether or not they have already purchased. This also applies to the sample size calculation.
+
+In an illustrative scenario with 500 assignments per arm per day, at the end of day 14 there are 7,000 assigned customers per arm, but only about 3,500 mature customers per arm.
+
+| Day | Assigned per arm | Mature per arm |
+|---|---:|---:|
+| 7 | 3,500 | 0 |
+| 14 | 7,000 | 3,500 |
+| 21 | 10,500 | 7,000 |
+| 28 | 14,000 | 10,500 |
+
+<ExperimentChart chart="assigned" />
+
+Spotify discusses a related statistical issue in its work on [the peeking problem 2.0](https://engineering.atspotify.com/2023/07/bringing-sequential-testing-to-experiments-with-longitudinal-data-part-1-the-peeking-problem-2-0). Repeated measurement of incomplete outcomes requires care even when sequential testing is used.
+
+There is a commercial limitation too: a treatment might bring purchases forward without increasing eventual purchase volume. Seven-day conversion can still be useful, but I would not automatically equate its uplift with the uplift in 30-day conversion.
+
+## 3. Designing for early decisions
+
+The usual warning about peeking is well founded. A conventional fixed-sample hypothesis test is not designed to be repeated until a significant result appears.
+
+To illustrate this, I simulated 100,000 experiments per scenario with independent binary seven-day conversion outcomes, a baseline of 24%, and approximately 5,000 mature customers per arm. In the null scenario there was no treatment effect.
+
+| Method | Observed false positive rate |
+|---|---:|
+| Single final test | 5.1% |
+| Unadjusted tests every 250 customers per arm | 25.2% |
+
+<ExperimentChart chart="falsePositive" />
+
+The repeated tests were two-sided at the 5% level. These rates are specific to the simulated design, not universal constants.
+
+If we know that early intervention is possible, why not account for it upfront? Group sequential testing, for example, uses planned interim evaluations and calibrated boundaries to control false-positive risk across those evaluations. [Spotify's discussion of sequential frameworks](https://engineering.atspotify.com/2023/03/choosing-sequential-testing-framework-comparisons-and-discussions) is a useful introduction.
+
+But statistical significance is only one part of an early rollout decision. An upcoming commercial opportunity, the size of the potential benefit, guardrail uncertainty and the ability to roll back all matter. Sometimes taking an informed gamble is the right commercial decision.
+
+The false-positive rate of a testing procedure is not the probability that a particular decision is wrong. That probability depends on additional assumptions about plausible effects; commercial risk also depends on their magnitude and consequences.
+
+## Taking an informed commercial gamble
+
+Returning to our checkout experiment, seven-day conversion has increased from 24% to 28.8%. Suppose another 50,000 eligible customers are expected over the approaching trading period. If half would otherwise receive control, and the uplift persists, expanding treatment to them could generate 1,200 additional purchases. At £25 contribution per incremental purchase, that's £30,000 before additional costs.
+
+But the observed uplift is uncertain. If the true effect were a 10% reduction, expanding to those same customers would instead cost 600 purchases. The commercial implications depend on the range of plausible outcomes, not just the point estimate.
+
+| True relative uplift | Additional purchases | Incremental contribution |
+|---|---:|---:|
+| −10% | −600 | −£15,000 |
+| 0% | 0 | £0 |
+| +10% | +600 | £15,000 |
+| +20% | +1,200 | £30,000 |
+
+Reversibility matters too. If we can turn a change off within minutes, the decision is very different from one that requires a considerable investment or has irreversible consequences.
+
+I don't think every early rollout needs to be ruled out. I think we should design for the possibility, understand the uncertainty and be explicit about the risk we are taking.
+
+In [Part 2](/blog/fixed-power-designs/), I look at an interesting alternative to the conventional fixed-sample design: what if we can determine how much information we need as the experiment progresses?
+
+## Further reading
+
+- [Spotify: The peeking problem 2.0](https://engineering.atspotify.com/2023/07/bringing-sequential-testing-to-experiments-with-longitudinal-data-part-1-the-peeking-problem-2-0)
+- [Spotify: Choosing a sequential testing framework](https://engineering.atspotify.com/2023/03/choosing-sequential-testing-framework-comparisons-and-discussions)
+
+
+*The ideas and perspectives in this article are my own, informed by practical experience. I used an LLM to assist with research, simulations, visualisations and editing. All numerical examples are fictional or simulated.*

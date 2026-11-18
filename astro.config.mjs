@@ -3,12 +3,15 @@
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://www.shanislam.com',
 	integrations: [mdx(), sitemap(), react()],
+	markdown: { remarkPlugins: [remarkMath], rehypePlugins: [rehypeKatex] },
 	fonts: [
 		{
 			provider: fontProviders.local(),

@@ -1,0 +1,85 @@
+---
+type Point = { label: string; values: number[] };
+type Props = { chart: string };
+const { chart } = Astro.props;
+const charts: Record<string, { title: string; note: string; units: string; labels: string[]; points: Point[]; max: number; diverging?: boolean }> = {
+  maturity: { title: 'Cumulative conversion at known checkpoints', note: 'Historical customer journey; the shape between checkpoints is not estimated.', units: '%', labels: ['Converted'], points: [{ label: 'Within 7 days', values: [24] }, { label: 'Within 30 days', values: [30] }], max: 30 },
+  assigned: { title: 'Assigned and mature customers per arm', note: 'Illustrative recruitment at 500 assignments per arm per day with a seven-day outcome window.', units: '', labels: ['Assigned', 'Mature'], points: [{ label: 'Day 7', values: [3500, 0] }, { label: 'Day 14', values: [7000, 3500] }, { label: 'Day 21', values: [10500, 7000] }, { label: 'Day 28', values: [14000, 10500] }], max: 14000 },
+  falsePositive: { title: 'False positives under the null', note: '100,000 simulated experiments per method; two-sided tests at the 5% level.', units: '%', labels: ['Observed false positive rate'], points: [{ label: 'Single final test', values: [5.1] }, { label: 'Unadjusted peeking', values: [25.2] }], max: 30 },
+  power: { title: 'Statistical power by baseline conversion rate', note: '100,000 simulations per scenario; fixed sample of 5,000 per arm.', units: '%', labels: ['Fixed sample', 'Fixed power'], points: [{ label: '10% baseline', values: [96.8, 81.6] }, { label: '24% baseline', values: [79, 81] }, { label: '40% baseline', values: [68.5, 80.9] }], max: 100 },
+  sample: { title: 'Mean fixed-power sample per arm', note: 'Absolute MDE held at 2.4 percentage points across baseline rates.', units: ' customers', labels: ['Mean sample'], points: [{ label: '10% baseline', values: [2824] }, { label: '24% baseline', values: [5252] }, { label: '40% baseline', values: [6750] }], max: 7000 },
+  requirement: { title: 'Mature sample versus estimated requirement', note: 'Illustrative checkpoints per group; the target changes with estimated variance.', units: ' customers', labels: ['Mature sample', 'Estimated requirement'], points: [{ label: 'Checkpoint 1', values: [2000, 4356] }, { label: 'Checkpoint 2', values: [4700, 4966] }, { label: 'Checkpoint 3', values: [5200, 5104] }], max: 5500 },
+  rollout: { title: 'Traffic allocation before and after expansion', note: '250 new customers per day in each population; the protected 50:50 comparison continues.', units: ' per day', labels: ['Protected control', 'Protected treatment', 'Separate population on control', 'Separate population on treatment'], points: [{ label: 'Before', values: [250, 250, 250, 0] }, { label: 'After', values: [250, 250, 0, 250] }], max: 250 },
+  probability: { title: 'Probability of early expansion', note: 'Simulated expansion rate at the planned one-sided interim efficacy check.', units: '%', labels: ['Early expansion rate'], points: [{ label: '0% true uplift', values: [0.5] }, { label: '5% true uplift', values: [5.6] }, { label: '10% true uplift', values: [26.6] }, { label: '20% true uplift', values: [90] }], max: 100 },
+  commercial: { title: 'Conversions gained or lost before final readout', note: 'Mean incremental seven-day conversions in constant-effect scenarios, plus a separate reversal stress test.', units: ' conversions', labels: ['Incremental conversions'], points: [{ label: '0% uplift', values: [0] }, { label: '5% uplift', values: [2] }, { label: '10% uplift', values: [18] }, { label: '20% uplift', values: [126] }, { label: 'Effect reversal', values: [-58] }], max: 126, diverging: true },
+};
+const spec = charts[chart];
+if (!spec) throw new Error(`Unknown experiment chart: ${chart}`);
+const fmt = (n: number) => `${n.toLocaleString('en-GB', { maximumFractionDigits: 1 })}${spec.units}`;
+const percentage = (n: number) => `${Math.max(0, Math.min(100, Math.abs(n) / spec.max * 100))}%`;
+---
+
+<figure class:list={['experiment-chart', { 'experiment-chart--diverging': spec.diverging }]} aria-labelledby={`${chart}-title`}>
+  <figcaption id={`${chart}-title`}><strong>{spec.title}</strong><span>{spec.note}</span></figcaption>
+  {spec.labels.length > 1 && <div class="experiment-chart__legend" aria-hidden="true">{spec.labels.map((label, i) => <span><i class={`series-key series-key--${i}`} />{label}</span>)}</div>}
+  {chart === 'maturity' && <div class="experiment-chart__curve" role="img" aria-label="Cumulative conversion: 24% within seven days and 30% within 30 days. Only these two checkpoints are known.">
+    <svg viewBox="0 0 600 112" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path d="M8 100H592" class="curve-axis" />
+      <path d="M38 48 L562 18" class="curve-line" />
+      <circle cx="38" cy="48" r="6" class="curve-point" />
+      <circle cx="562" cy="18" r="6" class="curve-point" />
+    </svg>
+    <div class="experiment-chart__curve-labels"><span><strong>24%</strong>Within 7 days</span><span><strong>30%</strong>Within 30 days</span></div>
+  </div>}
+  <div class="experiment-chart__plot" role="img" aria-label={`${spec.title}. ${spec.points.map(point => `${point.label}: ${point.values.map((value, i) => `${spec.labels[i]} ${fmt(value)}`).join(', ')}`).join('; ')}.`} style={chart === 'maturity' ? 'display:none' : undefined}>
+    {spec.points.map((point) => <div class="experiment-chart__row">
+      <span class="experiment-chart__label">{point.label}</span>
+      <div class="experiment-chart__bars">
+        {point.values.map((value, i) => <div class="experiment-chart__bar-line">
+          {spec.diverging && <div class="experiment-chart__negative">{value < 0 && <span class={`experiment-chart__bar experiment-chart__bar--${i} experiment-chart__bar--loss`} style={`width:${percentage(value)}`} />}</div>}
+          <div class="experiment-chart__track">{value > 0 && <span class={`experiment-chart__bar experiment-chart__bar--${i}`} style={`width:${percentage(value)}`} />}</div>
+          <strong class="experiment-chart__value">{fmt(value)}</strong>
+        </div>)}
+      </div>
+    </div>)}
+  </div>
+  <details class="experiment-chart__data"><summary>Chart data</summary><div class="experiment-chart__table-wrap"><table><thead><tr><th scope="col">Scenario</th>{spec.labels.map(label => <th scope="col">{label}</th>)}</tr></thead><tbody>{spec.points.map(point => <tr><th scope="row">{point.label}</th>{point.values.map(value => <td>{fmt(value)}</td>)}</tr>)}</tbody></table></div></details>
+</figure>
+
+<style>
+  .experiment-chart { margin: 18px 0 22px !important; padding: 14px 0 10px; border-top: 1px solid var(--site-border); border-bottom: 1px solid var(--site-border); font-family: var(--font-body); }
+  figcaption { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; line-height: 1.35; }
+  figcaption strong { font-size: 15px; color: var(--site-text); }
+  figcaption span { font-size: 12px; color: var(--site-muted); }
+  .experiment-chart__legend { display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 12px; color: var(--site-muted); font-size: 11px; }
+  .experiment-chart__legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .series-key { display: inline-block; width: 11px; height: 11px; background: var(--site-green); }
+  .series-key--1 { background: var(--site-sage); }.series-key--2 { background: #a58c6c; }.series-key--3 { background: var(--site-accent); }
+  .experiment-chart__plot { display: grid; gap: 8px; }
+  .experiment-chart__curve { width: 100%; }
+  .experiment-chart__curve svg { display: block; width: 100%; height: 70px; }
+  .curve-axis { fill: none; stroke: var(--site-border); stroke-width: 1; }
+  .curve-line { fill: none; stroke: var(--site-green); stroke-width: 3; stroke-dasharray: 7 5; }
+  .curve-point { fill: var(--site-green); }
+  .experiment-chart__curve-labels { display: flex; justify-content: space-between; gap: 12px; margin-top: -2px; color: var(--site-muted); font-size: 11px; }
+  .experiment-chart__curve-labels span { display: flex; flex-direction: column; line-height: 1.25; }
+  .experiment-chart__curve-labels span:last-child { text-align: right; }
+  .experiment-chart__curve-labels strong { color: var(--site-green); font-size: 15px; }
+  .experiment-chart__row { display: grid; grid-template-columns: minmax(112px, 145px) minmax(0, 1fr); gap: 10px; align-items: center; }
+  .experiment-chart__label { color: var(--site-text); font-size: 12px; line-height: 1.25; }
+  .experiment-chart__bars { display: grid; gap: 3px; }
+  .experiment-chart__bar-line { display: flex; align-items: center; gap: 7px; min-width: 0; }
+  .experiment-chart__track { height: 13px; flex: 1; background: var(--site-code); }
+  .experiment-chart__bar { display: block; height: 13px; min-width: 2px; background: var(--site-green); }
+  .experiment-chart__bar--1 { background: var(--site-sage); }.experiment-chart__bar--2 { background: #a58c6c; }.experiment-chart__bar--3 { background: var(--site-accent); }
+  .experiment-chart__value { flex: 0 0 92px; color: var(--site-text); font-size: 11px; font-weight: 650; white-space: nowrap; }
+  .experiment-chart__negative { display: flex; justify-content: flex-end; width: 22%; height: 13px; border-right: 1px solid var(--site-muted); background: var(--site-code); }
+  .experiment-chart__bar--loss { background: var(--site-accent); }
+  .experiment-chart--diverging .experiment-chart__value { flex-basis: 105px; }
+  .experiment-chart__data { margin-top: 10px; color: var(--site-muted); font-size: 11px; }
+  .experiment-chart__data summary { cursor: pointer; color: var(--site-green); }
+  .experiment-chart__table-wrap { overflow-x: auto; }
+  .experiment-chart__data table { width: 100%; margin: 6px 0 0; font-size: 11px; }
+  .experiment-chart__data th, .experiment-chart__data td { padding: 4px 6px; border-bottom: 1px solid var(--site-border); text-align: left; }
+  @media (max-width: 520px) { .experiment-chart__row { grid-template-columns: 90px minmax(0, 1fr); gap: 6px; } .experiment-chart__label { font-size: 11px; } .experiment-chart__value { flex-basis: 70px; font-size: 10px; } .experiment-chart--diverging .experiment-chart__value { flex-basis: 77px; } .experiment-chart__negative { width: 28%; } }
+</style>

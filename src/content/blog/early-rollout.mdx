@@ -1,0 +1,71 @@
+---
+title: "Can we roll out early and keep learning?"
+description: "Can we make an informed commercial decision halfway through an experiment without necessarily giving up the ability to learn from it?"
+pubDate: 2026-11-18
+tags: ["experimentation", "A/B testing", "decision making"]
+seriesPart: 3
+draft: false
+---
+
+import ExperimentChart from "../../components/ExperimentChart.astro";
+import ExperimentLifecycle from "../../components/ExperimentLifecycle.astro";
+
+In [Part 1](/blog/beyond-peeking-part-1/), I discussed the pressure to act on promising results in a planned six-week e-commerce experiment. In [Part 2](/blog/fixed-power-designs/), I explored fixed-power design as an alternative to committing to a sample size based on historical variance.
+
+Here I want to bring those two ideas together. Can we make an informed commercial decision halfway through an experiment without necessarily giving up the ability to learn from it?
+
+## Protecting the original comparison
+
+One approach I find particularly interesting is Spotify's separation of sequential safety monitoring from final product evaluation. I would extend that idea to positive early commercial signals as well.
+
+Consider a protected experimental population, randomly assigned 50:50 and left unchanged throughout the experiment. A separate eligible population initially receives control. If an early efficacy checkpoint and acceptable guardrails justify expansion, that separate population can receive the treatment while the protected comparison continues.
+
+This requires planning before launch, sufficient traffic, persistent assignments and an assumption that expansion does not affect the protected population. In a capacity-constrained business, for example, extra orders might change availability for both experimental groups. A protected holdout would not automatically resolve that interference.
+
+I simulated the combined design using 250 new customers per arm per day, seven days of observation before each cohort enters analysis, and a planned interim check after 2,500 mature customers per arm. The interim criterion was a one-sided p-value below 0.005. Another 250 visitors per day could receive the treatment after an early decision. This means the protected control, protected treatment and rollout population each account for a third of eligible new traffic. The protected experiment continued to its fixed-power endpoint irrespective of the efficacy check.
+
+<ExperimentChart chart="rollout" />
+
+| True relative uplift | Early expansion rate | Mean incremental seven-day conversions attributable to pre-readout expansion |
+|---|---:|---:|
+| 0% | 0.5% | 0 |
+| 5% | 5.6% | 2 |
+| 10% | 26.6% | 18 |
+| 20% | 90.0% | 126 |
+
+<ExperimentChart chart="probability" />
+
+Across the three simulated baseline rates, the final two-sided false positive rate was between 4.9% and 5.0%, and power at the absolute MDE was approximately 81%. Early expansion and the final conclusion are separate decisions. If either can declare a definitive success, their joint error rate must instead be accounted for.
+
+There are important limitations. The simulation assumes independent customers, constant effects and no interference or rollout costs. A treatment that initially increases conversion could subsequently lose its effect or even become harmful. In a stress test where the first ten recruitment cohorts had a 20% uplift but subsequent cohorts had a 10% reduction, expansion triggered in about 90% of simulations and cost an average of 58 conversions. This is why the rollback plan matters.
+
+<ExperimentChart chart="commercial" />
+
+Guardrails introduce their own information requirements. In another stress test, a checkout failure rate of 4% with a tolerable increase of one percentage point was used as a non-inferiority gate. Requiring the upper one-sided 95% confidence bound to fall below that threshold reduced early expansion for a genuinely harmful treatment from about 90% to 0.05%. It also reduced expansion for a safe, effective treatment to around 50%. This illustrates a trade-off, not a universal threshold recommendation.
+
+A protected cohort is only one option. A full commercial rollout may sometimes be justified when the opportunity is time-sensitive and reversibility is high. In that case we should be clear that we have chosen to forgo some further randomised evidence, rather than presenting an early estimate as a definitive final result. If we change the allocation inside an ongoing experiment, we need an analysis designed for that adaptation, particularly when outcomes vary over time.
+
+## Designing the decisions before the experiment
+
+<ExperimentLifecycle />
+
+| Stage | Question | Approach |
+|---|---|---|
+| Launch | Is it working correctly? | Production checks, SRM, assignment and integrity monitoring |
+| Early monitoring | Is it causing harm? | Technical alerts and calibrated sequential harm checks |
+| Interim evaluation | Should we act commercially? | Planned efficacy checks, mature outcomes, guardrails and commercial judgement |
+| Information assessment | Do we have enough data? | Fixed-power or planned fixed-sample requirement, minimum duration and maturity |
+| Final evaluation | What have we learnt? | Effect estimate, appropriate confidence interval, guardrails and commercial relevance |
+
+Before launch I would want the team to agree on the primary metric and observation window, MDE, power, significance level, guardrail margins, interim criteria, rollout options, maximum duration and rollback conditions. If the information target cannot be reached within the available time, the result may simply be inconclusive. Where early harm can terminate the study or where multiple interim efficacy decisions are possible, the inferential plan must account for those rules; the simulations here do not establish guarantees for all such combinations.
+
+There will always be an element of commercial judgement. The role of the data scientist is to help the business understand the uncertainty and make an informed decision. I don't think the objective should be to eliminate early commercial rollout. It should be to design experiments that support the decisions we may need to make throughout their lifecycle.
+
+## Further reading
+
+- [Spotify: Risk-aware product decisions with multiple metrics](https://engineering.atspotify.com/2024/03/risk-aware-product-decisions-in-a-b-tests-with-multiple-metrics)
+- [Spotify: Fixed-power designs](https://engineering.atspotify.com/2024/05/fixed-power-designs-its-not-if-you-peek-its-what-you-peek-at)
+- [Spotify: Longitudinal data and sequential testing](https://engineering.atspotify.com/2023/07/bringing-sequential-testing-to-experiments-with-longitudinal-data-part-2-sequential-testing)
+
+
+*The ideas and perspectives in this article are my own, informed by practical experience. I used an LLM to assist with research, simulations, visualisations and editing. All numerical examples are fictional or simulated.*

@@ -5,10 +5,14 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import { experimentSeries, seriesTitle } from '../data/experimentSeries';
 
 type Props = CollectionEntry<'blog'>['data'] & { headings?: { depth: number; slug: string; text: string }[] };
-const { title, description, pubDate, updatedDate, heroImage, headings = [] } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, seriesPart, headings = [] } = Astro.props;
 const sections = headings.filter((heading) => heading.depth === 2);
+const current = seriesPart ? experimentSeries[seriesPart - 1] : undefined;
+const previous = seriesPart && seriesPart > 1 ? experimentSeries[seriesPart - 2] : undefined;
+const next = seriesPart && seriesPart < 3 ? experimentSeries[seriesPart] : undefined;
 ---
 
 <!doctype html>
@@ -21,12 +25,23 @@ const sections = headings.filter((heading) => heading.depth === 2);
         <article>
           <header class="article-header">
             <a class="text-link article-back" href="/blog/">← All writing</a>
+            {current && <p class="article-series-label">{seriesTitle} <span aria-hidden="true">·</span> Part {seriesPart} of 3</p>}
             <h1>{title}</h1>
             <p class="article-header__description">{description}</p>
             <div class="article-header__meta">Shan Islam <span aria-hidden="true">·</span> <FormattedDate date={pubDate} />{updatedDate && <> <span aria-hidden="true">·</span> Updated <FormattedDate date={updatedDate} /></>}</div>
           </header>
           {heroImage && <figure class="article-hero-image"><Image width={1200} height={600} src={heroImage} alt="" /></figure>}
+          {current && <nav class="series-nav" aria-label="Experimentation in the Real World series">
+            <strong>In this series</strong>
+            <ol>{experimentSeries.map((item) => <li>
+              {item.part === seriesPart ? <span aria-current="page"><small>Part {item.part}</small>{item.title}</span> : <a href={`/blog/${item.slug}/`}><small>Part {item.part}</small>{item.title}</a>}
+            </li>)}</ol>
+          </nav>}
           <div class="article-prose prose"><slot /></div>
+          {current && <nav class="series-bottom" aria-label="Previous and next article">
+            {previous ? <a href={`/blog/${previous.slug}/`}><small>← Previous · Part {previous.part}</small><strong>{previous.title}</strong></a> : <span />}
+            {next ? <a href={`/blog/${next.slug}/`}><small>Next · Part {next.part} →</small><strong>{next.title}</strong></a> : <span />}
+          </nav>}
         </article>
         {sections.length > 1 && <aside class="article-toc" aria-label="In this article">
           <strong>In this article</strong>
@@ -45,6 +60,7 @@ const sections = headings.filter((heading) => heading.depth === 2);
   .article-header { margin: 0 0 16px; padding-bottom: 16px; border-bottom: 1px solid var(--site-border); }
   .article-back { margin-bottom: 16px; font-size: 14px; }
   .article-header h1 { margin: 0 0 8px; font-size: clamp(34px, 3.3vw, 44px); line-height: 1.13; }
+  .article-series-label { margin: 0 0 7px; color: var(--site-green); font-size: 12px; font-weight: 700; letter-spacing: .025em; }
   .article-header__description { margin: 0 0 8px; color: var(--site-muted); font-size: 17px; line-height: 1.5; }
   .article-header__meta { display: flex; flex-wrap: wrap; gap: 6px; color: var(--site-muted); font-size: 13px; }
   .article-hero-image { margin: 0 0 20px; }
@@ -68,6 +84,21 @@ const sections = headings.filter((heading) => heading.depth === 2);
   .article-prose th, .article-prose td { padding: 8px 12px; border: 1px solid var(--site-border); text-align: left; }
   .article-prose thead { background: var(--site-code); }
   .article-prose :is(td, th):not(:first-child) { text-align: right; }
+  .article-prose .katex-display { max-width: 100%; margin: 16px 0; overflow-x: auto; overflow-y: hidden; font-size: 1.02em; }
+  .series-nav { margin: 0 0 20px; padding: 12px 0 14px; border-bottom: 1px solid var(--site-border); }
+  .series-nav > strong { display: block; margin-bottom: 7px; color: var(--site-muted); font-size: 12px; }
+  .series-nav ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .series-nav li { min-width: 0; }
+  .series-nav a, .series-nav li > span { display: block; height: 100%; padding: 8px 9px; border-left: 2px solid var(--site-border); color: var(--site-muted); font-size: 12px; line-height: 1.3; text-decoration: none; }
+  .series-nav li > span[aria-current] { border-left-color: var(--site-green); color: var(--site-text); font-weight: 700; }
+  .series-nav a:hover, .series-nav a:focus-visible { border-left-color: var(--site-green); color: var(--site-green); }
+  .series-nav small { display: block; margin-bottom: 3px; color: var(--site-green); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+  .series-bottom { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 28px 0 4px; padding-top: 16px; border-top: 1px solid var(--site-border); }
+  .series-bottom a { display: block; color: var(--site-green); line-height: 1.35; text-decoration: none; }
+  .series-bottom a:last-child { text-align: right; }
+  .series-bottom a:hover strong { text-decoration: underline; }
+  .series-bottom small { display: block; margin-bottom: 3px; color: var(--site-muted); font-size: 11px; }
+  .series-bottom strong { font-size: 13px; }
   .article-toc { position: sticky; top: 24px; margin-top: 80px; padding-left: 20px; border-left: 1px solid var(--site-border); font-size: 13px; }
   .article-toc strong { display: block; margin: 0 0 12px; color: var(--site-text); font-size: 14px; }
   .article-toc ul { margin: 0; padding: 0; list-style: none; }
@@ -75,5 +106,5 @@ const sections = headings.filter((heading) => heading.depth === 2);
   .article-toc a { color: var(--site-muted); text-decoration: none; }
   .article-toc a:hover, .article-toc a:focus-visible { color: var(--site-green); text-decoration: underline; }
   @media (max-width: 900px) { .article-layout { grid-template-columns: minmax(0, 760px); } .article-toc { display: none; } }
-  @media (max-width: 720px) { .article-page { width: min(1120px, calc(100% - 40px)); padding-top: 24px; } .article-header h1 { font-size: 32px; } .article-header__description { font-size: 16px; } .article-prose p, .article-prose li { font-size: 16px; } .article-prose table { display: block; overflow-x: auto; white-space: nowrap; } }
+  @media (max-width: 720px) { .article-page { width: min(1120px, calc(100% - 40px)); padding-top: 24px; } .article-header h1 { font-size: 32px; } .article-header__description { font-size: 16px; } .article-prose p, .article-prose li { font-size: 16px; } .article-prose table { display: block; overflow-x: auto; white-space: nowrap; } .series-nav ol { grid-template-columns: 1fr; gap: 2px; } .series-nav a, .series-nav li > span { padding: 5px 9px; } }
 </style>
