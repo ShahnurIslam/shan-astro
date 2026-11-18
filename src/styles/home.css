@@ -1,7 +1,7 @@
 .home-page { padding-top: 40px; }
-.home-intro { margin-bottom: 24px; }
+.home-intro { margin-bottom: 20px; text-align: left; }
 .home-intro h1 { margin-bottom: 8px; }
-.home-intro p { margin: 0; font-size: clamp(19px, 2.5vw, 25px); line-height: 1.4; color: var(--site-text); }
+.home-intro p { max-width: 940px; margin: 0; font-size: clamp(19px, 2.5vw, 25px); line-height: 1.45; color: var(--site-text); }
 .home-feature { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 32px; align-items: center; padding-bottom: 24px; border-bottom: 1px solid var(--site-border); }
 .home-feature__image { display: block; overflow: hidden; }
 .home-feature__image img { display: block; width: 100%; aspect-ratio: 1.95; object-fit: cover; border-radius: 0; }
@@ -9,11 +9,19 @@
 .home-feature__copy p { max-width: 42ch; margin: 0 0 16px; color: var(--site-muted); }
 .home-latest { padding-top: 12px; }
 .home-latest h2 { margin: 0 0 4px; font-size: 25px; }
-.home-explore { margin: 12px 0 0; }
-.home-explore > span { color: var(--site-muted); margin: 0 8px; }
+.home-series__label { margin: 0 0 8px; color: var(--site-muted); font-size: 13px; line-height: 1.4; }
+.home-series__list { margin: 0; padding: 0; list-style: none; }
+.home-series__list li { margin: 0; padding: 0; }
+.home-series__title { display: block; }
+.home-series__title small { display: block; margin-bottom: 3px; color: var(--site-muted); font-size: 12px; line-height: 1.35; }
+.home-series__title strong { display: block; font-size: 18px; line-height: 1.35; }
+.home-writing-link { margin-top: 14px; font-size: 14px; }
+.home-more { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--site-border); font-size: 14px; }
 @media (max-width: 720px) {
   .home-page { padding-top: 32px; }
   .home-feature { grid-template-columns: 1fr; gap: 16px; }
   .home-feature__copy h2 { max-width: none; }
-  .home-intro { margin-bottom: 24px; }
+  .home-intro { margin-bottom: 18px; }
+  .home-series__title strong { font-size: 17px; }
+  .home-more { margin-top: 18px; }
 }
