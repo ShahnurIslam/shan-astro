@@ -1,85 +1,166 @@
 ---
 type Point = { label: string; values: number[] };
+type Chart = {
+  title: string;
+  note: string;
+  units: string;
+  labels: string[];
+  points: Point[];
+  max: number;
+  type: 'line-maturity' | 'horizontal' | 'vertical' | 'line-requirement' | 'stacked' | 'diverging';
+  axis: string;
+  shortLabels?: string[];
+};
 type Props = { chart: string };
 const { chart } = Astro.props;
-const charts: Record<string, { title: string; note: string; units: string; labels: string[]; points: Point[]; max: number; diverging?: boolean }> = {
-  maturity: { title: 'Cumulative conversion at known checkpoints', note: 'Historical customer journey; the shape between checkpoints is not estimated.', units: '%', labels: ['Converted'], points: [{ label: 'Within 7 days', values: [24] }, { label: 'Within 30 days', values: [30] }], max: 30 },
-  assigned: { title: 'Assigned and mature customers per arm', note: 'Illustrative recruitment at 500 assignments per arm per day with a seven-day outcome window.', units: '', labels: ['Assigned', 'Mature'], points: [{ label: 'Day 7', values: [3500, 0] }, { label: 'Day 14', values: [7000, 3500] }, { label: 'Day 21', values: [10500, 7000] }, { label: 'Day 28', values: [14000, 10500] }], max: 14000 },
-  falsePositive: { title: 'False positives under the null', note: '100,000 simulated experiments per method; two-sided tests at the 5% level.', units: '%', labels: ['Observed false positive rate'], points: [{ label: 'Single final test', values: [5.1] }, { label: 'Unadjusted peeking', values: [25.2] }], max: 30 },
-  power: { title: 'Statistical power by baseline conversion rate', note: '100,000 simulations per scenario; fixed sample of 5,000 per arm.', units: '%', labels: ['Fixed sample', 'Fixed power'], points: [{ label: '10% baseline', values: [96.8, 81.6] }, { label: '24% baseline', values: [79, 81] }, { label: '40% baseline', values: [68.5, 80.9] }], max: 100 },
-  sample: { title: 'Mean fixed-power sample per arm', note: 'Absolute MDE held at 2.4 percentage points across baseline rates.', units: ' customers', labels: ['Mean sample'], points: [{ label: '10% baseline', values: [2824] }, { label: '24% baseline', values: [5252] }, { label: '40% baseline', values: [6750] }], max: 7000 },
-  requirement: { title: 'Mature sample versus estimated requirement', note: 'Illustrative checkpoints per group; the target changes with estimated variance.', units: ' customers', labels: ['Mature sample', 'Estimated requirement'], points: [{ label: 'Checkpoint 1', values: [2000, 4356] }, { label: 'Checkpoint 2', values: [4700, 4966] }, { label: 'Checkpoint 3', values: [5200, 5104] }], max: 5500 },
-  rollout: { title: 'Traffic allocation before and after expansion', note: '250 new customers per day in each population; the protected 50:50 comparison continues.', units: ' per day', labels: ['Protected control', 'Protected treatment', 'Separate population on control', 'Separate population on treatment'], points: [{ label: 'Before', values: [250, 250, 250, 0] }, { label: 'After', values: [250, 250, 0, 250] }], max: 250 },
-  probability: { title: 'Probability of early expansion', note: 'Simulated expansion rate at the planned one-sided interim efficacy check.', units: '%', labels: ['Early expansion rate'], points: [{ label: '0% true uplift', values: [0.5] }, { label: '5% true uplift', values: [5.6] }, { label: '10% true uplift', values: [26.6] }, { label: '20% true uplift', values: [90] }], max: 100 },
-  commercial: { title: 'Conversions gained or lost before final readout', note: 'Mean incremental seven-day conversions in constant-effect scenarios, plus a separate reversal stress test.', units: ' conversions', labels: ['Incremental conversions'], points: [{ label: '0% uplift', values: [0] }, { label: '5% uplift', values: [2] }, { label: '10% uplift', values: [18] }, { label: '20% uplift', values: [126] }, { label: 'Effect reversal', values: [-58] }], max: 126, diverging: true },
+const charts: Record<string, Chart> = {
+  maturity: { title: 'Cumulative conversion over time', note: 'Solid points are known values; dashed connections are illustrative interpolation.', units: '%', labels: ['Converted'], points: [{ label: 'Day 0', values: [0] }, { label: 'Day 7', values: [24] }, { label: 'Day 30', values: [30] }], max: 35, type: 'line-maturity', axis: 'Days since assignment' },
+  assigned: { title: 'Assigned and mature customers per arm', note: 'Illustrative recruitment at 500 assignments per arm per day with a seven-day outcome window.', units: '', labels: ['Assigned', 'Mature'], points: [{ label: 'Day 7', values: [3500, 0] }, { label: 'Day 14', values: [7000, 3500] }, { label: 'Day 21', values: [10500, 7000] }, { label: 'Day 28', values: [14000, 10500] }], max: 14000, type: 'horizontal', axis: 'Customers per arm' },
+  falsePositive: { title: 'False positives under the null', note: '100,000 simulated experiments per method; two-sided tests at the 5% level.', units: '%', labels: ['Observed false positive rate'], points: [{ label: 'Single final test', values: [5.1] }, { label: 'Unadjusted tests every 250 customers per arm', values: [25.2] }], shortLabels: ['Final test', 'Unadjusted peeking'], max: 30, type: 'vertical', axis: 'False positive rate (%)' },
+  power: { title: 'Statistical power by baseline conversion rate', note: '100,000 simulations per scenario; dashed line marks the 80% target.', units: '%', labels: ['Fixed sample', 'Fixed power'], points: [{ label: '10% baseline', values: [96.8, 81.6] }, { label: '24% baseline', values: [79, 81] }, { label: '40% baseline', values: [68.5, 80.9] }], shortLabels: ['10%', '24%', '40%'], max: 100, type: 'vertical', axis: 'Power (%)' },
+  sample: { title: 'Sample size per arm across baseline rates', note: 'Fixed sample: 5,000 per arm. Fixed-power figures are mean samples; absolute MDE stays at 2.4 percentage points.', units: ' customers', labels: ['Original fixed sample', 'Mean fixed-power sample'], points: [{ label: '10% baseline', values: [5000, 2824] }, { label: '24% baseline', values: [5000, 5252] }, { label: '40% baseline', values: [5000, 6750] }], max: 7000, type: 'horizontal', axis: 'Customers per arm' },
+  requirement: { title: 'Mature sample versus estimated requirement', note: 'Illustrative checkpoints per group. The information target is reached at checkpoint 3.', units: ' customers', labels: ['Mature sample', 'Estimated requirement'], points: [{ label: 'Checkpoint 1', values: [2000, 4356] }, { label: 'Checkpoint 2', values: [4700, 4966] }, { label: 'Checkpoint 3', values: [5200, 5104] }], max: 5500, type: 'line-requirement', axis: 'Checkpoint' },
+  rollout: { title: 'Traffic allocation before and after expansion', note: 'Each bar totals 750 new customers per day. The protected 50:50 comparison stays unchanged.', units: ' per day', labels: ['Protected control', 'Protected treatment', 'Rollout on control', 'Rollout on treatment'], points: [{ label: 'Before expansion', values: [250, 250, 250, 0] }, { label: 'After expansion', values: [250, 250, 0, 250] }], max: 750, type: 'stacked', axis: 'Customers per day' },
+  probability: { title: 'Probability of early expansion', note: 'Simulated expansion rate at the planned one-sided interim efficacy check.', units: '%', labels: ['Early expansion rate'], points: [{ label: '0% true uplift', values: [0.5] }, { label: '5% true uplift', values: [5.6] }, { label: '10% true uplift', values: [26.6] }, { label: '20% true uplift', values: [90] }], shortLabels: ['0%', '5%', '10%', '20%'], max: 100, type: 'vertical', axis: 'Early expansion rate (%)' },
+  commercial: { title: 'Conversions gained or lost before final readout', note: 'Mean incremental seven-day conversions. Effect reversal is a separate stress test.', units: ' conversions', labels: ['Incremental conversions'], points: [{ label: '0% uplift', values: [0] }, { label: '5% uplift', values: [2] }, { label: '10% uplift', values: [18] }, { label: '20% uplift', values: [126] }, { label: 'Effect reversal', values: [-58] }], max: 140, type: 'diverging', axis: 'Incremental conversions' },
 };
 const spec = charts[chart];
 if (!spec) throw new Error(`Unknown experiment chart: ${chart}`);
 const fmt = (n: number) => `${n.toLocaleString('en-GB', { maximumFractionDigits: 1 })}${spec.units}`;
-const percentage = (n: number) => `${Math.max(0, Math.min(100, Math.abs(n) / spec.max * 100))}%`;
+const colours = ['#075544', '#8AA692', '#a58c6c', '#C46D42'];
+const ink = '#18201C', muted = '#5C655F', grid = '#D6DCD4';
+const escape = (value: string) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+const text = (x: number, y: number, value: string, size = 14, anchor = 'start', fill = ink, weight = 400) => `<text x="${x}" y="${y}" font-size="${size}" text-anchor="${anchor}" fill="${fill}" font-weight="${weight}">${escape(value)}</text>`;
+const line = (x1: number, y1: number, x2: number, y2: number, stroke = grid, width = 1, dash = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="${width}" ${dash ? `stroke-dasharray="${dash}"` : ''}/>`;
+const rect = (x: number, y: number, width: number, height: number, fill: string) => `<rect x="${x}" y="${y}" width="${Math.max(0,width)}" height="${height}" fill="${fill}"/>`;
+const dot = (x: number, y: number, fill: string, radius = 5) => `<circle cx="${x}" cy="${y}" r="${radius}" fill="${fill}" stroke="#FAF8F4" stroke-width="2"/>`;
+const number = (n: number) => n.toLocaleString('en-GB', { maximumFractionDigits: 1 });
+function renderPlot(mobile: boolean) {
+  const w = mobile ? 360 : 700;
+  const h = mobile ? 330 : 310;
+  const top = 28, bottom = mobile ? 58 : 52;
+  let body = '';
+  if (spec.type === 'line-maturity') {
+    const left = mobile ? 47 : 64, right = 22, yBottom = h - bottom, plotW = w - left - right, plotH = yBottom - top;
+    const x = (day: number) => left + day / 30 * plotW;
+    const y = (value: number) => yBottom - value / 35 * plotH;
+    for (const tick of [0, 10, 20, 30, 35]) { const yy=y(tick); body += line(left,yy,w-right,yy) + text(left-7,yy+5,`${tick}%`,13,'end',muted); }
+    for (const day of [0,7,15,30]) { const xx=x(day); body += line(xx,yBottom,xx,yBottom+5,muted) + text(xx,yBottom+22,String(day),13,'middle',muted); }
+    body += line(left,top,left,yBottom,muted) + line(left,yBottom,w-right,yBottom,muted);
+    body += `<path d="M${x(0)},${y(0)} L${x(7)},${y(24)} L${x(30)},${y(30)}" fill="none" stroke="${colours[0]}" stroke-width="3" stroke-dasharray="7 6"/>`;
+    for (const [day,value] of [[0,0],[7,24],[30,30]]) body += dot(x(day),y(value),colours[0],6);
+    body += text(x(7)+7,y(24)-10,'24%',15,'start',colours[0],700) + text(x(30)-6,y(30)-10,'30%',15,'end',colours[0],700);
+    body += text(w-right,top-8,'80% of 30-day conversions',mobile?12:14,'end',colours[0],700);
+    body += text(w/2,h-5,'Days since assignment',14,'middle',muted);
+  } else if (spec.type === 'line-requirement') {
+    const left = mobile ? 55 : 72, right = mobile ? 27 : 40, yBottom=h-bottom, plotW=w-left-right, plotH=yBottom-top;
+    const x = (i: number) => left + 20 + i * (plotW-40)/2;
+    const y = (value: number) => yBottom - value/spec.max*plotH;
+    for (const tick of [0,2500,5000]) { const yy=y(tick); body += line(left,yy,w-right,yy) + text(left-7,yy+5,number(tick),12,'end',muted); }
+    body += line(left,top,left,yBottom,muted) + line(left,yBottom,w-right,yBottom,muted);
+    for (let j=0;j<2;j++) {
+      body += `<polyline points="${spec.points.map((p,i)=>`${x(i)},${y(p.values[j])}`).join(' ')}" fill="none" stroke="${colours[j]}" stroke-width="3"/>`;
+      spec.points.forEach((p,i)=>{body += dot(x(i),y(p.values[j]),colours[j],i===2&&j===0?7:5);});
+    }
+    spec.points.forEach((p,i)=>{
+      body += text(x(i),yBottom+22,String(i+1),13,'middle',muted);
+      body += text(i===2?x(i)+12:x(i),y(p.values[0])+19,number(p.values[0]),mobile?12:13,i===2?'start':'middle',colours[0],700);
+      body += text(i===2?x(i)-13:x(i),y(p.values[1])-10,number(p.values[1]),mobile?12:13,i===2?'end':'middle',colours[1],700);
+    });
+    body += `<circle cx="${x(2)}" cy="${y(5200)}" r="11" fill="none" stroke="${colours[0]}" stroke-width="2"/>`;
+    body += text(w-right,top-8,'Target reached at 3',mobile?12:14,'end',colours[0],700);
+    body += text(w/2,h-5,'Checkpoint',14,'middle',muted);
+  } else if (spec.type === 'vertical') {
+    const left=mobile?46:58,right=18,yBottom=h-bottom,plotW=w-left-right,plotH=yBottom-top;
+    const y=(v:number)=>yBottom-v/spec.max*plotH;
+    const ticks=spec.max===30?[0,10,20,30]:[0,25,50,75,100];
+    for(const tick of ticks) {const yy=y(tick);body+=line(left,yy,w-right,yy)+text(left-7,yy+5,`${tick}%`,12,'end',muted);}
+    body+=line(left,top,left,yBottom,muted)+line(left,yBottom,w-right,yBottom,muted);
+    if(chart==='power') body+=line(left,y(80),w-right,y(80),'#C46D42',2,'6 5');
+    const groupW=plotW/spec.points.length,barW=Math.min(mobile?27:47,groupW/(spec.labels.length+1.2));
+    spec.points.forEach((p,i)=>{
+      const center=left+groupW*(i+.5);
+      p.values.forEach((v,j)=>{
+        const xx=center+(j-(p.values.length-1)/2)*(barW+3)-barW/2;
+        body+=rect(xx,y(v),barW,Math.max(2,yBottom-y(v)),colours[j]);
+        body+=text(xx+barW/2,Math.max(top-3,y(v)-8),`${number(v)}%`,mobile?12:13,'middle',ink,700);
+      });
+      body+=text(center,yBottom+23,spec.shortLabels?.[i]??p.label,mobile?13:14,'middle',muted);
+    });
+    body+=text(w/2,h-5,chart==='power'?'Baseline conversion rate':chart==='probability'?'True relative uplift':'Testing method',14,'middle',muted);
+  } else if (spec.type === 'stacked') {
+    const left=mobile?16:32,right=mobile?16:32,plotW=w-left-right,barH=mobile?38:44;
+    spec.points.forEach((p,i)=>{
+      const labelY=i===0?56:159, barY=labelY+14;
+      body+=text(left,labelY,p.label,15,'start',ink,700)+text(w-right,labelY,'750 / day',14,'end',muted);
+      let xx=left;
+      p.values.forEach((v,j)=>{if(v>0){const width=v/750*plotW;body+=rect(xx,barY,width,barH,colours[j])+text(xx+width/2,barY+barH/2+5,'250',14,'middle','#fff',700);xx+=width;}});
+      body+=line(left,barY+barH+8,w-right,barY+barH+8,grid);
+    });
+    const legendY=mobile?269:263;
+    body+=rect(left,legendY-11,11,11,colours[0])+text(left+17,legendY-1,'Protected control',mobile?12:13,'start',muted);
+    body+=rect(left,legendY+11,11,11,colours[1])+text(left+17,legendY+21,'Protected treatment',mobile?12:13,'start',muted);
+    const secondX=mobile?190:360;
+    body+=rect(secondX,legendY-11,11,11,colours[2])+text(secondX+17,legendY-1,'Rollout: control',mobile?12:13,'start',muted);
+    body+=rect(secondX,legendY+11,11,11,colours[3])+text(secondX+17,legendY+21,'Rollout: treatment',mobile?12:13,'start',muted);
+  } else if (spec.type === 'diverging') {
+    const left=mobile?105:150,right=mobile?27:55,yBottom=h-bottom,plotW=w-left-right,zero=left+plotW/2,half=plotW/2,band=(yBottom-top)/spec.points.length,barH=mobile?22:25;
+    for(const tick of [-140,-70,0,70,140]) {const xx=zero+tick/140*half;body+=line(xx,top,xx,yBottom,tick===0?muted:grid,tick===0?2:1)+text(xx,yBottom+21,String(tick),12,'middle',muted);}
+    spec.points.forEach((p,i)=>{
+      const value=p.values[0], cy=top+band*(i+.5), width=Math.abs(value)/140*half;
+      body+=text(left-8,cy+5,p.label,mobile?13:14,'end',ink);
+      if(value>0)body+=rect(zero,cy-barH/2,width,barH,colours[0]);
+      if(value<0)body+=rect(zero-width,cy-barH/2,width,barH,'#C46D42');
+      body+=text(value<0?zero-width-5:zero+width+5,cy+5,number(value),mobile?13:14,value<0?'end':'start',value<0?'#A4512C':colours[0],700);
+    });
+    body+=text(w/2,h-5,'Incremental seven-day conversions',14,'middle',muted);
+  } else {
+    const left=mobile?105:150,right=mobile?48:70,yBottom=h-bottom,plotW=w-left-right,band=(yBottom-top)/spec.points.length,barH=spec.points.length>3?(mobile?16:19):(mobile?22:26);
+    const ticks=spec.max===14000?[0,7000,14000]:[0,3500,7000];
+    for(const tick of ticks) {const xx=left+tick/spec.max*plotW;body+=line(xx,top,xx,yBottom)+text(xx,yBottom+21,number(tick),12,'middle',muted);}
+    spec.points.forEach((p,i)=>{
+      const cy=top+band*(i+.5), barGap=3, groupH=p.values.length*barH+(p.values.length-1)*barGap;
+      body+=text(left-8,cy+5,p.label,mobile?13:14,'end',ink);
+      p.values.forEach((v,j)=>{
+        const yy=cy-groupH/2+j*(barH+barGap),width=v/spec.max*plotW;
+        if(v>0)body+=rect(left,yy,width,barH,colours[j]);
+        body+=text(left+width+5,yy+barH/2+5,number(v),mobile?12:13,'start',ink,700);
+      });
+    });
+    body+=text(w/2,h-5,spec.axis,14,'middle',muted);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="chart-svg ${mobile?'chart-svg--mobile':'chart-svg--desktop'}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${escape(spec.title)}. ${escape(spec.points.map(p=>`${p.label}: ${p.values.map((v,i)=>`${spec.labels[i]} ${fmt(v)}`).join(', ')}`).join('; '))}." preserveAspectRatio="xMidYMid meet"><title>${escape(spec.title)}</title>${body}</svg>`;
+}
 ---
 
-<figure class:list={['experiment-chart', { 'experiment-chart--diverging': spec.diverging }]} aria-labelledby={`${chart}-title`}>
+<figure class="experiment-chart" aria-labelledby={`${chart}-title`}>
   <figcaption id={`${chart}-title`}><strong>{spec.title}</strong><span>{spec.note}</span></figcaption>
-  {spec.labels.length > 1 && <div class="experiment-chart__legend" aria-hidden="true">{spec.labels.map((label, i) => <span><i class={`series-key series-key--${i}`} />{label}</span>)}</div>}
-  {chart === 'maturity' && <div class="experiment-chart__curve" role="img" aria-label="Cumulative conversion: 24% within seven days and 30% within 30 days. Only these two checkpoints are known.">
-    <svg viewBox="0 0 600 112" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <path d="M8 100H592" class="curve-axis" />
-      <path d="M38 48 L562 18" class="curve-line" />
-      <circle cx="38" cy="48" r="6" class="curve-point" />
-      <circle cx="562" cy="18" r="6" class="curve-point" />
-    </svg>
-    <div class="experiment-chart__curve-labels"><span><strong>24%</strong>Within 7 days</span><span><strong>30%</strong>Within 30 days</span></div>
-  </div>}
-  <div class="experiment-chart__plot" role="img" aria-label={`${spec.title}. ${spec.points.map(point => `${point.label}: ${point.values.map((value, i) => `${spec.labels[i]} ${fmt(value)}`).join(', ')}`).join('; ')}.`} style={chart === 'maturity' ? 'display:none' : undefined}>
-    {spec.points.map((point) => <div class="experiment-chart__row">
-      <span class="experiment-chart__label">{point.label}</span>
-      <div class="experiment-chart__bars">
-        {point.values.map((value, i) => <div class="experiment-chart__bar-line">
-          {spec.diverging && <div class="experiment-chart__negative">{value < 0 && <span class={`experiment-chart__bar experiment-chart__bar--${i} experiment-chart__bar--loss`} style={`width:${percentage(value)}`} />}</div>}
-          <div class="experiment-chart__track">{value > 0 && <span class={`experiment-chart__bar experiment-chart__bar--${i}`} style={`width:${percentage(value)}`} />}</div>
-          <strong class="experiment-chart__value">{fmt(value)}</strong>
-        </div>)}
-      </div>
-    </div>)}
-  </div>
+  {spec.labels.length > 1 && spec.type !== 'stacked' && <div class="experiment-chart__legend" aria-hidden="true">{spec.labels.map((label, i) => <span><i style={`background:${colours[i]}`} />{label}</span>)}{chart === 'power' && <span><i class="target-key" />80% target</span>}</div>}
+  <div class="experiment-chart__visual" set:html={renderPlot(false) + renderPlot(true)} />
   <details class="experiment-chart__data"><summary>Chart data</summary><div class="experiment-chart__table-wrap"><table><thead><tr><th scope="col">Scenario</th>{spec.labels.map(label => <th scope="col">{label}</th>)}</tr></thead><tbody>{spec.points.map(point => <tr><th scope="row">{point.label}</th>{point.values.map(value => <td>{fmt(value)}</td>)}</tr>)}</tbody></table></div></details>
 </figure>
 
 <style>
-  .experiment-chart { margin: 18px 0 22px !important; padding: 14px 0 10px; border-top: 1px solid var(--site-border); border-bottom: 1px solid var(--site-border); font-family: var(--font-body); }
-  figcaption { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; line-height: 1.35; }
-  figcaption strong { font-size: 15px; color: var(--site-text); }
-  figcaption span { font-size: 12px; color: var(--site-muted); }
-  .experiment-chart__legend { display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 12px; color: var(--site-muted); font-size: 11px; }
-  .experiment-chart__legend span { display: inline-flex; align-items: center; gap: 5px; }
-  .series-key { display: inline-block; width: 11px; height: 11px; background: var(--site-green); }
-  .series-key--1 { background: var(--site-sage); }.series-key--2 { background: #a58c6c; }.series-key--3 { background: var(--site-accent); }
-  .experiment-chart__plot { display: grid; gap: 8px; }
-  .experiment-chart__curve { width: 100%; }
-  .experiment-chart__curve svg { display: block; width: 100%; height: 70px; }
-  .curve-axis { fill: none; stroke: var(--site-border); stroke-width: 1; }
-  .curve-line { fill: none; stroke: var(--site-green); stroke-width: 3; stroke-dasharray: 7 5; }
-  .curve-point { fill: var(--site-green); }
-  .experiment-chart__curve-labels { display: flex; justify-content: space-between; gap: 12px; margin-top: -2px; color: var(--site-muted); font-size: 11px; }
-  .experiment-chart__curve-labels span { display: flex; flex-direction: column; line-height: 1.25; }
-  .experiment-chart__curve-labels span:last-child { text-align: right; }
-  .experiment-chart__curve-labels strong { color: var(--site-green); font-size: 15px; }
-  .experiment-chart__row { display: grid; grid-template-columns: minmax(112px, 145px) minmax(0, 1fr); gap: 10px; align-items: center; }
-  .experiment-chart__label { color: var(--site-text); font-size: 12px; line-height: 1.25; }
-  .experiment-chart__bars { display: grid; gap: 3px; }
-  .experiment-chart__bar-line { display: flex; align-items: center; gap: 7px; min-width: 0; }
-  .experiment-chart__track { height: 13px; flex: 1; background: var(--site-code); }
-  .experiment-chart__bar { display: block; height: 13px; min-width: 2px; background: var(--site-green); }
-  .experiment-chart__bar--1 { background: var(--site-sage); }.experiment-chart__bar--2 { background: #a58c6c; }.experiment-chart__bar--3 { background: var(--site-accent); }
-  .experiment-chart__value { flex: 0 0 92px; color: var(--site-text); font-size: 11px; font-weight: 650; white-space: nowrap; }
-  .experiment-chart__negative { display: flex; justify-content: flex-end; width: 22%; height: 13px; border-right: 1px solid var(--site-muted); background: var(--site-code); }
-  .experiment-chart__bar--loss { background: var(--site-accent); }
-  .experiment-chart--diverging .experiment-chart__value { flex-basis: 105px; }
-  .experiment-chart__data { margin-top: 10px; color: var(--site-muted); font-size: 11px; }
+  .experiment-chart { margin: 20px 0 24px !important; padding: 14px 0 10px; border-top: 1px solid var(--site-border); border-bottom: 1px solid var(--site-border); font-family: var(--font-body); }
+  figcaption { display: flex; flex-direction: column; gap: 3px; margin-bottom: 11px; line-height: 1.4; }
+  figcaption strong { color: var(--site-text); font-size: 17px; }
+  figcaption span { color: var(--site-muted); font-size: 13px; }
+  .experiment-chart__legend { display: flex; flex-wrap: wrap; gap: 7px 18px; margin: 0 0 8px; color: var(--site-muted); font-size: 13px; }
+  .experiment-chart__legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .experiment-chart__legend i { display: inline-block; flex: 0 0 13px; width: 13px; height: 13px; }
+  .experiment-chart__legend .target-key { height: 0; border-top: 2px dashed var(--site-accent); }
+  .experiment-chart__visual { min-width: 0; }
+  .experiment-chart__visual :global(svg) { display: block; width: 100%; height: auto; font-family: var(--font-body); }
+  .experiment-chart__visual :global(.chart-svg--mobile) { display: none; }
+  .experiment-chart__data { margin-top: 7px; color: var(--site-muted); font-size: 13px; }
   .experiment-chart__data summary { cursor: pointer; color: var(--site-green); }
   .experiment-chart__table-wrap { overflow-x: auto; }
-  .experiment-chart__data table { width: 100%; margin: 6px 0 0; font-size: 11px; }
-  .experiment-chart__data th, .experiment-chart__data td { padding: 4px 6px; border-bottom: 1px solid var(--site-border); text-align: left; }
-  @media (max-width: 520px) { .experiment-chart__row { grid-template-columns: 90px minmax(0, 1fr); gap: 6px; } .experiment-chart__label { font-size: 11px; } .experiment-chart__value { flex-basis: 70px; font-size: 10px; } .experiment-chart--diverging .experiment-chart__value { flex-basis: 77px; } .experiment-chart__negative { width: 28%; } }
+  .experiment-chart__data table { width: 100%; margin: 8px 0 0; border-collapse: collapse; font-size: 13px; }
+  .experiment-chart__data th, .experiment-chart__data td { padding: 6px 8px; border-bottom: 1px solid var(--site-border); text-align: left; overflow-wrap: anywhere; }
+  .experiment-chart__data td { font-variant-numeric: tabular-nums; }
+  @media (max-width: 600px) {
+    .experiment-chart__visual :global(.chart-svg--desktop) { display: none; }
+    .experiment-chart__visual :global(.chart-svg--mobile) { display: block; }
+    .experiment-chart__legend { font-size: 12px; gap: 5px 12px; }
+  }
 </style>

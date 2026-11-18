@@ -19,7 +19,12 @@ Spotify researchers Mattias Nordin and Mårten Schultzberg proposed [fixed-power
 
 For an equally allocated two-arm experiment, a simplified normal-approximation calculation is:
 
-$$n_{\mathrm{required}}=\frac{(\sigma_C^2+\sigma_T^2)(z_{1-\alpha/2}+z_{1-\beta})^2}{\delta^2}$$
+$$
+\begin{aligned}
+n_{\mathrm{required}}&=\frac{\sigma_C^2+\sigma_T^2}{\delta^2}\\
+&\quad\times(z_{1-\alpha/2}+z_{1-\beta})^2
+\end{aligned}
+$$
 
 Here $n$ is the sample size per arm, $\delta$ is the absolute MDE, and the two variances describe the outcomes in control and treatment. For binary conversion, $\sigma_g^2=p_g(1-p_g)$.
 
@@ -27,7 +32,9 @@ Suppose the historical seven-day conversion rate is 24%, the MDE is 2.4 percenta
 
 In a fixed-power design we update the variance estimates from mature outcomes in each arm and stop when:
 
-$$n_{\mathrm{mature}}\geq\widehat n_{\mathrm{required}}$$
+$$
+n_{\mathrm{mature}}\geq\widehat n_{\mathrm{required}}
+$$
 
 subject to the other planned completion criteria. The absolute MDE remains 0.024 throughout; we don't redefine it using the observed uplift or the changing baseline.
 

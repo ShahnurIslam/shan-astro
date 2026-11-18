@@ -90,6 +90,16 @@ The repeated tests were two-sided at the 5% level. These rates are specific to t
 
 If we know that early intervention is possible, why not account for it upfront? Group sequential testing, for example, uses planned interim evaluations and calibrated boundaries to control false-positive risk across those evaluations. [Spotify's discussion of sequential frameworks](https://engineering.atspotify.com/2023/03/choosing-sequential-testing-framework-comparisons-and-discussions) is a useful introduction.
 
+### Designing for both continuous monitoring and final evaluation
+
+One aspect of [Spotify's experimentation approach](https://confidence.spotify.com/bootcamp/interpreting-experiment-results/course-wrap-up) that I find particularly interesting is the separation of continuous monitoring from final statistical evaluation.
+
+Deterioration checks can run sequentially throughout an experiment, regardless of whether the primary analysis uses sequential or non-sequential inference.
+
+This allows us to detect harm early without necessarily using interim efficacy results to determine when the experiment finishes.
+
+I would like to build on this approach by considering positive commercial signals as well. Can we design experiments that allow us to act on emerging evidence whilst retaining a reliable final evaluation?
+
 But statistical significance is only one part of an early rollout decision. An upcoming commercial opportunity, the size of the potential benefit, guardrail uncertainty and the ability to roll back all matter. Sometimes taking an informed gamble is the right commercial decision.
 
 The false-positive rate of a testing procedure is not the probability that a particular decision is wrong. That probability depends on additional assumptions about plausible effects; commercial risk also depends on their magnitude and consequences.

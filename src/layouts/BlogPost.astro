@@ -22,7 +22,7 @@ const next = seriesPart && seriesPart < 3 ? experimentSeries[seriesPart] : undef
     <Header />
     <main class="article-page">
       <div class="article-layout">
-        <article>
+        <article class:list={{ 'article--series': current }} data-series-part={seriesPart}>
           <header class="article-header">
             <a class="text-link article-back" href="/blog/">← All writing</a>
             {current && <p class="article-series-label">{seriesTitle} <span aria-hidden="true">·</span> Part {seriesPart} of 3</p>}
@@ -84,7 +84,21 @@ const next = seriesPart && seriesPart < 3 ? experimentSeries[seriesPart] : undef
   .article-prose th, .article-prose td { padding: 8px 12px; border: 1px solid var(--site-border); text-align: left; }
   .article-prose thead { background: var(--site-code); }
   .article-prose :is(td, th):not(:first-child) { text-align: right; }
-  .article-prose .katex-display { max-width: 100%; margin: 16px 0; overflow-x: auto; overflow-y: hidden; font-size: 1.02em; }
+  .article--series .article-prose > table { width: 100%; table-layout: fixed; }
+  .article--series .article-prose > table :is(th, td) { overflow-wrap: anywhere; hyphens: none; white-space: normal; }
+  .article--series .article-prose > table td:not(:first-child) { font-variant-numeric: tabular-nums; }
+  .article--series[data-series-part="2"] .article-prose > table:last-of-type :is(th, td):last-child,
+  .article--series[data-series-part="3"] .article-prose > table:last-of-type :is(th, td):not(:first-child) { text-align: left; }
+  .article--series[data-series-part="2"] .article-prose > table:first-of-type :is(th, td):first-child { width: 30%; }
+  .article--series[data-series-part="3"] .article-prose > table:first-of-type :is(th, td):first-child { width: 27%; }
+  .article--series[data-series-part="3"] .article-prose > table:first-of-type :is(th, td):nth-child(2) { width: 27%; }
+  .article--series[data-series-part="3"] .article-prose > table:first-of-type :is(th, td):last-child { width: 46%; }
+  .article--series[data-series-part="3"] .article-prose > table:last-of-type :is(th, td):first-child { width: 29%; }
+  .article--series[data-series-part="3"] .article-prose > table:last-of-type :is(th, td):nth-child(2) { width: 29%; }
+  .article--series[data-series-part="3"] .article-prose > table:last-of-type :is(th, td):last-child { width: 42%; }
+  .article--series .article-prose .katex-display { max-width: 100%; margin: 14px 0 16px; overflow-x: auto; overflow-y: hidden; text-align: center; font-size: 1.3em; }
+  .article--series .article-prose .katex-display > .katex { display: inline-block; text-align: left; }
+  .article--series .article-prose p > .katex { font-size: 1em; }
   .series-nav { margin: 0 0 20px; padding: 12px 0 14px; border-bottom: 1px solid var(--site-border); }
   .series-nav > strong { display: block; margin-bottom: 7px; color: var(--site-muted); font-size: 12px; }
   .series-nav ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
@@ -106,5 +120,5 @@ const next = seriesPart && seriesPart < 3 ? experimentSeries[seriesPart] : undef
   .article-toc a { color: var(--site-muted); text-decoration: none; }
   .article-toc a:hover, .article-toc a:focus-visible { color: var(--site-green); text-decoration: underline; }
   @media (max-width: 900px) { .article-layout { grid-template-columns: minmax(0, 760px); } .article-toc { display: none; } }
-  @media (max-width: 720px) { .article-page { width: min(1120px, calc(100% - 40px)); padding-top: 24px; } .article-header h1 { font-size: 32px; } .article-header__description { font-size: 16px; } .article-prose p, .article-prose li { font-size: 16px; } .article-prose table { display: block; overflow-x: auto; white-space: nowrap; } .series-nav ol { grid-template-columns: 1fr; gap: 2px; } .series-nav a, .series-nav li > span { padding: 5px 9px; } }
+  @media (max-width: 720px) { .article-page { width: min(1120px, calc(100% - 40px)); padding-top: 24px; } .article-header h1 { font-size: 32px; } .article-header__description { font-size: 16px; } .article-prose p, .article-prose li { font-size: 16px; } .article-prose table { display: block; overflow-x: auto; white-space: nowrap; } .article--series .article-prose > table { display: table; overflow: visible; font-size: 14px; } .article--series .article-prose > table :is(th, td) { padding: 5px 6px; line-height: 1.35; } .article--series .article-prose .katex-display { font-size: 1.3em; } .series-nav ol { grid-template-columns: 1fr; gap: 2px; } .series-nav a, .series-nav li > span { padding: 5px 9px; } }
 </style>
