@@ -26,7 +26,7 @@ export default function ExperimentChecker() {
         <button ref={suiteRef} id="tab-suite" type="button" role="tab" aria-selected={mode === "suite"} aria-controls="panel-suite" tabIndex={mode === "suite" ? 0 : -1} onClick={() => setMode("suite")}>Decision Suite</button>
       </div>
     </div>
-    <div id="panel-quick" role="tabpanel" aria-labelledby="tab-quick" hidden={mode !== "quick"}>{mode === "quick" && <QuickReadout />}</div>
+    <div id="panel-quick" role="tabpanel" aria-labelledby="tab-quick" hidden={mode !== "quick"}>{mode === "quick" && <QuickReadout onOpenSuite={() => setMode("suite")} />}</div>
     <div id="panel-suite" role="tabpanel" aria-labelledby="tab-suite" hidden={mode !== "suite"}>{mode === "suite" && <DecisionSuite />}</div>
   </section>;
 }

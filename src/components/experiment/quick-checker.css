@@ -255,6 +255,23 @@
 .quick-diagnostics dd.quick-diagnostics__relative {
   margin-top: 11px;
 }
+.suite-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: var(--primary);
+  background: transparent;
+  font: 650 15px var(--font-body);
+  text-align: left;
+  cursor: pointer;
+}
+.suite-cta svg {
+  flex: none;
+  width: 16px;
+}
 @media (max-width: 900px) {
   .quick-workspace {
     grid-template-columns: 1fr;

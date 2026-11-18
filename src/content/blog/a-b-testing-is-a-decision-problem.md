@@ -70,6 +70,8 @@ It cares whether the effect is worth acting on.
 
 Suppose changing checkout has implementation costs and operational consequences, and we decide beforehand that an improvement below **+0.5 percentage points** isn't commercially interesting.
 
+Ideally, that threshold was chosen before launch and informed the experiment's sample-size and duration planning, rather than being invented after seeing the result.
+
 Our interval is:
 
 **+0.28pp → +2.12pp**
@@ -275,7 +277,7 @@ Often the hypothesis really is directional:
 
 > We think Treatment will improve conversion.
 
-In that case a pre-specified one-sided superiority test can be entirely reasonable.
+In that case a pre-specified one-sided superiority test can be reasonable when the inferential question is genuinely directional, while downside and guardrail risks still need to be monitored separately.
 
 But the phrase **pre-specified** matters.
 
@@ -301,19 +303,21 @@ In fact, commercially, they often aren't.
 
 This is often where discussions become unnecessarily tribal.
 
-A Bayesian analysis might let us express an experiment in language that maps more naturally onto decisions:
+A Bayesian analysis might let us express an experiment in language that maps more naturally onto decisions.
 
-> 89% probability Treatment is better than Control.
+Instead of asking only whether the data would be surprising under a null hypothesis, we might ask:
 
-Better still:
+> What is the probability Treatment is better than Control?
 
-> 71% probability the uplift exceeds our +0.5pp worthwhile threshold.
+Or more usefully:
 
-And perhaps:
+> What is the probability the uplift exceeds our +0.5pp worthwhile threshold?
 
-> 5% probability the effect is worse than our −0.2pp unacceptable-loss threshold.
+And:
 
-Those statements are often easier for decision makers to reason about than a p-value.
+> What is the probability the effect crosses our −0.2pp unacceptable-loss boundary?
+
+Those statements can be easier for decision makers to reason about than a p-value.
 
 But Bayesian statistics hasn't magically removed uncertainty.
 
@@ -379,7 +383,11 @@ and more interested in:
 
 > **Do we have enough trustworthy information to make the commercial decision?**
 
-To answer that properly, I want to know several things.
+A primary-metric win is not automatically a rollout decision. If conversion improves while refunds, cancellations, margin or another pre-specified guardrail deteriorates materially, that changes the decision too.
+
+The same caution applies when we've searched across many metrics, variants or segments: the more questions we ask of the same random data, the easier it becomes to find something apparently interesting by chance.
+
+To answer the decision properly, I want to know several things.
 
 Was the experiment validly designed?
 
@@ -391,9 +399,13 @@ Could Treatment affect people assigned to Control through shared inventory, capa
 
 Is the metric the one we chose before looking at the result?
 
+Are the important guardrails healthy?
+
 Is the outcome mature?
 
 Have we been continuously monitoring the experiment?
+
+How many metrics, variants or segments have we inspected?
 
 What range of effects is still reasonably compatible with the data?
 
@@ -448,6 +460,8 @@ The real job is to understand the uncertainty well enough to make a decision whi
 **Statistics cannot remove uncertainty. It helps us understand it well enough to choose which risk we're willing to take.**
 
 The [Experiment Decision Checker](https://shanislam.com/tools/experiment-decision-checker/) offers a quick statistical readout for a binary A/B test. Its numbers are one part of the wider decision, which also depends on validity, maturity and commercial consequences.
+
+The current version focuses on binary A/B tests, validity, maturity, fixed versus continuous monitoring, uncertainty and commercial thresholds. Bayesian inference, one-sided testing, explicit non-inferiority or equivalence testing, and multiplicity correction are ideas discussed here rather than current features.
 
 Because the point of an experiment was never the p-value.
 
